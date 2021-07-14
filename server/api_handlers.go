@@ -24,6 +24,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var fileId string = request.PostForm.Get("fileid")
 
 	docKey, found := p.globalCache.Get("ONLYOFFICE_" + fileId)
+	userId, _ := request.Cookie("MMUSERID")
 
 	if !found {
 		docKey = utils.GenerateKey()
@@ -31,6 +32,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	fileInfo, _ := p.API.GetFileInfo(fileId)
+	user, _ := p.API.GetUser(userId.Value)
 	//TODO: Use id from manifest
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL
 
@@ -39,7 +41,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	temp := template.New("onlyoffice")
 	temp, _ = temp.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	fileId, _ = p.JwtSign(fileId, p.signingKey)
+	fileId, _ = p.encryptAES(fileId, p.internalKey)
 
 	data := map[string]interface{}{
 		"apijs":        p.configuration.DESAddress + utils.DESApijs,
@@ -49,6 +51,8 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		"fileId":       fileId,
 		"documentType": utils.GetFileType(fileInfo.Extension),
 		"serverURL":    serverURL,
+		"userId":       userId.Value,
+		"username":     user.Username,
 	}
 	temp.ExecuteTemplate(writer, "editor.html", data)
 }
@@ -98,7 +102,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	body := dto.CallbackBody{}
 	json.NewDecoder(request.Body).Decode(&body)
 
-	fileId, _ := p.JwtDecode(query.Get("fileId"), p.signingKey)
+	fileId, _ := p.decryptAES(query.Get("fileId"), p.internalKey)
 
 	body.FileId = fileId
 
@@ -127,7 +131,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 func (p *Plugin) downloadFile(writer http.ResponseWriter, request *http.Request) {
 	query := request.URL.Query()
 
-	fileId, _ := p.JwtDecode(query.Get("fileId"), p.signingKey)
+	fileId, _ := p.decryptAES(query.Get("fileId"), p.internalKey)
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)

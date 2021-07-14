@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"utils"
 
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/v5/plugin"
@@ -14,14 +15,14 @@ type Plugin struct {
 	plugin.MattermostPlugin
 	router            *mux.Router
 	globalCache       *cache.Cache
-	signingKey        []byte
+	internalKey       []byte
 	configurationLock sync.RWMutex
 	configuration     *configuration
 }
 
 func (p *Plugin) OnActivate() error {
 	p.router = p.forkRouter()
-	p.signingKey = []byte(p.configuration.DESSecret)
+	p.internalKey = []byte(utils.GenerateKey())
 	p.globalCache = cache.New(5*time.Minute, 5*time.Minute)
 	return nil
 }

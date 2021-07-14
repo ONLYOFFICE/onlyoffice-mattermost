@@ -51,11 +51,10 @@ const manifestStr = `
       {
         "key": "DESJwt",
         "display_name": "Secret key (leave blank to disable): ",
-        "type": "generated",
-        "help_text": "",
-        "regenerate_help_text": "Generate a new secret key",
-        "placeholder": "",
-        "default": null
+        "type": "text",
+        "help_text": "Document server JWT secret.",
+        "placeholder": "Enter your secret key",
+        "default": ""
       }
     ]
   }

@@ -2,12 +2,12 @@ package main
 
 import (
 	"net/http"
-	"strings"
 )
 
 func (p *Plugin) authenticationMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		//TODO: Check whether auth token is valid or not
+		//TODO: Add channel checks
 		userId, cookieErr := request.Cookie("MMUSERID")
 		_, userErr := p.API.GetUser(userId.Value)
 
@@ -20,11 +20,13 @@ func (p *Plugin) authenticationMiddleware(next func(writer http.ResponseWriter, 
 	}
 }
 
-func (p *Plugin) docServerOnly(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+func (p *Plugin) docServerOnlyMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		query := request.URL.Query()
 		fileId := query.Get("fileId")
-		if !strings.Contains(fileId, "_"+p.configuration.DESSecret) {
+		decipheredFileid, decipherErr := p.decryptAES(fileId, p.internalKey)
+		_, err := p.API.GetFileInfo(decipheredFileid)
+		if err != nil || decipherErr != nil {
 			http.Error(writer, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

@@ -30,3 +30,26 @@ type CommandResponse struct {
 	Version    string `json:"version,omitempty"`
 	Connection bool   `json:"-"`
 }
+
+type Document struct {
+	FileType string `json:"fileType"`
+	Key      string `json:"key"`
+	Title    string `json:"title"`
+	Url      string `json:"url"`
+}
+
+type User struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type EditorConfig struct {
+	User        User   `json:"user"`
+	CallbackUrl string `json:"callbackUrl"`
+}
+
+type Config struct {
+	Document     Document     `json:"document"`
+	DocumentType string       `json:"documentType"`
+	EditorConfig EditorConfig `json:"editorConfig"`
+}

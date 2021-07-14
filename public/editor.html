@@ -76,6 +76,10 @@
             },
             "documentType": "{{.documentType}}",
             "editorConfig": {
+                "user": {
+                    "id": "{{.userId}}",
+                    "name": "{{.username}}"
+                },
                 "callbackUrl": "{{.serverURL}}/plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi/callback?fileId={{.fileId}}"
             }
         }
