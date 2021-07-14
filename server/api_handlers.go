@@ -34,7 +34,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	user, _ := p.API.GetUser(userId.Value)
 	//TODO: Use id from manifest
-	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL
+	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi"
 
 	bundlePath, _ := p.API.GetBundlePath()
 
@@ -43,16 +43,30 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 
 	fileId, _ = p.encryptAES(fileId, p.internalKey)
 
+	var config dto.Config = dto.Config{
+		Document: dto.Document{
+			FileType: fileInfo.Extension,
+			Key:      fmt.Sprintf("%v", docKey),
+			Title:    fileInfo.Name,
+			Url:      serverURL + "/download?fileId=" + fileId,
+		},
+		DocumentType: utils.GetFileType(fileInfo.Extension),
+		EditorConfig: dto.EditorConfig{
+			User: dto.User{
+				Id:   userId.Value,
+				Name: user.Username,
+			},
+			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
+		},
+	}
+
+	jwtString, _ := JwtSign(config, []byte(p.configuration.DESJwt))
+
+	config.Token = jwtString
+
 	data := map[string]interface{}{
-		"apijs":        p.configuration.DESAddress + utils.DESApijs,
-		"key":          docKey,
-		"title":        fileInfo.Name,
-		"fileType":     fileInfo.Extension,
-		"fileId":       fileId,
-		"documentType": utils.GetFileType(fileInfo.Extension),
-		"serverURL":    serverURL,
-		"userId":       userId.Value,
-		"username":     user.Username,
+		"apijs":  p.configuration.DESAddress + utils.DESApijs,
+		"config": config,
 	}
 	temp.ExecuteTemplate(writer, "editor.html", data)
 }

@@ -69,19 +69,20 @@
 
         var config = {
             "document": {
-                "fileType": "{{.fileType}}",
-                "key": "{{.key}}",
-                "title": "{{.title}}",
-                "url": "{{.serverURL}}/plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi/download?fileId={{.fileId}}"
+                "fileType": "{{.config.Document.FileType}}",
+                "key": "{{.config.Document.Key}}",
+                "title": "{{.config.Document.Title}}",
+                "url": "{{.config.Document.Url}}"
             },
-            "documentType": "{{.documentType}}",
+            "documentType": "{{.config.DocumentType}}",
             "editorConfig": {
                 "user": {
-                    "id": "{{.userId}}",
-                    "name": "{{.username}}"
+                    "id": "{{.config.EditorConfig.User.Id}}",
+                    "name": "{{.config.EditorConfig.User.Name}}"
                 },
-                "callbackUrl": "{{.serverURL}}/plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi/callback?fileId={{.fileId}}"
-            }
+                "callbackUrl": "{{.config.EditorConfig.CallbackUrl}}"
+            },
+            "token": "{{.config.Token}}"
         }
 
         var connectEditor = function () {

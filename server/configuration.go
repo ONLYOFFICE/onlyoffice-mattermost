@@ -24,7 +24,7 @@ import (
 type configuration struct {
 	DESAddress   string
 	DESEnableTLS bool
-	DESSecret    string
+	DESJwt       string
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -33,7 +33,7 @@ func (c *configuration) Clone() *configuration {
 	return &configuration{
 		DESAddress:   c.DESAddress,
 		DESEnableTLS: c.DESEnableTLS,
-		DESSecret:    c.DESSecret,
+		DESJwt:       c.DESJwt,
 	}
 }
 

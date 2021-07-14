@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/golang-jwt/jwt"
+
 type CallbackBody struct {
 	Actions []struct {
 		Type   int    `json:"type"`
@@ -48,8 +50,11 @@ type EditorConfig struct {
 	CallbackUrl string `json:"callbackUrl"`
 }
 
+//TODO: Method to generate template strings
 type Config struct {
-	Document     Document     `json:"document"`
-	DocumentType string       `json:"documentType"`
-	EditorConfig EditorConfig `json:"editorConfig"`
+	Document           Document     `json:"document"`
+	DocumentType       string       `json:"documentType"`
+	EditorConfig       EditorConfig `json:"editorConfig"`
+	Token              string       `json:"token,omitempty"`
+	jwt.StandardClaims `json:"-"`
 }

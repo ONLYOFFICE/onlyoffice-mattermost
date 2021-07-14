@@ -9,10 +9,6 @@ import (
 	"math/big"
 )
 
-func GenerateKey() {
-	rand.Prime(rand.Reader, 64)
-}
-
 func (p *Plugin) encryptAES(text string, key []byte) (string, error) {
 	byteText := []byte(text)
 
