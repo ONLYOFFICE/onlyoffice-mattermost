@@ -1,0 +1,47 @@
+{
+    "id": "com.onlyoffice.mattermost-plugin",
+    "name": "ONLYOFFICE",
+    "description": "This plugin allows users to edit office documents from Mattermost using ONLYOFFICE Docs.",
+    "version": "0.1.0",
+    "min_server_version": "5.12.0",
+    "server": {
+        "executables": {
+            "linux-amd64": "server/dist/plugin-linux-amd64",
+            "darwin-amd64": "server/dist/plugin-darwin-amd64",
+            "windows-amd64": "server/dist/plugin-windows-amd64.exe"
+        }
+    },
+    "webapp": {
+        "bundle_path": "webapp/dist/main.js"
+    },
+    "settings_schema": {
+        "header": "",
+        "footer": "",
+        "settings": [
+            {
+                "key": "DESAddress",
+                "display_name": "Document Editing Service address: ",
+                "type": "text",
+                "help_text": "ONLYOFFICE Document Service Location specifies the address of the server with yhe document services installed. Please change the '<documentserver>' for the server address in the below line.",
+                "placeholder": "https://<documentserver>:<port>/",
+                "default": "https://<documentserver>:<port>/"
+            },
+            {
+                "key": "DESCertificate",
+                "display_name": "Enable certificate verification (disabling is insecure): ",
+                "type": "bool",
+                "help_text": "Enable or disable certificate verification.",
+                "placeholder": "",
+                "default": true
+            },
+            {
+                "key": "DESJwt",
+                "display_name": "Secret key (leave blank to disable): ",
+                "type": "generated",
+                "regenerate_help_text": "Generate a new secret key",
+                "placeholder": "",
+                "default": null
+            }
+        ]
+    }
+}
