@@ -22,7 +22,7 @@ const Root = ({ visible, close, theme, fileInfo }) => {
             <form action="" method="POST" target="iframeEditor" id="editorForm">
                 <input id='file-id' name="fileid" value='' type='hidden' />
             </form>
-            <iframe style={style.modal} name="iframeEditor" id="iframeEditor" />
+            <iframe style={style.modal} name="iframeEditor" />
         </div>
     );
 };

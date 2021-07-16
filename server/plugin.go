@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoders"
 	"net/http"
 	"sync"
 	"time"
@@ -16,6 +17,7 @@ type Plugin struct {
 	router            *mux.Router
 	globalCache       *cache.Cache
 	internalKey       []byte
+	encoder           encoders.Encoder
 	configurationLock sync.RWMutex
 	configuration     *configuration
 }

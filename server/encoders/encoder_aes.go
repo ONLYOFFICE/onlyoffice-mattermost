@@ -1,4 +1,4 @@
-package main
+package encoders
 
 import (
 	"crypto/aes"
@@ -9,7 +9,7 @@ import (
 	"math/big"
 )
 
-func (p *Plugin) encryptAES(text string, key []byte) (string, error) {
+func (e EncoderAES) Encode(text string, key []byte) (string, error) {
 	byteText := []byte(text)
 
 	aes, err := aes.NewCipher(key)
@@ -37,7 +37,7 @@ func (p *Plugin) encryptAES(text string, key []byte) (string, error) {
 	return data.String(), nil
 }
 
-func (p *Plugin) decryptAES(text string, key []byte) (string, error) {
+func (e EncoderAES) Decode(text string, key []byte) (string, error) {
 	sequence := new(big.Int)
 	sequence.SetString(text, 10)
 	cipherBytes := sequence.Bytes()

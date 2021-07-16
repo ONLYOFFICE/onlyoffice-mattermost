@@ -2,15 +2,14 @@ package main
 
 import (
 	"dto"
+	"encoders"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"path/filepath"
 	"text/template"
 	"utils"
 
-	"github.com/mattermost/mattermost-server/v5/shared/filestore"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -22,31 +21,25 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	var fileId string = request.PostForm.Get("fileid")
-
-	docKey, found := p.globalCache.Get("ONLYOFFICE_" + fileId)
-	userId, _ := request.Cookie("MMUSERID")
-
-	if !found {
-		docKey = utils.GenerateKey()
-		p.globalCache.Set("ONLYOFFICE_"+fileId, docKey, cache.NoExpiration)
-	}
-
+	var docKey string = p.getDocKey(fileId)
 	fileInfo, _ := p.API.GetFileInfo(fileId)
-	user, _ := p.API.GetUser(userId.Value)
-	//TODO: Use id from manifest
-	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi"
 
-	bundlePath, _ := p.API.GetBundlePath()
+	userId, _ := request.Cookie("MMUSERID")
+	user, _ := p.API.GetUser(userId.Value)
+
+	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + utils.MMPluginApi
 
 	temp := template.New("onlyoffice")
+	bundlePath, _ := p.API.GetBundlePath()
 	temp, _ = temp.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	fileId, _ = p.encryptAES(fileId, p.internalKey)
+	p.encoder = encoders.EncoderAES{}
+	fileId, _ = p.encoder.Encode(fileId, p.internalKey)
 
 	var config dto.Config = dto.Config{
 		Document: dto.Document{
 			FileType: fileInfo.Extension,
-			Key:      fmt.Sprintf("%v", docKey),
+			Key:      docKey,
 			Title:    fileInfo.Name,
 			Url:      serverURL + "/download?fileId=" + fileId,
 		},
@@ -60,7 +53,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		},
 	}
 
-	jwtString, _ := JwtSign(config, []byte(p.configuration.DESJwt))
+	jwtString, _ := utils.JwtSign(config, []byte(p.configuration.DESJwt))
 
 	config.Token = jwtString
 
@@ -68,45 +61,8 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		"apijs":  p.configuration.DESAddress + utils.DESApijs,
 		"config": config,
 	}
+
 	temp.ExecuteTemplate(writer, "editor.html", data)
-}
-
-func (p *Plugin) saveFile(body *dto.CallbackBody) {
-	var url string = body.Url
-	var file io.ReadCloser = p.GetHTTPClient().GetRequest(url)
-
-	defer file.Close()
-
-	serverConfig := p.API.GetUnsanitizedConfig()
-	filestore, _ := filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(false))
-
-	fileInfo, err := p.API.GetFileInfo(body.FileId)
-
-	if err != nil {
-		p.API.LogError("[ONLYOFFICE]: Fileinfo error - ", err.Error())
-	}
-
-	_, exception := filestore.WriteFile(file, fileInfo.Path)
-
-	if exception != nil {
-		p.API.LogError("[ONLYOFFICE]: Filestore error - ", exception.Error())
-	}
-
-	if body.Status == 2 {
-		p.globalCache.Delete("ONLYOFFICE_" + body.FileId)
-	}
-}
-
-func noImplementation(body *dto.CallbackBody) {
-	fmt.Println("[ONLYOFFICE]: No implementation")
-}
-
-func (p *Plugin) noChangesClosed(body *dto.CallbackBody) {
-	_, found := p.globalCache.Get("ONLYOFFICE_" + body.FileId)
-
-	if found {
-		p.globalCache.Delete("ONLYOFFICE_" + body.FileId)
-	}
 }
 
 func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
@@ -116,18 +72,11 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	body := dto.CallbackBody{}
 	json.NewDecoder(request.Body).Decode(&body)
 
-	fileId, _ := p.decryptAES(query.Get("fileId"), p.internalKey)
+	handler, exists := p.getCallbackHandler(&body)
 
+	p.encoder = encoders.EncoderAES{}
+	fileId, _ := p.encoder.Decode(query.Get("fileId"), p.internalKey)
 	body.FileId = fileId
-
-	docServerStatus := map[int]func(body *dto.CallbackBody){
-		1: noImplementation,
-		2: p.saveFile,
-		4: p.noChangesClosed,
-		6: p.saveFile,
-	}
-
-	handler, exists := docServerStatus[body.Status]
 
 	if !exists {
 		writer.Header().Set("Content-Type", "application/json")
@@ -142,11 +91,36 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte(response))
 }
 
-func (p *Plugin) downloadFile(writer http.ResponseWriter, request *http.Request) {
+func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	query := request.URL.Query()
 
-	fileId, _ := p.decryptAES(query.Get("fileId"), p.internalKey)
+	p.encoder = encoders.EncoderAES{}
+	fileId, _ := p.encoder.Decode(query.Get("fileId"), p.internalKey)
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)
+}
+
+func (p *Plugin) getDocKey(fileId string) string {
+	docKey, found := p.globalCache.Get("ONLYOFFICE_" + fileId)
+	if !found {
+		docKey = utils.GenerateKey()
+		p.globalCache.Set("ONLYOFFICE_"+fileId, docKey, cache.NoExpiration)
+	}
+	return fmt.Sprintf("%v", docKey)
+}
+
+func (p *Plugin) getCallbackHandler(callbackBody *dto.CallbackBody) (func(body *dto.CallbackBody), bool) {
+	docServerStatus := map[int]func(body *dto.CallbackBody){
+		1: p.handleIsBeingEdited,
+		2: p.handleSave,
+		3: p.handleSavingError,
+		4: p.handleNoChanges,
+		6: p.handleSave,
+		7: p.handleForcesavingError,
+	}
+
+	handler, exists := docServerStatus[callbackBody.Status]
+
+	return handler, exists
 }

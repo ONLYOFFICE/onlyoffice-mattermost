@@ -1,5 +1,18 @@
 package utils
 
+type extensionsConfig struct {
+	Viewed    []string
+	Edited    []string
+	Converted []string
+}
+
+type extensionTypesConfig struct {
+	Spreadsheet  []string
+	Presentation []string
+	Document     []string
+}
+
+//TODO: Rebuild with maps (N vs 1 complexity)
 func isInList(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -33,18 +46,6 @@ var extensionTypes = extensionTypesConfig{
 		".html", ".htm", ".mht",
 		".pdf", ".djvu", ".fb2", ".epub", ".xps",
 	},
-}
-
-type extensionsConfig struct {
-	Viewed    []string
-	Edited    []string
-	Converted []string
-}
-
-type extensionTypesConfig struct {
-	Spreadsheet  []string
-	Presentation []string
-	Document     []string
 }
 
 func GetFileType(fileExt string) string {
