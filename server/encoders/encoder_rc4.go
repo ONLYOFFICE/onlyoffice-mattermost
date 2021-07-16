@@ -2,7 +2,6 @@ package encoders
 
 import (
 	"crypto/rc4"
-	"math/big"
 )
 
 func (e EncoderRC4) Encode(text string, key []byte) (string, error) {
@@ -16,17 +15,15 @@ func (e EncoderRC4) Encode(text string, key []byte) (string, error) {
 	encrypted := make([]byte, len(textBytes))
 	rc.XORKeyStream(encrypted, textBytes)
 
-	data := new(big.Int).SetBytes(encrypted)
+	data := encryptedTextConversion(encrypted)
 
-	return data.String(), nil
+	return data, nil
 }
 
 func (e EncoderRC4) Decode(text string, key []byte) (string, error) {
-	sequence := new(big.Int)
-	sequence.SetString(text, 10)
-
 	decrypted := make([]byte, len(text))
-	encryptedText := sequence.Bytes()
+
+	encryptedText := textToEncryptedConversion(text)
 
 	rc, err := rc4.NewCipher(key)
 	if err != nil {

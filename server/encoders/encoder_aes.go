@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
-	"math/big"
 )
 
 func (e EncoderAES) Encode(text string, key []byte) (string, error) {
@@ -32,15 +31,13 @@ func (e EncoderAES) Encode(text string, key []byte) (string, error) {
 	}
 	encrypted := aesGCM.Seal(nonce, nonce, byteText, nil)
 
-	data := new(big.Int).SetBytes(encrypted)
+	data := encryptedTextConversion(encrypted)
 
-	return data.String(), nil
+	return data, nil
 }
 
 func (e EncoderAES) Decode(text string, key []byte) (string, error) {
-	sequence := new(big.Int)
-	sequence.SetString(text, 10)
-	cipherBytes := sequence.Bytes()
+	cipherBytes := textToEncryptedConversion(text)
 
 	c, err := aes.NewCipher(key)
 	if err != nil {
@@ -59,8 +56,10 @@ func (e EncoderAES) Decode(text string, key []byte) (string, error) {
 
 	nonce, ciphertext := cipherBytes[:nonceSize], cipherBytes[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+
 	if err != nil {
 		return "", err
 	}
+
 	return string(plaintext), nil
 }

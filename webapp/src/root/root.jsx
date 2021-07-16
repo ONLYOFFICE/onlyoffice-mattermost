@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {id as pluginName} from '../manifest';
 
-//http://46.101.101.37/web-apps/apps/api/documents/api.js
-
 const Root = ({ visible, close, theme, fileInfo }) => {
     if (!visible) {
         return null;

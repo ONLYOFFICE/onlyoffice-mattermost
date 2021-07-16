@@ -3,6 +3,7 @@ package main
 import (
 	"dto"
 	"io"
+	"time"
 	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/shared/filestore"
@@ -31,9 +32,11 @@ func (p *Plugin) handleSave(body *dto.CallbackBody) {
 		return
 	}
 
+	//TODO: To a separate function
 	if body.Status == 2 {
 		post, _ := p.API.GetPost(fileInfo.PostId)
 		post.EditAt = utils.GetTimestamp()
+		post.Message = "The file has been changed " + time.Now().Format(time.ANSIC)
 		p.API.UpdatePost(post)
 	}
 }
