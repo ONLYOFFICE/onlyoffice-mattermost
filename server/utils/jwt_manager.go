@@ -7,8 +7,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func JwtSign(config dto.Config, key []byte) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, config)
+func JwtSign(payload dto.JwtPayload, key []byte) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	ss, err := token.SignedString(key)
 	if err != nil {
 		return "", err

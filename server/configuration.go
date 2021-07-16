@@ -103,7 +103,9 @@ func (p *Plugin) OnConfigurationChange() error {
 	var body = dto.CommandBody{
 		Command: dto.VERSION,
 	}
-	//TODO: Add jwt to the body
+	//TODO: Bugfix (still error: 6)
+	body.Token, _ = utils.JwtSign(body, []byte(p.configuration.DESJwt))
+
 	var response = new(dto.CommandResponse)
 
 	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)
