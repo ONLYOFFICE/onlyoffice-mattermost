@@ -37,34 +37,3 @@ func (p *Plugin) docServerOnlyMiddleware(next func(writer http.ResponseWriter, r
 		next(writer, request)
 	}
 }
-
-func (p *Plugin) fileAuthorizationMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		err := request.ParseForm()
-		if err != nil {
-			http.Error(writer, "Bad Request", http.StatusBadRequest)
-			return
-		}
-
-		var fileId string = request.PostForm.Get("fileid")
-		userId, _ := request.Cookie("MMUSERID")
-
-		if !p.checkFilePermissions(userId.Value, fileId, &writer) {
-			return
-		}
-
-		next(writer, request)
-	}
-}
-
-func (p *Plugin) checkFilePermissions(userId string, fileId string, writer *http.ResponseWriter) bool {
-	//TODO: Implement file permission checks
-	_, fileErr := p.API.GetFileInfo(fileId)
-
-	if fileErr != nil {
-		http.Error(*writer, "Forbidden", http.StatusForbidden)
-		return false
-	}
-
-	return true
-}

@@ -100,7 +100,10 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.setConfiguration(configuration)
 
 	// Trying to connect to the Document Service
-	var body = dto.CommandBody{dto.VERSION}
+	var body = dto.CommandBody{
+		Command: dto.VERSION,
+	}
+	//TODO: Add jwt to the body
 	var response = new(dto.CommandResponse)
 
 	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)

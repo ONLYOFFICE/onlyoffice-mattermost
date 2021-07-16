@@ -3,6 +3,7 @@ package main
 import (
 	"dto"
 	"io"
+	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/shared/filestore"
 )
@@ -27,25 +28,22 @@ func (p *Plugin) handleSave(body *dto.CallbackBody) {
 
 	if exception != nil {
 		p.API.LogError("[ONLYOFFICE]: Filestore error - ", exception.Error())
+		return
 	}
 
 	if body.Status == 2 {
-		p.globalCache.Delete("ONLYOFFICE_" + body.FileId)
+		post, _ := p.API.GetPost(fileInfo.PostId)
+		post.EditAt = utils.GetTimestamp()
+		p.API.UpdatePost(post)
 	}
 }
 
 //Status 4
 func (p *Plugin) handleNoChanges(body *dto.CallbackBody) {
-	_, found := p.globalCache.Get("ONLYOFFICE_" + body.FileId)
-
-	if found {
-		p.globalCache.Delete("ONLYOFFICE_" + body.FileId)
-	}
 }
 
 //Status 1
 func (p *Plugin) handleIsBeingEdited(body *dto.CallbackBody) {
-
 }
 
 //Status 3

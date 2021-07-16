@@ -5,12 +5,16 @@ go 1.12
 require (
 	dto v0.0.1
 	encoders v0.0.0-00010101000000-000000000000
+	github.com/go-ldap/ldap v3.0.3+incompatible // indirect
 	github.com/gorilla/mux v1.8.0
-	github.com/mattermost/mattermost-server/v5 v5.36.1
+	github.com/mattermost/mattermost-server v5.11.1+incompatible
+	github.com/mattermost/mattermost-server/v5 v5.37.0
+	github.com/nicksnyder/go-i18n v1.10.1 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.0
+	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	utils v0.0.1
 )

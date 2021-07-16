@@ -5,6 +5,6 @@ type Encoder interface {
 	Decode(text string, key []byte) (string, error)
 }
 
-//TODO: Fine tuning of individial instances
+//TODO: Fine tuning of individial instances (using custom constructors)
 type EncoderAES struct{}
-type EncoderMD5 struct{}
+type EncoderRC4 struct{}

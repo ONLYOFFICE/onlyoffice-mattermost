@@ -4,13 +4,11 @@ import (
 	"dto"
 	"encoders"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"text/template"
 	"utils"
-
-	"github.com/patrickmn/go-cache"
 )
 
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
@@ -21,7 +19,8 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	var fileId string = request.PostForm.Get("fileid")
-	var docKey string = p.getDocKey(fileId)
+	var docKey string = p.generateDocKey(fileId)
+
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 
 	userId, _ := request.Cookie("MMUSERID")
@@ -101,13 +100,24 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(fileContent)
 }
 
-func (p *Plugin) getDocKey(fileId string) string {
-	docKey, found := p.globalCache.Get("ONLYOFFICE_" + fileId)
-	if !found {
-		docKey = utils.GenerateKey()
-		p.globalCache.Set("ONLYOFFICE_"+fileId, docKey, cache.NoExpiration)
+func (p *Plugin) generateDocKey(fileId string) string {
+	fileInfo, err := p.API.GetFileInfo(fileId)
+	if err != nil {
+		return ""
 	}
-	return fmt.Sprintf("%v", docKey)
+
+	post, _ := p.API.GetPost(fileInfo.PostId)
+
+	var postUpdatedAt string = strconv.FormatInt(post.EditAt, 10)
+
+	p.encoder = encoders.EncoderRC4{}
+	docKey, encodeErr := p.encoder.Encode(fileId+"_"+postUpdatedAt, []byte(utils.RC4Key))
+
+	if encodeErr != nil {
+		p.API.LogError("[ONLYOFFICE] Document key generation problem: ", encodeErr.Error())
+		return ""
+	}
+	return docKey
 }
 
 func (p *Plugin) getCallbackHandler(callbackBody *dto.CallbackBody) (func(body *dto.CallbackBody), bool) {

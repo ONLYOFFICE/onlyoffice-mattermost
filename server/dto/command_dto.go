@@ -3,6 +3,7 @@ package dto
 import (
 	"strconv"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 )
 
@@ -15,7 +16,9 @@ const (
 )
 
 type CommandBody struct {
-	Command string `json:"c"`
+	Command            string `json:"c"`
+	Token              string `json:"token,omitempty"`
+	jwt.StandardClaims `json:"-"`
 }
 
 type CommandResponse struct {
