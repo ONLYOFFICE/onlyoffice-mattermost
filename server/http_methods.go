@@ -12,6 +12,7 @@ type HTTPClient struct {
 	client http.Client
 }
 
+//TODO: Rebuild this function
 func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, responseBody interface {
 	Connected()
 	CheckResponse() error

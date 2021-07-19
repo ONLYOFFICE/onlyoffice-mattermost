@@ -3,18 +3,21 @@ package main
 import (
 	"encoders"
 	"net/http"
+	"utils"
 )
 
 func (p *Plugin) authenticationMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		//TODO: Add channel checks
-		userId, cookieErr := request.Cookie("MMUSERID")
-		_, userErr := p.API.GetUser(userId.Value)
+		userId, cookieErr := request.Cookie(utils.MMUserCookie)
+		user, userErr := p.API.GetUser(userId.Value)
 
 		if userErr != nil || cookieErr != nil {
 			http.Error(writer, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		request.Header.Add("ONLYOFFICE_USERNAME", user.Username)
 
 		next(writer, request)
 	}

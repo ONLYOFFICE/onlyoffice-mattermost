@@ -1,16 +1,15 @@
 package main
 
 import (
-	"dto"
 	"io"
-	"time"
+	"models"
 	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/shared/filestore"
 )
 
 //Status 2 and 6
-func (p *Plugin) handleSave(body *dto.CallbackBody) {
+func (p *Plugin) handleSave(body *models.CallbackBody) {
 	var url string = body.Url
 	var file io.ReadCloser = p.GetHTTPClient().GetRequest(url)
 
@@ -35,26 +34,40 @@ func (p *Plugin) handleSave(body *dto.CallbackBody) {
 	//TODO: To a separate function
 	if body.Status == 2 {
 		post, _ := p.API.GetPost(fileInfo.PostId)
-		post.EditAt = utils.GetTimestamp()
-		post.Message = "The file has been changed " + time.Now().Format(time.ANSIC)
+		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
 	}
 }
 
 //Status 4
-func (p *Plugin) handleNoChanges(body *dto.CallbackBody) {
+func (p *Plugin) handleNoChanges(body *models.CallbackBody) {
 }
 
 //Status 1
-func (p *Plugin) handleIsBeingEdited(body *dto.CallbackBody) {
+func (p *Plugin) handleIsBeingEdited(body *models.CallbackBody) {
 }
 
 //Status 3
-func (p *Plugin) handleSavingError(body *dto.CallbackBody) {
+func (p *Plugin) handleSavingError(body *models.CallbackBody) {
 
 }
 
 //Status 7
-func (p *Plugin) handleForcesavingError(body *dto.CallbackBody) {
+func (p *Plugin) handleForcesavingError(body *models.CallbackBody) {
 
+}
+
+func (p *Plugin) getCallbackHandler(callbackBody *models.CallbackBody) (func(body *models.CallbackBody), bool) {
+	docServerStatus := map[int]func(body *models.CallbackBody){
+		1: p.handleIsBeingEdited,
+		2: p.handleSave,
+		3: p.handleSavingError,
+		4: p.handleNoChanges,
+		6: p.handleSave,
+		7: p.handleForcesavingError,
+	}
+
+	handler, exists := docServerStatus[callbackBody.Status]
+
+	return handler, exists
 }

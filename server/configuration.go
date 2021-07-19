@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dto"
 	"fmt"
+	"models"
 	"reflect"
 
 	"utils"
@@ -100,13 +100,13 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.setConfiguration(configuration)
 
 	// Trying to connect to the Document Service
-	var body = dto.CommandBody{
-		Command: dto.VERSION,
+	var body = models.CommandBody{
+		Command: models.VERSION,
 	}
 	//TODO: Bugfix (still error: 6)
 	body.Token, _ = utils.JwtSign(body, []byte(p.configuration.DESJwt))
 
-	var response = new(dto.CommandResponse)
+	var response = new(models.CommandResponse)
 
 	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)
 	var err = response.CheckResponse()

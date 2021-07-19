@@ -1,9 +1,9 @@
 package main
 
 import (
-	"dto"
 	"encoders"
 	"encoding/json"
+	"models"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -23,8 +23,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 
-	userId, _ := request.Cookie("MMUSERID")
-	user, _ := p.API.GetUser(userId.Value)
+	userId, _ := request.Cookie(utils.MMUserCookie)
 
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + utils.MMPluginApi
 
@@ -35,18 +34,18 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	p.encoder = encoders.EncoderAES{}
 	fileId, _ = p.encoder.Encode(fileId, p.internalKey)
 
-	var config dto.Config = dto.Config{
-		Document: dto.Document{
+	var config models.Config = models.Config{
+		Document: models.Document{
 			FileType: fileInfo.Extension,
 			Key:      docKey,
 			Title:    fileInfo.Name,
 			Url:      serverURL + "/download?fileId=" + fileId,
 		},
 		DocumentType: utils.GetFileType(fileInfo.Extension),
-		EditorConfig: dto.EditorConfig{
-			User: dto.User{
+		EditorConfig: models.EditorConfig{
+			User: models.User{
 				Id:   userId.Value,
-				Name: user.Username,
+				Name: request.Header.Get("ONLYOFFICE_USERNAME"),
 			},
 			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
 		},
@@ -68,7 +67,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	query := request.URL.Query()
 	response := "{\"error\": 0}"
 
-	body := dto.CallbackBody{}
+	body := models.CallbackBody{}
 	json.NewDecoder(request.Body).Decode(&body)
 
 	handler, exists := p.getCallbackHandler(&body)
@@ -108,29 +107,14 @@ func (p *Plugin) generateDocKey(fileId string) string {
 
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
-	var postUpdatedAt string = strconv.FormatInt(post.EditAt, 10)
+	var postUpdatedAt string = strconv.FormatInt(post.UpdateAt, 10)
 
 	p.encoder = encoders.EncoderRC4{}
-	docKey, encodeErr := p.encoder.Encode(fileId+"_"+postUpdatedAt, []byte(utils.RC4Key))
+	docKey, encodeErr := p.encoder.Encode(fileId+postUpdatedAt, []byte(utils.RC4Key))
 
 	if encodeErr != nil {
 		p.API.LogError("[ONLYOFFICE] Document key generation problem: ", encodeErr.Error())
 		return ""
 	}
 	return docKey
-}
-
-func (p *Plugin) getCallbackHandler(callbackBody *dto.CallbackBody) (func(body *dto.CallbackBody), bool) {
-	docServerStatus := map[int]func(body *dto.CallbackBody){
-		1: p.handleIsBeingEdited,
-		2: p.handleSave,
-		3: p.handleSavingError,
-		4: p.handleNoChanges,
-		6: p.handleSave,
-		7: p.handleForcesavingError,
-	}
-
-	handler, exists := docServerStatus[callbackBody.Status]
-
-	return handler, exists
 }
