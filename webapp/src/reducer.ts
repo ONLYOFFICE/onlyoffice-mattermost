@@ -1,18 +1,18 @@
-import {combineReducers} from 'redux';
+import {AnyAction, combineReducers} from 'redux';
 
 import {OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL} from './action_types';
 
-const rootModalVisible = (state = {isVisible: false, fileInfo: null}, action: any) => {
+const rootModalVisible = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
     switch (action.type) {
     case OPEN_ROOT_MODAL:
         return {
             isVisible: true,
-            fileInfo: action.payload
+            fileInfo: action.payload,
         };
     case CLOSE_ROOT_MODAL:
         return {
             isVisible: false,
-            fileInfo: null
+            fileInfo: null,
         };
     default:
         return state;
@@ -20,6 +20,6 @@ const rootModalVisible = (state = {isVisible: false, fileInfo: null}, action: an
 };
 
 export default combineReducers({
-    rootModalVisible
+    rootModalVisible,
 });
 

@@ -1,26 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
+
 import {id as pluginName} from '../manifest';
 
-const Root = ({ visible, close, theme, fileInfo }) => {
+// eslint-disable-next-line react/prop-types
+const Root = ({visible, close, theme, fileInfo}) => {
+    useEffect(() => {
+        if (!visible) {
+            return;
+        }
+        document.getElementById('editorForm').action = `/plugins/${pluginName}/onlyofficeapi/editor`;
+        // eslint-disable-next-line react/prop-types
+        document.getElementById('file-id').value = fileInfo.id;
+        document.getElementById('editorForm').submit();
+    }, [fileInfo, visible]);
+
     if (!visible) {
         return null;
     }
-    useEffect(() => {
-        document.getElementById("editorForm").action = `/plugins/${pluginName}/onlyofficeapi/editor`;
-        document.getElementById("file-id").value = fileInfo.id;
-        document.getElementById("editorForm").submit();
-    }, [fileInfo]);
+
     const style = getStyle(theme);
+
     return (
         <div
             style={style.backdrop}
             onClick={close}
         >
-            <form action="" method="POST" target="iframeEditor" id="editorForm">
-                <input id='file-id' name="fileid" value='' type='hidden' />
+            <form
+                action=''
+                method='POST'
+                target='iframeEditor'
+                id='editorForm'
+            >
+                <input
+                    id='file-id'
+                    name='fileid'
+                    value=''
+                    type='hidden'
+                />
             </form>
-            <iframe style={style.modal} name="iframeEditor" />
+            <iframe
+                style={style.modal}
+                name='iframeEditor'
+            />
         </div>
     );
 };
@@ -29,7 +51,6 @@ Root.propTypes = {
     visible: PropTypes.bool.isRequired,
     close: PropTypes.func.isRequired,
     theme: PropTypes.object.isRequired,
-    subMenu: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
 };
 
 const getStyle = (theme) => ({
