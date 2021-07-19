@@ -103,13 +103,16 @@ func (p *Plugin) OnConfigurationChange() error {
 	var body = models.CommandBody{
 		Command: models.VERSION,
 	}
-	//TODO: Bugfix (still error: 6)
 	body.Token, _ = utils.JwtSign(body, []byte(p.configuration.DESJwt))
+	var jwtHeader Header = Header{
+		Key:   "Authorization",
+		Value: "Bearer " + body.Token,
+	}
 
 	var response = new(models.CommandResponse)
 
-	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)
-	var err = response.CheckResponse()
+	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response, jwtHeader)
+	var err = response.ProcessResponse()
 
 	if err != nil {
 		return errors.Cause(err)

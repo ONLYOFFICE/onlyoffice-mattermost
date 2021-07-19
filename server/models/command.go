@@ -22,13 +22,13 @@ type CommandBody struct {
 }
 
 type CommandResponse struct {
-	Error      int    `json:"error"`
-	Version    string `json:"version,omitempty"`
-	Connection bool   `json:"-"`
+	Error        int    `json:"error"`
+	Version      string `json:"version,omitempty"`
+	IsSuccessful bool   `json:"-"`
 }
 
-func (dsr *CommandResponse) CheckResponse() error {
-	if !dsr.Connection {
+func (dsr *CommandResponse) ProcessResponse() error {
+	if !dsr.IsSuccessful {
 		var err error = errors.New("[ONLYOFFICE]: No connection to the Document Service")
 		return errors.Wrap(err, err.Error())
 	}
@@ -39,6 +39,10 @@ func (dsr *CommandResponse) CheckResponse() error {
 	return nil
 }
 
-func (dsr *CommandResponse) Connected() {
-	dsr.Connection = true
+func (dsr *CommandResponse) Succeeded() {
+	dsr.IsSuccessful = true
+}
+
+func (dsr *CommandResponse) Failed() {
+	dsr.IsSuccessful = false
 }

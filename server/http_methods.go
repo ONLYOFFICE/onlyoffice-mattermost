@@ -12,20 +12,31 @@ type HTTPClient struct {
 	client http.Client
 }
 
+type Header struct {
+	Key   string
+	Value string
+}
+
 //TODO: Rebuild this function
 func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, responseBody interface {
-	Connected()
-	CheckResponse() error
-}) {
+	Succeeded()
+	Failed()
+}, headers ...Header) {
 	body := &requestBody
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(body)
 	req, _ := http.NewRequest("POST", url, buf)
 
+	for _, header := range headers {
+		req.Header.Add(header.Key, header.Value)
+	}
+
 	res, _ := httpClient.client.Do(req)
 
 	if res.StatusCode < 300 {
-		responseBody.Connected()
+		responseBody.Succeeded()
+	} else {
+		responseBody.Failed()
 	}
 
 	defer httpClient.client.CloseIdleConnections()
