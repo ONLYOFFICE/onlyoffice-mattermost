@@ -48,9 +48,10 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		},
 	}
 
-	jwtString, _ := utils.JwtSign(config, []byte(p.configuration.DESJwt))
-
-	config.Token = jwtString
+	if p.configuration.DESJwt != "" {
+		jwtString, _ := utils.JwtSign(config, []byte(p.configuration.DESJwt))
+		config.Token = jwtString
+	}
 
 	data := map[string]interface{}{
 		"apijs":  p.configuration.DESAddress + utils.DESApijs,
@@ -65,18 +66,35 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	response := "{\"error\": 0}"
 
 	body := models.CallbackBody{}
-	json.NewDecoder(request.Body).Decode(&body)
+
+	//TODO: Refactor
+	decodingErr := json.NewDecoder(request.Body).Decode(&body)
+
+	if decodingErr != nil {
+		p.API.LogError("[ONLYOFFICE] Callback body decoding error - ", decodingErr.Error())
+		http.Error(writer, response, http.StatusInternalServerError)
+		return
+	}
+
+	if p.configuration.DESJwt != "" {
+		jwtBodyHandlerErr := processJwtBody(&body, []byte(p.configuration.DESJwt))
+
+		if jwtBodyHandlerErr != nil {
+			p.API.LogError("[ONLYOFFICE] JWT Body processing error - ", jwtBodyHandlerErr.Error())
+			http.Error(writer, response, http.StatusInternalServerError)
+			return
+		}
+	}
 
 	handler, exists := p.getCallbackHandler(&body)
 
 	p.encryptor = encryptors.EncryptorAES{}
-	fileId, _ := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
+	fileId, decryptionErr := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
 	body.FileId = fileId
 
-	if !exists {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(500)
-		writer.Write([]byte(response))
+	if !exists || decryptionErr != nil {
+		http.Error(writer, response, http.StatusInternalServerError)
+		return
 	}
 
 	handler(&body, p)

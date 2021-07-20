@@ -6,9 +6,11 @@ import {ThunkDispatch} from 'redux-thunk';
 
 import {postDropdownMenuAction} from 'actions';
 
+import {isExtensionSupported} from 'utils/file_utils';
+
 import manifest from './manifest';
 import Reducer from './reducer';
-import Root from './root';
+import Root from './components/root';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
@@ -18,7 +20,7 @@ export default class Plugin {
         registry.registerRootComponent(Root);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
         registry.registerFileDropdownMenuAction(
-            () => true,
+            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
             'ONLYOFFICE',
             (fileInfo: FileInfo) => dispatch(postDropdownMenuAction(fileInfo)),
         );

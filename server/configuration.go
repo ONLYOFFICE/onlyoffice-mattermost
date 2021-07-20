@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"models"
+	"path/filepath"
 	"reflect"
 
 	"utils"
 
+	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v5/plugin"
 	"github.com/pkg/errors"
 )
 
@@ -25,6 +28,8 @@ type configuration struct {
 	DESAddress   string
 	DESEnableTLS bool
 	DESJwt       string
+	DESJwtHeader string
+	DESJwtPrefix string
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -34,6 +39,8 @@ func (c *configuration) Clone() *configuration {
 		DESAddress:   c.DESAddress,
 		DESEnableTLS: c.DESEnableTLS,
 		DESJwt:       c.DESJwt,
+		DESJwtHeader: c.DESJwtHeader,
+		DESJwtPrefix: c.DESJwtPrefix,
 	}
 }
 
@@ -103,20 +110,28 @@ func (p *Plugin) OnConfigurationChange() error {
 	var body = models.CommandBody{
 		Command: models.VERSION,
 	}
+
 	body.Token, _ = utils.JwtSign(body, []byte(p.configuration.DESJwt))
-	var jwtHeader Header = Header{
-		Key:   "Authorization",
-		Value: "Bearer " + body.Token,
-	}
 
 	var response = new(models.CommandResponse)
 
-	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response, jwtHeader)
+	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)
 	var err = response.ProcessResponse()
 
 	if err != nil {
 		return errors.Cause(err)
 	}
+
+	bot_id, creationErr := p.Helpers.EnsureBot(&model.Bot{
+		Username:    "ONLYOFFICE",
+		DisplayName: "ONLYOFFICE",
+		Description: "ONLYOFFICE Helper",
+	}, plugin.ProfileImagePath(filepath.Join("assets", "logo.png")))
+	if creationErr != nil {
+		return errors.Wrap(creationErr, "Failed to create an ONLYOFFICE bot")
+	}
+
+	p.onlyoffice_bot_id = bot_id
 
 	p.API.LogInfo("[ONLYOFFICE]: The server responded without errors")
 

@@ -10,4 +10,5 @@ type CallbackBody struct {
 	Users  []string `json:"users"`
 	Url    string   `json:"url"`
 	FileId string   `json:"-"`
+	Token  string   `json:"token,-"`
 }

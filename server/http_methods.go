@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"log"
 	"net/http"
 )
@@ -21,15 +20,11 @@ type Header struct {
 func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, responseBody interface {
 	Succeeded()
 	Failed()
-}, headers ...Header) {
+}) {
 	body := &requestBody
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(body)
 	req, _ := http.NewRequest("POST", url, buf)
-
-	for _, header := range headers {
-		req.Header.Add(header.Key, header.Value)
-	}
 
 	res, _ := httpClient.client.Do(req)
 
@@ -46,10 +41,12 @@ func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, re
 	json.NewDecoder(res.Body).Decode(responseBody)
 }
 
-func (httpClient HTTPClient) GetRequest(url string) io.ReadCloser {
+func (httpClient HTTPClient) GetRequest(url string) (*http.Response, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal("Response error: ", err.Error())
+		return nil, err
 	}
-	return resp.Body
+	defer httpClient.client.CloseIdleConnections()
+	return resp, nil
 }

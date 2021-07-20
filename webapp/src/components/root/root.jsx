@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 
-import {id as pluginName} from '../manifest';
+import {id as pluginName} from '../../manifest';
 
 // eslint-disable-next-line react/prop-types
 const Root = ({visible, close, theme, fileInfo}) => {

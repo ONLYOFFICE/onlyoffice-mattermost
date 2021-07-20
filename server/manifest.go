@@ -55,6 +55,22 @@ const manifestStr = `
         "help_text": "Document server JWT secret.",
         "placeholder": "Enter your secret key",
         "default": ""
+      },
+      {
+        "key": "DESJwtHeader",
+        "display_name": "JWT Header name: ",
+        "type": "text",
+        "help_text": "Change the default header name.",
+        "placeholder": "Enter your secret key",
+        "default": "Authorization"
+      },
+      {
+        "key": "DESJwtPrefix",
+        "display_name": "JWT Prefix: ",
+        "type": "text",
+        "help_text": "Authorization header prefix.",
+        "placeholder": "",
+        "default": "Bearer "
       }
     ]
   }

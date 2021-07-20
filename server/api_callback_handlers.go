@@ -1,18 +1,42 @@
 package main
 
 import (
-	"io"
+	"fmt"
 	"models"
 	"utils"
 
+	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/shared/filestore"
+	"github.com/mitchellh/mapstructure"
 )
+
+func processJwtBody(body *models.CallbackBody, jwtKey []byte) error {
+	decodedCallback, jwtDecodingErr := utils.JwtDecode(body.Token, jwtKey)
+
+	if jwtDecodingErr != nil {
+		return jwtDecodingErr
+	}
+
+	err := mapstructure.Decode(decodedCallback, &body)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 //Status 2 and 6
 func handleSave(body *models.CallbackBody, p *Plugin) {
 	var url string = body.Url
-	var file io.ReadCloser = p.GetHTTPClient().GetRequest(url)
+	response, getErr := p.GetHTTPClient().GetRequest(url)
 
+	if getErr != nil {
+		p.API.LogError("[ONLYOFFICE] Couldn't fetch the file requested")
+		return
+	}
+
+	file := response.Body
 	defer file.Close()
 
 	serverConfig := p.API.GetUnsanitizedConfig()
@@ -22,6 +46,7 @@ func handleSave(body *models.CallbackBody, p *Plugin) {
 
 	if err != nil {
 		p.API.LogError("[ONLYOFFICE]: Fileinfo error - ", err.Error())
+		return
 	}
 
 	_, exception := filestore.WriteFile(file, fileInfo.Path)
@@ -35,6 +60,21 @@ func handleSave(body *models.CallbackBody, p *Plugin) {
 		post, _ := p.API.GetPost(fileInfo.PostId)
 		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
+		//TODO: Move to a separate function
+		user, _ := p.API.GetUser(body.Users[0])
+		var newPostMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
+		newPost := model.Post{
+			Message:   newPostMessage,
+			ParentId:  post.Id,
+			RootId:    post.Id,
+			ChannelId: post.ChannelId,
+			UserId:    p.onlyoffice_bot_id,
+		}
+		_, creationErr := p.API.CreatePost(&newPost)
+		if creationErr != nil {
+			fmt.Println("[ONLYOFFICE] Post creation error: ", creationErr.Error())
+			return
+		}
 	}
 }
 

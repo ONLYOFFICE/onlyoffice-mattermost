@@ -15,6 +15,7 @@ type Plugin struct {
 	router            *mux.Router
 	internalKey       []byte
 	encryptor         encryptors.Encryptor
+	onlyoffice_bot_id string
 	configurationLock sync.RWMutex
 	configuration     *configuration
 }

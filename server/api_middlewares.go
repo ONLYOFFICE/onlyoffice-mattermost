@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"encryptors"
+	"io/ioutil"
 	"net/http"
+	"strings"
 	"utils"
 )
 
@@ -136,7 +140,145 @@ func (m *ChannelAuthorizationMiddleware) HasError() bool {
 	return m.hasError || m.next.HasError()
 }
 
-func (p *Plugin) userAccessMiddlewareChain(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+type BodyJwtMiddleware struct {
+	plugin   *Plugin
+	next     Middleware
+	hasError bool
+}
+
+func (m *BodyJwtMiddleware) Execute(writer http.ResponseWriter, request *http.Request) {
+	if m.plugin.configuration.DESJwt != "" {
+		type TokenBody struct {
+			Token string `json:"token,omitempty"`
+		}
+
+		if request.Body == nil {
+			m.hasError = true
+			return
+		}
+
+		var tokenBody TokenBody
+		var bodyBytes []byte
+
+		bodyBytes, _ = ioutil.ReadAll(request.Body)
+		request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		decodingErr := json.Unmarshal(bodyBytes, &tokenBody)
+		if decodingErr != nil {
+			m.hasError = true
+			return
+		}
+
+		if tokenBody.Token == "" {
+			m.hasError = true
+			return
+		}
+
+		_, jwtDecodingErr := utils.JwtDecode(tokenBody.Token, []byte(m.plugin.configuration.DESJwt))
+		if jwtDecodingErr != nil {
+			m.hasError = true
+			return
+		}
+	}
+
+	if m.next != nil {
+		m.next.Execute(writer, request)
+	}
+}
+
+func (m *BodyJwtMiddleware) SetNext(Next Middleware) Middleware {
+	m.next = Next
+	return m.next
+}
+
+func (m *BodyJwtMiddleware) HasError() bool {
+	if m.next != nil {
+		return m.hasError || m.next.HasError()
+	}
+	return m.hasError
+}
+
+type HeaderJwtMiddleware struct {
+	plugin   *Plugin
+	next     Middleware
+	hasError bool
+}
+
+func (m *HeaderJwtMiddleware) Execute(writer http.ResponseWriter, request *http.Request) {
+	if m.plugin.configuration.DESJwt != "" {
+
+		jwtToken := request.Header.Get(m.plugin.configuration.DESJwtHeader)
+
+		if jwtToken == "" {
+			m.hasError = true
+			return
+		}
+
+		jwtToken = strings.Split(jwtToken, m.plugin.configuration.DESJwtPrefix)[1]
+		jwtToken = strings.TrimSpace(jwtToken)
+
+		_, jwtErr := utils.JwtDecode(jwtToken, []byte(m.plugin.configuration.DESJwt))
+
+		if jwtErr != nil {
+			m.hasError = true
+			return
+		}
+	}
+
+	if m.next != nil {
+		m.next.Execute(writer, request)
+	}
+}
+
+func (m *HeaderJwtMiddleware) SetNext(Next Middleware) Middleware {
+	m.next = Next
+	return m.next
+}
+
+func (m *HeaderJwtMiddleware) HasError() bool {
+	if m.next != nil {
+		return m.hasError || m.next.HasError()
+	}
+	return m.hasError
+}
+
+type DecryptorMiddleware struct {
+	plugin   *Plugin
+	next     Middleware
+	hasError bool
+}
+
+func (m *DecryptorMiddleware) Execute(writer http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	fileId := query.Get("fileId")
+
+	m.plugin.encryptor = encryptors.EncryptorAES{}
+	decipheredFileid, decipherErr := m.plugin.encryptor.Decrypt(fileId, m.plugin.internalKey)
+	_, err := m.plugin.API.GetFileInfo(decipheredFileid)
+
+	if err != nil || decipherErr != nil {
+		m.hasError = true
+		return
+	}
+
+	if m.next != nil {
+		m.next.Execute(writer, request)
+	}
+}
+
+func (m *DecryptorMiddleware) SetNext(Next Middleware) Middleware {
+	m.next = Next
+	return m.next
+}
+
+func (m *DecryptorMiddleware) HasError() bool {
+	if m.next != nil {
+		return m.hasError || m.next.HasError()
+	}
+	return m.hasError
+}
+
+func (p *Plugin) userAccessChain(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	authentication := &AuthenticationMiddleware{plugin: p}
 	checkFile := &FileValidityMiddleware{plugin: p}
 	channelAccess := &ChannelAuthorizationMiddleware{plugin: p}
@@ -146,9 +288,7 @@ func (p *Plugin) userAccessMiddlewareChain(next func(writer http.ResponseWriter,
 	return func(writer http.ResponseWriter, request *http.Request) {
 		authentication.Execute(writer, request)
 
-		var hasError bool = authentication.HasError()
-
-		if hasError {
+		if authentication.HasError() {
 			return
 		}
 
@@ -156,16 +296,36 @@ func (p *Plugin) userAccessMiddlewareChain(next func(writer http.ResponseWriter,
 	}
 }
 
-func (p *Plugin) docServerOnlyMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+func (p *Plugin) callbackChain(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+	decryptorMiddleware := DecryptorMiddleware{plugin: p}
+	bodyJwtMiddleware := BodyJwtMiddleware{plugin: p}
+
+	decryptorMiddleware.SetNext(&bodyJwtMiddleware)
+
 	return func(writer http.ResponseWriter, request *http.Request) {
-		query := request.URL.Query()
-		fileId := query.Get("fileId")
 
-		p.encryptor = encryptors.EncryptorAES{}
-		decipheredFileid, decipherErr := p.encryptor.Decrypt(fileId, p.internalKey)
+		decryptorMiddleware.Execute(writer, request)
 
-		_, err := p.API.GetFileInfo(decipheredFileid)
-		if err != nil || decipherErr != nil {
+		if decryptorMiddleware.HasError() {
+			http.Error(writer, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		next(writer, request)
+	}
+}
+
+func (p *Plugin) downloadChain(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+	decryptorMiddleware := DecryptorMiddleware{plugin: p}
+	headerJwtMiddleware := HeaderJwtMiddleware{plugin: p}
+
+	decryptorMiddleware.SetNext(&headerJwtMiddleware)
+
+	return func(writer http.ResponseWriter, request *http.Request) {
+
+		decryptorMiddleware.Execute(writer, request)
+
+		if decryptorMiddleware.HasError() {
 			http.Error(writer, "Forbidden", http.StatusForbidden)
 			return
 		}
