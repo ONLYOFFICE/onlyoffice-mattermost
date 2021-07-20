@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoders"
 	"encoding/json"
+	"encryptors"
 	"models"
 	"net/http"
 	"path/filepath"
@@ -12,18 +12,15 @@ import (
 )
 
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
-	err := request.ParseForm()
-	if err != nil {
-		p.API.LogError("[ONLYOFFICE]: Editor error ", err.Error())
-		return
-	}
-
 	var fileId string = request.PostForm.Get("fileid")
+
 	var docKey string = p.generateDocKey(fileId)
 
 	fileInfo, _ := p.API.GetFileInfo(fileId)
+	docType, _ := utils.GetFileType(fileInfo.Extension)
 
 	userId, _ := request.Cookie(utils.MMUserCookie)
+	user, _ := p.API.GetUser(userId.Value)
 
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + utils.MMPluginApi
 
@@ -31,8 +28,8 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	bundlePath, _ := p.API.GetBundlePath()
 	temp, _ = temp.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	p.encoder = encoders.EncoderAES{}
-	fileId, _ = p.encoder.Encode(fileId, p.internalKey)
+	p.encryptor = encryptors.EncryptorAES{}
+	fileId, _ = p.encryptor.Encrypt(fileId, p.internalKey)
 
 	var config models.Config = models.Config{
 		Document: models.Document{
@@ -41,11 +38,11 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 			Title:    fileInfo.Name,
 			Url:      serverURL + "/download?fileId=" + fileId,
 		},
-		DocumentType: utils.GetFileType(fileInfo.Extension),
+		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
 			User: models.User{
 				Id:   userId.Value,
-				Name: request.Header.Get("ONLYOFFICE_USERNAME"),
+				Name: user.Username,
 			},
 			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
 		},
@@ -72,8 +69,8 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 	handler, exists := p.getCallbackHandler(&body)
 
-	p.encoder = encoders.EncoderAES{}
-	fileId, _ := p.encoder.Decode(query.Get("fileId"), p.internalKey)
+	p.encryptor = encryptors.EncryptorAES{}
+	fileId, _ := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
 	body.FileId = fileId
 
 	if !exists {
@@ -82,7 +79,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte(response))
 	}
 
-	handler(&body)
+	handler(&body, p)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
@@ -92,8 +89,8 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	query := request.URL.Query()
 
-	p.encoder = encoders.EncoderAES{}
-	fileId, _ := p.encoder.Decode(query.Get("fileId"), p.internalKey)
+	p.encryptor = encryptors.EncryptorAES{}
+	fileId, _ := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)
@@ -109,11 +106,11 @@ func (p *Plugin) generateDocKey(fileId string) string {
 
 	var postUpdatedAt string = strconv.FormatInt(post.UpdateAt, 10)
 
-	p.encoder = encoders.EncoderRC4{}
-	docKey, encodeErr := p.encoder.Encode(fileId+postUpdatedAt, []byte(utils.RC4Key))
+	p.encryptor = encryptors.EncryptorRC4{}
+	docKey, encodeErr := p.encryptor.Encrypt(fileId+postUpdatedAt, []byte(utils.RC4Key))
 
 	if encodeErr != nil {
-		p.API.LogError("[ONLYOFFICE] Document key generation problem: ", encodeErr.Error())
+		p.API.LogError("[ONLYOFFICE] Key generation error: ", encodeErr.Error())
 		return ""
 	}
 	return docKey

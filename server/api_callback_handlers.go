@@ -9,7 +9,7 @@ import (
 )
 
 //Status 2 and 6
-func (p *Plugin) handleSave(body *models.CallbackBody) {
+func handleSave(body *models.CallbackBody, p *Plugin) {
 	var url string = body.Url
 	var file io.ReadCloser = p.GetHTTPClient().GetRequest(url)
 
@@ -31,7 +31,6 @@ func (p *Plugin) handleSave(body *models.CallbackBody) {
 		return
 	}
 
-	//TODO: To a separate function
 	if body.Status == 2 {
 		post, _ := p.API.GetPost(fileInfo.PostId)
 		post.UpdateAt = utils.GetTimestamp()
@@ -40,31 +39,31 @@ func (p *Plugin) handleSave(body *models.CallbackBody) {
 }
 
 //Status 4
-func (p *Plugin) handleNoChanges(body *models.CallbackBody) {
+func handleNoChanges(body *models.CallbackBody, p *Plugin) {
 }
 
 //Status 1
-func (p *Plugin) handleIsBeingEdited(body *models.CallbackBody) {
+func handleIsBeingEdited(body *models.CallbackBody, p *Plugin) {
 }
 
 //Status 3
-func (p *Plugin) handleSavingError(body *models.CallbackBody) {
+func handleSavingError(body *models.CallbackBody, p *Plugin) {
 
 }
 
 //Status 7
-func (p *Plugin) handleForcesavingError(body *models.CallbackBody) {
+func handleForcesavingError(body *models.CallbackBody, p *Plugin) {
 
 }
 
-func (p *Plugin) getCallbackHandler(callbackBody *models.CallbackBody) (func(body *models.CallbackBody), bool) {
-	docServerStatus := map[int]func(body *models.CallbackBody){
-		1: p.handleIsBeingEdited,
-		2: p.handleSave,
-		3: p.handleSavingError,
-		4: p.handleNoChanges,
-		6: p.handleSave,
-		7: p.handleForcesavingError,
+func (p *Plugin) getCallbackHandler(callbackBody *models.CallbackBody) (func(body *models.CallbackBody, plugin *Plugin), bool) {
+	docServerStatus := map[int]func(body *models.CallbackBody, plugin *Plugin){
+		1: handleIsBeingEdited,
+		2: handleSave,
+		3: handleSavingError,
+		4: handleNoChanges,
+		6: handleSave,
+		7: handleForcesavingError,
 	}
 
 	handler, exists := docServerStatus[callbackBody.Status]

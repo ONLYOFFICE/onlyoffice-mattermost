@@ -3,7 +3,7 @@ module github.com/ONLYOFFICE/onlyoffice-mattermost
 go 1.12
 
 require (
-	encoders v0.0.0-00010101000000-000000000000
+	encryptors v0.0.1
 	github.com/gorilla/mux v1.8.0
 	github.com/mattermost/mattermost-server/v5 v5.37.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
@@ -16,6 +16,6 @@ require (
 
 replace models => ./server/models
 
-replace encoders => ./server/encoders
+replace encryptors => ./server/encryptors
 
 replace utils => ./server/utils

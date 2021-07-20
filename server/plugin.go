@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoders"
+	"encryptors"
 	"net/http"
 	"sync"
 	"utils"
@@ -14,7 +14,7 @@ type Plugin struct {
 	plugin.MattermostPlugin
 	router            *mux.Router
 	internalKey       []byte
-	encoder           encoders.Encoder
+	encryptor         encryptors.Encryptor
 	configurationLock sync.RWMutex
 	configuration     *configuration
 }

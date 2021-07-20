@@ -8,6 +8,7 @@ type JwtPayload interface {
 func (c Config) Valid() error {
 	return nil
 }
+
 func (c CommandBody) Valid() error {
 	return nil
 }

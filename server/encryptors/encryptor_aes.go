@@ -1,4 +1,4 @@
-package encoders
+package encryptors
 
 import (
 	"crypto/aes"
@@ -8,7 +8,7 @@ import (
 	"io"
 )
 
-func (e EncoderAES) Encode(text string, key []byte) (string, error) {
+func (e EncryptorAES) Encrypt(text string, key []byte) (string, error) {
 	byteText := []byte(text)
 
 	aes, err := aes.NewCipher(key)
@@ -36,7 +36,7 @@ func (e EncoderAES) Encode(text string, key []byte) (string, error) {
 	return data, nil
 }
 
-func (e EncoderAES) Decode(text string, key []byte) (string, error) {
+func (e EncryptorAES) Decrypt(text string, key []byte) (string, error) {
 	cipherBytes := textToEncryptedConversion(text)
 
 	c, err := aes.NewCipher(key)

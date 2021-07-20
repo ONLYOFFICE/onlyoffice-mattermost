@@ -1,10 +1,10 @@
-package encoders
+package encryptors
 
 import (
 	"crypto/rc4"
 )
 
-func (e EncoderRC4) Encode(text string, key []byte) (string, error) {
+func (e EncryptorRC4) Encrypt(text string, key []byte) (string, error) {
 	rc, err := rc4.NewCipher(key)
 	if err != nil {
 		return "", err
@@ -20,7 +20,7 @@ func (e EncoderRC4) Encode(text string, key []byte) (string, error) {
 	return data, nil
 }
 
-func (e EncoderRC4) Decode(text string, key []byte) (string, error) {
+func (e EncryptorRC4) Decrypt(text string, key []byte) (string, error) {
 	decrypted := make([]byte, len(text))
 
 	encryptedText := textToEncryptedConversion(text)

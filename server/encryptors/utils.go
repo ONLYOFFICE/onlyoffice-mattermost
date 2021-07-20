@@ -1,4 +1,4 @@
-package encoders
+package encryptors
 
 import "math/big"
 

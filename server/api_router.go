@@ -27,7 +27,7 @@ func (p *Plugin) forkRouter() *mux.Router {
 
 	subrouter := router.PathPrefix("/onlyofficeapi").Subrouter()
 	subrouter.HandleFunc("/download", p.docServerOnlyMiddleware(p.download)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/editor", p.authenticationMiddleware((p.editor))).Methods(http.MethodPost)
+	subrouter.HandleFunc("/editor", p.userAccessMiddlewareChain(p.editor)).Methods(http.MethodPost)
 	subrouter.HandleFunc("/callback", p.docServerOnlyMiddleware(p.callback)).Methods(http.MethodPost)
 
 	return router
