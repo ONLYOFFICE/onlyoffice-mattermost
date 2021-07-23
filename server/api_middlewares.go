@@ -333,3 +333,19 @@ func (p *Plugin) downloadChain(next func(writer http.ResponseWriter, request *ht
 		next(writer, request)
 	}
 }
+
+func (p *Plugin) permissionsChain(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
+	authenticationMiddleware := AuthenticationMiddleware{plugin: p}
+
+	return func(writer http.ResponseWriter, request *http.Request) {
+
+		authenticationMiddleware.Execute(writer, request)
+
+		if authenticationMiddleware.HasError() {
+			http.Error(writer, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		next(writer, request)
+	}
+}

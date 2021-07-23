@@ -1,3 +1,6 @@
+import {FileInfo} from 'mattermost-redux/types/files';
+import {isJSDocAuthorTag} from 'typescript';
+
 const AllowedExtensions = [
     'xls',
     'xlsx',
@@ -48,5 +51,25 @@ export function isExtensionSupported(fileExt: string): boolean {
     }
 
     return false;
+}
+
+export function isFileAuthor(fileInfo: FileInfo): boolean {
+    // eslint-disable-next-line no-console
+    const userId: string = getCookie('MMUSERID');
+
+    if (userId) {
+        return fileInfo.user_id === userId;
+    }
+
+    return false;
+}
+
+function getCookie(name: string): string {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return parts!.pop()!.split(';').shift() || '';
+    }
+    return '';
 }
 

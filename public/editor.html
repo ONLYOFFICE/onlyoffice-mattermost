@@ -90,26 +90,8 @@
             "onAppReady": onAppReady,
         };
 
-        var config = {
-            "document": {
-                "fileType": "{{.config.Document.FileType}}",
-                "key": "{{.config.Document.Key}}",
-                "title": "{{.config.Document.Title}}",
-                "url": "{{.config.Document.Url}}"
-            },
-            "documentType": "{{.config.DocumentType}}",
-            "editorConfig": {
-                "user": {
-                    "id": "{{.config.EditorConfig.User.Id}}",
-                    "name": "{{.config.EditorConfig.User.Name}}"
-                },
-                "callbackUrl": "{{.config.EditorConfig.CallbackUrl}}"
-            },
-            "token": "{{.config.Token}}"
-        }
-
         var connectEditor = function () {
-            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            docEditor = new DocsAPI.DocEditor("iframeEditor", {{ .config }});
             fixSize();
         };
 

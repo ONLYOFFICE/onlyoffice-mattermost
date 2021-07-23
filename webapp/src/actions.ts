@@ -5,17 +5,30 @@ import {Dispatch} from 'redux';
 import {FileInfo} from 'mattermost-redux/types/files';
 
 import {id as pluginId} from './manifest';
-import {OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL} from './action_types';
+import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL, CLOSE_PERMISSIONS_MODAL, OPEN_PERMISSIONS_MODAL} from './action_types';
 
-export const closeRootModal = () => (dispatch: Dispatch) => {
+export const closeEditor = () => (dispatch: Dispatch) => {
     dispatch({
-        type: CLOSE_ROOT_MODAL,
+        type: CLOSE_EDITOR_MODAL,
     });
 };
 
-export const postDropdownMenuAction = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
+export const openEditor = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
     dispatch({
-        type: OPEN_ROOT_MODAL,
+        type: OPEN_EDITOR_MODAL,
+        payload: fileInfo,
+    });
+};
+
+export const closePermissions = () => (dispatch: Dispatch) => {
+    dispatch({
+        type: CLOSE_PERMISSIONS_MODAL,
+    });
+};
+
+export const openPermissions = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
+    dispatch({
+        type: OPEN_PERMISSIONS_MODAL,
         payload: fileInfo,
     });
 };

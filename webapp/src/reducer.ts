@@ -1,15 +1,32 @@
 import {AnyAction, combineReducers} from 'redux';
 
-import {OPEN_ROOT_MODAL, CLOSE_ROOT_MODAL} from './action_types';
+import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL, OPEN_PERMISSIONS_MODAL, CLOSE_PERMISSIONS_MODAL} from './action_types';
 
-const rootModalVisible = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
+const editorModalVisible = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
     switch (action.type) {
-    case OPEN_ROOT_MODAL:
+    case OPEN_EDITOR_MODAL:
         return {
             isVisible: true,
             fileInfo: action.payload,
         };
-    case CLOSE_ROOT_MODAL:
+    case CLOSE_EDITOR_MODAL:
+        return {
+            isVisible: false,
+            fileInfo: null,
+        };
+    default:
+        return state;
+    }
+};
+
+const permissionsModalVisible = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
+    switch (action.type) {
+    case OPEN_PERMISSIONS_MODAL:
+        return {
+            isVisible: true,
+            fileInfo: action.payload,
+        };
+    case CLOSE_PERMISSIONS_MODAL:
         return {
             isVisible: false,
             fileInfo: null,
@@ -20,6 +37,7 @@ const rootModalVisible = (state = {isVisible: false, fileInfo: null}, action: An
 };
 
 export default combineReducers({
-    rootModalVisible,
+    editorModalVisible,
+    permissionsModalVisible,
 });
 

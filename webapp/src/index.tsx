@@ -4,25 +4,32 @@ import {GlobalState} from 'mattermost-redux/types/store';
 import {FileInfo} from 'mattermost-redux/types/files';
 import {ThunkDispatch} from 'redux-thunk';
 
-import {postDropdownMenuAction} from 'actions';
+import {openEditor, openPermissions} from 'actions';
 
-import {isExtensionSupported} from 'utils/file_utils';
+import {isExtensionSupported, isFileAuthor} from 'utils/file_utils';
 
 import manifest from './manifest';
 import Reducer from './reducer';
-import Root from './components/root';
+import Editor from './components/editor';
+import Permissions from './components/permissions';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async initialize(registry: any, store: Store<GlobalState>) {
         registry.registerReducer(Reducer);
-        registry.registerRootComponent(Root);
+        registry.registerRootComponent(Editor);
+        registry.registerRootComponent(Permissions);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
         registry.registerFileDropdownMenuAction(
             (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
-            'ONLYOFFICE',
-            (fileInfo: FileInfo) => dispatch(postDropdownMenuAction(fileInfo)),
+            'Open file in ONLYOFFICE',
+            (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
+        );
+        registry.registerFileDropdownMenuAction(
+            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension) && isFileAuthor(fileInfo),
+            'Change access rights',
+            (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
         );
     }
 }

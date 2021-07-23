@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"models"
 	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/model"
-	"github.com/mattermost/mattermost-server/v5/shared/filestore"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -39,9 +37,6 @@ func handleSave(body *models.CallbackBody, p *Plugin) {
 	file := response.Body
 	defer file.Close()
 
-	serverConfig := p.API.GetUnsanitizedConfig()
-	filestore, _ := filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(false))
-
 	fileInfo, err := p.API.GetFileInfo(body.FileId)
 
 	if err != nil {
@@ -49,7 +44,7 @@ func handleSave(body *models.CallbackBody, p *Plugin) {
 		return
 	}
 
-	_, exception := filestore.WriteFile(file, fileInfo.Path)
+	_, exception := p.WriteFile(file, fileInfo.Path)
 
 	if exception != nil {
 		p.API.LogError("[ONLYOFFICE]: Filestore error - ", exception.Error())
@@ -72,7 +67,7 @@ func handleSave(body *models.CallbackBody, p *Plugin) {
 		}
 		_, creationErr := p.API.CreatePost(&newPost)
 		if creationErr != nil {
-			fmt.Println("[ONLYOFFICE] Post creation error: ", creationErr.Error())
+			p.API.LogError("[ONLYOFFICE] Post creation error: ", creationErr.Error())
 			return
 		}
 	}

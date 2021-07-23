@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {id as pluginName} from '../../manifest';
 
 // eslint-disable-next-line react/prop-types
-const Root = ({visible, close, theme, fileInfo}) => {
+const Editor = ({visible, close, theme, fileInfo}) => {
     useEffect(() => {
         if (!visible) {
             return;
@@ -47,7 +47,7 @@ const Root = ({visible, close, theme, fileInfo}) => {
     );
 };
 
-Root.propTypes = {
+Editor.propTypes = {
     visible: PropTypes.bool.isRequired,
     close: PropTypes.func.isRequired,
     theme: PropTypes.object.isRequired,
@@ -75,4 +75,4 @@ const getStyle = (theme) => ({
     },
 });
 
-export default Root;
+export default Editor;

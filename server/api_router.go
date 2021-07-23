@@ -46,6 +46,7 @@ func (p *Plugin) forkRouter() *mux.Router {
 	subrouter.HandleFunc("/download", p.downloadChain(p.download)).Methods(http.MethodGet)
 	subrouter.HandleFunc("/editor", p.userAccessChain(p.editor)).Methods(http.MethodPost)
 	subrouter.HandleFunc("/callback", p.callbackChain(p.callback)).Methods(http.MethodPost)
+	subrouter.HandleFunc("/permissions", p.permissionsChain(p.permissions)).Methods(http.MethodPost)
 
 	return router
 }

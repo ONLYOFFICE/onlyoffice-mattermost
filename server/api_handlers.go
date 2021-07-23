@@ -31,12 +31,17 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	p.encryptor = encryptors.EncryptorAES{}
 	fileId, _ = p.encryptor.Encrypt(fileId, p.internalKey)
 
+	post, _ := p.API.GetPost(fileInfo.PostId)
+
+	userPermissions, _ := getFilePermissionsByUserId(userId.Value, fileInfo.Id, *post)
+
 	var config models.Config = models.Config{
 		Document: models.Document{
 			FileType: fileInfo.Extension,
 			Key:      docKey,
 			Title:    fileInfo.Name,
 			Url:      serverURL + "/download?fileId=" + fileId,
+			P:        userPermissions,
 		},
 		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
@@ -53,9 +58,12 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		config.Token = jwtString
 	}
 
+	jsonBytes, _ := json.Marshal(config)
+	jsonConfig := string(jsonBytes)
+
 	data := map[string]interface{}{
 		"apijs":  p.configuration.DESAddress + utils.DESApijs,
-		"config": config,
+		"config": jsonConfig,
 	}
 
 	temp.ExecuteTemplate(writer, "editor.html", data)
@@ -112,6 +120,46 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)
+}
+
+func (p *Plugin) permissions(writer http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+
+	fileInfo, fileInfoErr := p.API.GetFileInfo(query.Get("fileId"))
+	user, userErr := p.API.GetUserByUsername(query.Get("username"))
+
+	if fileInfoErr != nil || userErr != nil {
+		writer.WriteHeader(400)
+		return
+	}
+
+	userId, _ := request.Cookie(utils.MMUserCookie)
+
+	if fileInfo.CreatorId != userId.Value {
+		writer.WriteHeader(403)
+		return
+	}
+
+	body := models.Permissions{}
+
+	//TODO: Refactor
+	decodingErr := json.NewDecoder(request.Body).Decode(&body)
+
+	if decodingErr != nil {
+		writer.WriteHeader(500)
+		p.API.LogError("[ONLYOFFICE] Permissions endpoint error: Decoding error")
+		return
+	}
+
+	setPermissionsErr := p.SetFilePermissionsByUsername(user.Username, fileInfo.Id, body)
+
+	if setPermissionsErr != nil {
+		writer.WriteHeader(500)
+		p.API.LogError("[ONLYOFFICE] Permissions endpoint error: Permissions update error")
+		return
+	}
+
+	writer.WriteHeader(200)
 }
 
 func (p *Plugin) generateDocKey(fileId string) string {

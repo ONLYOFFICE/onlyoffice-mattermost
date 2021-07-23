@@ -22,8 +22,23 @@ type User struct {
 }
 
 type Document struct {
-	FileType string `json:"fileType"`
-	Key      string `json:"key"`
-	Title    string `json:"title"`
-	Url      string `json:"url"`
+	FileType string      `json:"fileType"`
+	Key      string      `json:"key"`
+	Title    string      `json:"title"`
+	Url      string      `json:"url"`
+	P        Permissions `json:"permissions"`
+}
+
+type Permissions struct {
+	Comment                 bool `json:"comment"`
+	Copy                    bool `json:"copy"`
+	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly"`
+	Download                bool `json:"download"`
+	Edit                    bool `json:"edit"`
+	EditCommentAuthorOnly   bool `json:"editCommentAuthorOnly"`
+	FillForms               bool `json:"fillForms"`
+	ModifyContentControl    bool `json:"modifyContentControl"`
+	ModifyFilter            bool `json:"modifyFilter"`
+	Print                   bool `json:"print"`
+	Review                  bool `json:"review"`
 }
