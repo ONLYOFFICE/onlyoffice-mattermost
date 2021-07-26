@@ -5,8 +5,7 @@ import (
 	"models"
 	"path/filepath"
 	"reflect"
-
-	"utils"
+	"security"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"
@@ -108,14 +107,13 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	// Trying to connect to the Document Service
 	var body = models.CommandBody{
-		Command: models.VERSION,
+		Command: models.ONLYOFFICE_COMMAND_VERSION,
 	}
-
-	body.Token, _ = utils.JwtSign(body, []byte(p.configuration.DESJwt))
+	body.Token, _ = security.JwtSign(body, []byte(p.configuration.DESJwt))
 
 	var response = new(models.CommandResponse)
 
-	p.GetHTTPClient().PostRequest(configuration.DESAddress+utils.DESCommandService, &body, response)
+	p.GetHTTPClient().PostRequest(configuration.DESAddress+ONLYOFFICE_COMMAND_SERVICE, &body, response)
 	var err = response.ProcessResponse()
 
 	if err != nil {
@@ -131,7 +129,11 @@ func (p *Plugin) OnConfigurationChange() error {
 		return errors.Wrap(creationErr, "Failed to create an ONLYOFFICE bot")
 	}
 
-	p.onlyoffice_bot_id = bot_id
+	p.onlyoffice_bot = ONLYOFFICE_BOT{
+		Id:           bot_id,
+		LoggerPrefix: "[ONLYOFFICE BOT]: ",
+		P:            p,
+	}
 
 	p.API.LogInfo("[ONLYOFFICE]: The server responded without errors")
 

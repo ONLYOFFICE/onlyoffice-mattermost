@@ -1,13 +1,14 @@
-package encryptors
+package security
 
 import (
 	"crypto/rc4"
+	"errors"
 )
 
 func (e EncryptorRC4) Encrypt(text string, key []byte) (string, error) {
 	rc, err := rc4.NewCipher(key)
 	if err != nil {
-		return "", err
+		return "", errors.New(ONLYOFFICE_LOGGER_PREFIX + " Could not create a new RC4 cypher" + ONLYOFFICE_LOGGER_ENCRYPTION_SUFFIX)
 	}
 
 	textBytes := []byte(text)
@@ -27,7 +28,7 @@ func (e EncryptorRC4) Decrypt(text string, key []byte) (string, error) {
 
 	rc, err := rc4.NewCipher(key)
 	if err != nil {
-		return "", err
+		return "", errors.New(ONLYOFFICE_LOGGER_PREFIX + " Could not create a new RC4 cypher" + ONLYOFFICE_LOGGER_DECRYPTION_SUFFIX)
 	}
 
 	rc.XORKeyStream(decrypted, encryptedText)

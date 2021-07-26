@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encryptors"
 	"net/http"
 	"sync"
 	"utils"
@@ -14,8 +13,7 @@ type Plugin struct {
 	plugin.MattermostPlugin
 	router            *mux.Router
 	internalKey       []byte
-	encryptor         encryptors.Encryptor
-	onlyoffice_bot_id string
+	onlyoffice_bot    ONLYOFFICE_BOT
 	configurationLock sync.RWMutex
 	configuration     *configuration
 }

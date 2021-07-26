@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/base64"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
 	"models"
-	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"
@@ -35,14 +32,14 @@ func ConvertBase64ToPermissionSet(base64permissions string) (map[string]map[stri
 
 func getFilePermissionsByUserId(userId string, fileId string, post model.Post) (models.Permissions, error) {
 	if userId == post.UserId {
-		return utils.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
+		return models.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
 	}
 
-	ONLYOFFICE_PERMISSIONS_PROP := post.GetProp(utils.ONLYOFFICE_PERMISSIONS_PROP)
+	ONLYOFFICE_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP)
 
 	//If no permissions set, we want to grant default rights
 	if ONLYOFFICE_PERMISSIONS_PROP == nil {
-		return utils.ONLYOFFICE_ALL_USERS_PERMISSIONS, nil
+		return models.ONLYOFFICE_DEFAULT_PERMISSIONS, nil
 	}
 
 	base64permissions := fmt.Sprintf("%v", ONLYOFFICE_PERMISSIONS_PROP)
@@ -62,10 +59,10 @@ func getFilePermissionsByUserId(userId string, fileId string, post model.Post) (
 	userPermissions, userPermissionsExists := permissionsSet[fileId][userId]
 
 	if !userPermissionsExists {
-		wildcardPermissions, wildcardPermissionsExist := permissionsSet[fileId][utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY]
+		wildcardPermissions, wildcardPermissionsExist := permissionsSet[fileId][ONLYOFFICE_PERMISSIONS_WILDCARD_KEY]
 
 		if !wildcardPermissionsExist {
-			return utils.ONLYOFFICE_ALL_USERS_PERMISSIONS, nil
+			return models.ONLYOFFICE_DEFAULT_PERMISSIONS, nil
 		}
 
 		return wildcardPermissions, nil
@@ -95,10 +92,10 @@ func (p *Plugin) SetFilePermissionsByUsername(username string, fileId string, pe
 		return nil
 	}
 
-	ONLYOFFICE_PERMISSIONS_PROP := post.GetProp(utils.ONLYOFFICE_PERMISSIONS_PROP)
+	ONLYOFFICE_PERMISSIONS := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP)
 
-	if ONLYOFFICE_PERMISSIONS_PROP != nil {
-		base64permissions := fmt.Sprintf("%v", ONLYOFFICE_PERMISSIONS_PROP)
+	if ONLYOFFICE_PERMISSIONS != nil {
+		base64permissions := fmt.Sprintf("%v", ONLYOFFICE_PERMISSIONS)
 		filePermissions, unmarshallingErr := ConvertBase64ToPermissionSet(base64permissions)
 
 		if unmarshallingErr != nil {
@@ -108,8 +105,8 @@ func (p *Plugin) SetFilePermissionsByUsername(username string, fileId string, pe
 		filePermissions[fileId][user.Id] = permissions
 		jsonPermissions, _ := json.Marshal(filePermissions)
 
-		post.DelProp(utils.ONLYOFFICE_PERMISSIONS_PROP)
-		post.AddProp(utils.ONLYOFFICE_PERMISSIONS_PROP, jsonPermissions)
+		post.DelProp(ONLYOFFICE_PERMISSIONS_PROP)
+		post.AddProp(ONLYOFFICE_PERMISSIONS_PROP, jsonPermissions)
 
 		p.API.UpdatePost(post)
 		return nil
@@ -127,7 +124,7 @@ func (p *Plugin) SetFilePermissionsByUsername(username string, fileId string, pe
 		return marshallingErr
 	}
 
-	post.AddProp(utils.ONLYOFFICE_PERMISSIONS_PROP, jsonPermissionsBytes)
+	post.AddProp(ONLYOFFICE_PERMISSIONS_PROP, jsonPermissionsBytes)
 	p.API.UpdatePost(post)
 
 	return nil
@@ -140,16 +137,6 @@ func (p *Plugin) MessageWillBePosted(c *plugin.Context, post *model.Post) (*mode
 
 func (p *Plugin) MessageHasBeenPosted(c *plugin.Context, post *model.Post) {
 	//TODO: Custom file permissions logic on upload (with a file wizzard)
-}
-
-func GetBytes(key interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(key)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
 }
 
 func (p *Plugin) FileWillBeUploaded(c *plugin.Context, info *model.FileInfo, file io.Reader, output io.Writer) (*model.FileInfo, string) {

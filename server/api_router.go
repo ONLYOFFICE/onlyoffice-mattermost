@@ -43,10 +43,10 @@ func (p *Plugin) forkRouter() *mux.Router {
 	router.Use(p.DebugRoutes)
 
 	subrouter := router.PathPrefix("/onlyofficeapi").Subrouter()
-	subrouter.HandleFunc("/download", p.downloadChain(p.download)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/editor", p.userAccessChain(p.editor)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/callback", p.callbackChain(p.callback)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/permissions", p.permissionsChain(p.permissions)).Methods(http.MethodPost)
+	subrouter.HandleFunc("/download", p.downloadMiddleware(p.download)).Methods(http.MethodGet)
+	subrouter.HandleFunc("/editor", p.userAccessMiddleware(p.editor)).Methods(http.MethodPost)
+	subrouter.HandleFunc("/callback", p.callbackMiddleware(p.callback)).Methods(http.MethodPost)
+	subrouter.HandleFunc("/permissions", p.permissionsMiddleware(p.permissions)).Methods(http.MethodPost)
 
 	return router
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/mattermost/mattermost-server/v5/shared/filestore"
 )
 
-func (p *Plugin) getFilestore() (filestore.FileBackend, error) {
+func getFilestore(p *Plugin) (filestore.FileBackend, error) {
 	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
 	filestore, err := filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance))
@@ -17,7 +17,7 @@ func (p *Plugin) getFilestore() (filestore.FileBackend, error) {
 }
 
 func (p *Plugin) WriteFile(fr io.Reader, path string) (int64, error) {
-	filestore, err := p.getFilestore()
+	filestore, err := getFilestore(p)
 	if err != nil {
 		return 0, err
 	}

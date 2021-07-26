@@ -7,14 +7,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	DROP      string = "drop"
-	FORCESAVE string = "forcesave"
-	INFO      string = "info"
-	META      string = "meta"
-	VERSION   string = "version"
-)
-
 type CommandBody struct {
 	Command            string `json:"c"`
 	Token              string `json:"token,omitempty"`

@@ -1,98 +1,87 @@
 package main
 
 import (
+	"errors"
 	"models"
+	"security"
 	"utils"
 
-	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mitchellh/mapstructure"
 )
 
 func processJwtBody(body *models.CallbackBody, jwtKey []byte) error {
-	decodedCallback, jwtDecodingErr := utils.JwtDecode(body.Token, jwtKey)
+	decodedCallback, jwtDecodingErr := security.JwtDecode(body.Token, jwtKey)
 
 	if jwtDecodingErr != nil {
-		return jwtDecodingErr
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not process JWT in callback body")
 	}
 
 	err := mapstructure.Decode(decodedCallback, &body)
 
 	if err != nil {
-		return err
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not populate callback body with decoded JWT")
 	}
 
 	return nil
 }
 
 //Status 2 and 6
-func handleSave(body *models.CallbackBody, p *Plugin) {
+func handleSave(body *models.CallbackBody, p *Plugin) error {
 	var url string = body.Url
-	response, getErr := p.GetHTTPClient().GetRequest(url)
 
+	response, getErr := p.GetHTTPClient().GetRequest(url)
 	if getErr != nil {
-		p.API.LogError("[ONLYOFFICE] Couldn't fetch the file requested")
-		return
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not download the file requested")
 	}
 
 	file := response.Body
 	defer file.Close()
 
-	fileInfo, err := p.API.GetFileInfo(body.FileId)
-
-	if err != nil {
-		p.API.LogError("[ONLYOFFICE]: Fileinfo error - ", err.Error())
-		return
+	fileInfo, fileInfoErr := p.API.GetFileInfo(body.FileId)
+	if fileInfoErr != nil {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not find given file's FileInfo")
 	}
 
-	_, exception := p.WriteFile(file, fileInfo.Path)
+	_, filestoreErr := p.WriteFile(file, fileInfo.Path)
 
-	if exception != nil {
-		p.API.LogError("[ONLYOFFICE]: Filestore error - ", exception.Error())
-		return
+	if filestoreErr != nil {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Filestore error when writing changes to the file " + fileInfo.Name)
 	}
 
 	if body.Status == 2 {
 		post, _ := p.API.GetPost(fileInfo.PostId)
 		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
-		//TODO: Move to a separate function
 		user, _ := p.API.GetUser(body.Users[0])
-		var newPostMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
-		newPost := model.Post{
-			Message:   newPostMessage,
-			ParentId:  post.Id,
-			RootId:    post.Id,
-			ChannelId: post.ChannelId,
-			UserId:    p.onlyoffice_bot_id,
-		}
-		_, creationErr := p.API.CreatePost(&newPost)
-		if creationErr != nil {
-			p.API.LogError("[ONLYOFFICE] Post creation error: ", creationErr.Error())
-			return
-		}
+		var newReplyMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
+		p.onlyoffice_bot.BOT_CREATE_REPLY(newReplyMessage, post.ChannelId, post.Id)
 	}
+
+	return nil
 }
 
 //Status 4
-func handleNoChanges(body *models.CallbackBody, p *Plugin) {
+func handleNoChanges(body *models.CallbackBody, p *Plugin) error {
+	return nil
 }
 
 //Status 1
-func handleIsBeingEdited(body *models.CallbackBody, p *Plugin) {
+func handleIsBeingEdited(body *models.CallbackBody, p *Plugin) error {
+	return nil
 }
 
 //Status 3
-func handleSavingError(body *models.CallbackBody, p *Plugin) {
-
+func handleSavingError(body *models.CallbackBody, p *Plugin) error {
+	return nil
 }
 
 //Status 7
-func handleForcesavingError(body *models.CallbackBody, p *Plugin) {
-
+func handleForcesavingError(body *models.CallbackBody, p *Plugin) error {
+	return nil
 }
 
-func (p *Plugin) getCallbackHandler(callbackBody *models.CallbackBody) (func(body *models.CallbackBody, plugin *Plugin), bool) {
-	docServerStatus := map[int]func(body *models.CallbackBody, plugin *Plugin){
+func (p *Plugin) getCallbackHandler(callbackBody *models.CallbackBody) (func(body *models.CallbackBody, plugin *Plugin) error, bool) {
+	docServerStatus := map[int]func(body *models.CallbackBody, plugin *Plugin) error{
 		1: handleIsBeingEdited,
 		2: handleSave,
 		3: handleSavingError,

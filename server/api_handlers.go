@@ -2,38 +2,39 @@ package main
 
 import (
 	"encoding/json"
-	"encryptors"
 	"models"
 	"net/http"
 	"path/filepath"
+	"security"
 	"strconv"
 	"text/template"
 	"utils"
+
+	"github.com/mattermost/mattermost-server/v5/model"
 )
 
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
+	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")
-
-	var docKey string = p.generateDocKey(fileId)
-
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
-	userId, _ := request.Cookie(utils.MMUserCookie)
-	user, _ := p.API.GetUser(userId.Value)
+	//We expect only authorized by middlewares users
+	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
+	var username string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER)
 
-	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + utils.MMPluginApi
-
-	temp := template.New("onlyoffice")
+	htmlTemplate := template.New("onlyoffice")
 	bundlePath, _ := p.API.GetBundlePath()
-	temp, _ = temp.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
+	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	p.encryptor = encryptors.EncryptorAES{}
-	fileId, _ = p.encryptor.Encrypt(fileId, p.internalKey)
+	var encryptor security.Encryptor = security.EncryptorAES{}
+	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
 
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
-	userPermissions, _ := getFilePermissionsByUserId(userId.Value, fileInfo.Id, *post)
+	var docKey string = generateDocKey(*fileInfo, *post)
+
+	userPermissions, _ := getFilePermissionsByUserId(userId, fileInfo.Id, *post)
 
 	var config models.Config = models.Config{
 		Document: models.Document{
@@ -46,15 +47,16 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
 			User: models.User{
-				Id:   userId.Value,
-				Name: user.Username,
+				Id:   userId,
+				Name: username,
 			},
 			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
 		},
 	}
 
+	//TODO: Think up a better JWT logic
 	if p.configuration.DESJwt != "" {
-		jwtString, _ := utils.JwtSign(config, []byte(p.configuration.DESJwt))
+		jwtString, _ := security.JwtSign(config, []byte(p.configuration.DESJwt))
 		config.Token = jwtString
 	}
 
@@ -62,61 +64,55 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	jsonConfig := string(jsonBytes)
 
 	data := map[string]interface{}{
-		"apijs":  p.configuration.DESAddress + utils.DESApijs,
+		"apijs":  p.configuration.DESAddress + ONLYOFFICE_API_JS,
 		"config": jsonConfig,
 	}
 
-	temp.ExecuteTemplate(writer, "editor.html", data)
+	htmlTemplate.ExecuteTemplate(writer, "editor.html", data)
 }
 
 func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
-	response := "{\"error\": 0}"
-
 	body := models.CallbackBody{}
-
-	//TODO: Refactor
 	decodingErr := json.NewDecoder(request.Body).Decode(&body)
 
 	if decodingErr != nil {
-		p.API.LogError("[ONLYOFFICE] Callback body decoding error - ", decodingErr.Error())
-		http.Error(writer, response, http.StatusInternalServerError)
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Callback body decoding error")
+		writer.WriteHeader(500)
 		return
 	}
 
 	if p.configuration.DESJwt != "" {
-		jwtBodyHandlerErr := processJwtBody(&body, []byte(p.configuration.DESJwt))
+		jwtBodyProcessingErr := processJwtBody(&body, []byte(p.configuration.DESJwt))
 
-		if jwtBodyHandlerErr != nil {
-			p.API.LogError("[ONLYOFFICE] JWT Body processing error - ", jwtBodyHandlerErr.Error())
-			http.Error(writer, response, http.StatusInternalServerError)
+		if jwtBodyProcessingErr != nil {
+			p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "JWT Body processing error")
+			writer.WriteHeader(500)
 			return
 		}
 	}
 
 	handler, exists := p.getCallbackHandler(&body)
 
-	p.encryptor = encryptors.EncryptorAES{}
-	fileId, decryptionErr := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
-	body.FileId = fileId
-
-	if !exists || decryptionErr != nil {
-		http.Error(writer, response, http.StatusInternalServerError)
+	if !exists {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Could not find a proper callback handler")
+		writer.WriteHeader(500)
 		return
 	}
+
+	var encryptor security.Encryptor = security.EncryptorAES{}
+	fileId, _ := encryptor.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
+	body.FileId = fileId
 
 	handler(&body, p)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
-	writer.Write([]byte(response))
+	writer.Write([]byte("{\"error\": 0}"))
 }
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
-
-	p.encryptor = encryptors.EncryptorAES{}
-	fileId, _ := p.encryptor.Decrypt(query.Get("fileId"), p.internalKey)
+	var encryptor security.Encryptor = security.EncryptorAES{}
+	fileId, _ := encryptor.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)
@@ -133,16 +129,14 @@ func (p *Plugin) permissions(writer http.ResponseWriter, request *http.Request) 
 		return
 	}
 
-	userId, _ := request.Cookie(utils.MMUserCookie)
+	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
 
-	if fileInfo.CreatorId != userId.Value {
+	if fileInfo.CreatorId != userId {
 		writer.WriteHeader(403)
 		return
 	}
 
 	body := models.Permissions{}
-
-	//TODO: Refactor
 	decodingErr := json.NewDecoder(request.Body).Decode(&body)
 
 	if decodingErr != nil {
@@ -162,22 +156,11 @@ func (p *Plugin) permissions(writer http.ResponseWriter, request *http.Request) 
 	writer.WriteHeader(200)
 }
 
-func (p *Plugin) generateDocKey(fileId string) string {
-	fileInfo, err := p.API.GetFileInfo(fileId)
-	if err != nil {
-		return ""
-	}
-
-	post, _ := p.API.GetPost(fileInfo.PostId)
-
+func generateDocKey(fileInfo model.FileInfo, post model.Post) string {
 	var postUpdatedAt string = strconv.FormatInt(post.UpdateAt, 10)
 
-	p.encryptor = encryptors.EncryptorRC4{}
-	docKey, encodeErr := p.encryptor.Encrypt(fileId+postUpdatedAt, []byte(utils.RC4Key))
+	var encryptor security.Encryptor = security.EncryptorRC4{}
+	docKey, _ := encryptor.Encrypt(fileInfo.Id+postUpdatedAt, []byte(ONLYOFFICE_RC4_KEY))
 
-	if encodeErr != nil {
-		p.API.LogError("[ONLYOFFICE] Key generation error: ", encodeErr.Error())
-		return ""
-	}
 	return docKey
 }
