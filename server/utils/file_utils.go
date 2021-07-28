@@ -1,13 +1,15 @@
 package utils
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+)
 
 func IsExtensionSupported(fileExt string) bool {
 	_, exists := ONLYOFFICE_EXTENSION_TYPE_MAP[fileExt]
-	if !exists {
-		return !exists
+	if exists {
+		return true
 	}
-	return exists
+	return false
 }
 
 func GetFileType(fileExt string) (string, error) {

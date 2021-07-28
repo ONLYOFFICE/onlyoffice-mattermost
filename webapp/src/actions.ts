@@ -5,7 +5,9 @@ import {Dispatch} from 'redux';
 import {FileInfo} from 'mattermost-redux/types/files';
 
 import {id as pluginId} from './manifest';
-import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL, CLOSE_PERMISSIONS_MODAL, OPEN_PERMISSIONS_MODAL} from './action_types';
+
+import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL,
+    CLOSE_PERMISSIONS_MODAL, OPEN_PERMISSIONS_MODAL} from './action_types';
 
 export const closeEditor = () => (dispatch: Dispatch) => {
     dispatch({

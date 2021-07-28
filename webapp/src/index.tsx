@@ -1,5 +1,5 @@
+/* eslint-disable no-console */
 import {AnyAction, Store} from 'redux';
-
 import {GlobalState} from 'mattermost-redux/types/store';
 import {FileInfo} from 'mattermost-redux/types/files';
 import {ThunkDispatch} from 'redux-thunk';

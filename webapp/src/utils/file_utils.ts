@@ -1,5 +1,4 @@
 import {FileInfo} from 'mattermost-redux/types/files';
-import {isJSDocAuthorTag} from 'typescript';
 
 const AllowedExtensions = [
     'xls',

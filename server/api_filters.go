@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"security"
@@ -60,13 +61,19 @@ type FileValidationFilter struct {
 }
 
 func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	formErr := request.ParseForm()
-	if formErr != nil {
-		m.hasError = true
-		return
+	var fileId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
+
+	if request.Method == "POST" {
+		fmt.Println("POST")
+		formErr := request.ParseForm()
+		if formErr != nil {
+			m.hasError = true
+			return
+		}
+
+		fileId = request.PostForm.Get("fileid")
 	}
 
-	var fileId string = request.PostForm.Get("fileid")
 	fileInfo, fileInfoErr := m.plugin.API.GetFileInfo(fileId)
 
 	if fileInfoErr != nil {
@@ -128,6 +135,8 @@ func (m *ChannelAuthorizationFilter) DoFilter(writer http.ResponseWriter, reques
 		m.hasError = true
 		return
 	}
+
+	request.Header.Add(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER, post.ChannelId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)

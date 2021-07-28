@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 
@@ -18,6 +19,8 @@ const Editor = ({visible, close, theme, fileInfo}) => {
     if (!visible) {
         return null;
     }
+
+    console.log(fileInfo);
 
     const style = getStyle(theme);
 

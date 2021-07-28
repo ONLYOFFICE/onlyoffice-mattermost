@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"models"
 	"net/http"
 	"path/filepath"
@@ -18,6 +19,8 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var fileId string = request.PostForm.Get("fileid")
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
+
+	fmt.Println("{POSTID}: ", fileInfo.PostId)
 
 	//We expect only authorized by middlewares users
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
@@ -118,42 +121,90 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(fileContent)
 }
 
-func (p *Plugin) permissions(writer http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
+func (p *Plugin) filePermissions(writer http.ResponseWriter, request *http.Request) {
+	var postPermissionsBody []PostPermission = []PostPermission{}
 
-	fileInfo, fileInfoErr := p.API.GetFileInfo(query.Get("fileId"))
-	user, userErr := p.API.GetUserByUsername(query.Get("username"))
+	decodingErr := json.NewDecoder(request.Body).Decode(&postPermissionsBody)
+	if decodingErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Permissions body decoding error")
+		writer.WriteHeader(400)
+		return
+	}
 
-	if fileInfoErr != nil || userErr != nil {
+	if len(postPermissionsBody) == 0 {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid permissions body length")
+		writer.WriteHeader(400)
+		return
+	}
+
+	fileInfo, fileInfoErr := p.API.GetFileInfo(postPermissionsBody[0].FileId)
+
+	if fileInfoErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id in permissions body")
+		writer.WriteHeader(400)
+		return
+	}
+
+	post, postErr := p.API.GetPost(fileInfo.PostId)
+
+	if postErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
 		writer.WriteHeader(400)
 		return
 	}
 
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
 
-	if fileInfo.CreatorId != userId {
+	if post.UserId != userId {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Only post's author can change file permissions")
 		writer.WriteHeader(403)
 		return
 	}
 
-	body := models.Permissions{}
-	decodingErr := json.NewDecoder(request.Body).Decode(&body)
-
-	if decodingErr != nil {
-		writer.WriteHeader(500)
-		p.API.LogError("[ONLYOFFICE] Permissions endpoint error: Decoding error")
-		return
-	}
-
-	setPermissionsErr := p.SetFilePermissionsByUsername(user.Username, fileInfo.Id, body)
+	setPermissionsErr := p.SetPostFilesPermissions(postPermissionsBody, post.Id)
 
 	if setPermissionsErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Permissions update error")
 		writer.WriteHeader(500)
-		p.API.LogError("[ONLYOFFICE] Permissions endpoint error: Permissions update error")
 		return
 	}
 
 	writer.WriteHeader(200)
+}
+
+func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	page, parsePageErr := strconv.Atoi(query.Get("page"))
+	limit, parseLimitErr := strconv.Atoi(query.Get("limit"))
+
+	if parsePageErr != nil || parseLimitErr != nil {
+		writer.WriteHeader(400)
+		return
+	}
+
+	authorName := request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER)
+
+	var channelId string = request.Header.Get(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER)
+
+	usersInChannel, usersErr := p.API.GetUsersInChannel(channelId, "username", page, limit)
+
+	if usersErr != nil {
+		writer.WriteHeader(400)
+		return
+	}
+
+	var usernames []string
+
+	for _, user := range usersInChannel {
+		if user.Username == authorName {
+			continue
+		}
+		usernames = append(usernames, user.Username)
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(200)
+	json.NewEncoder(writer).Encode(usernames)
 }
 
 func generateDocKey(fileInfo model.FileInfo, post model.Post) string {

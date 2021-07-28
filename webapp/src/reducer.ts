@@ -1,6 +1,7 @@
 import {AnyAction, combineReducers} from 'redux';
 
-import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL, OPEN_PERMISSIONS_MODAL, CLOSE_PERMISSIONS_MODAL} from './action_types';
+import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL,
+    OPEN_PERMISSIONS_MODAL, CLOSE_PERMISSIONS_MODAL} from './action_types';
 
 const editorModalVisible = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
     switch (action.type) {
