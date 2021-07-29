@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"models"
+	"strings"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )
@@ -51,8 +52,8 @@ func getFilePermissionsByUserId(userId string, fileId string, post model.Post) (
 		return models.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
 	}
 
-	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + userId + "_" + fileId)
-	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_*_" + fileId)
+	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + userId)
+	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY)
 
 	//If no permissions set, we want to grant default rights
 	if ONLYOFFICE_USER_PERMISSIONS_PROP == nil && ONLYOFFICE_WILDCARD_PERMISSIONS_PROP == nil {
@@ -66,17 +67,18 @@ func getFilePermissionsByUserId(userId string, fileId string, post model.Post) (
 	return ConvertInterfaceToPermissions(ONLYOFFICE_WILDCARD_PERMISSIONS_PROP)
 }
 
-func extractUsernames(postPermissions []PostPermission) ([]string, string) {
+func extractUsernames(postPermissions []PostPermission) ([]string, map[string]bool) {
 	var usernames []string = []string{}
-	var wildcardKey string = ""
+	var wildcardFiles map[string]bool = make(map[string]bool)
+
 	for _, postPermission := range postPermissions {
 		if postPermission.Username != ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
 			usernames = append(usernames, postPermission.Username)
 		} else {
-			wildcardKey = postPermission.Username
+			wildcardFiles[postPermission.FileId] = true
 		}
 	}
-	return usernames, wildcardKey
+	return usernames, wildcardFiles
 }
 
 func setFilePermissions(post *model.Post, propKey string, filePermissions models.Permissions) {
@@ -86,6 +88,16 @@ func setFilePermissions(post *model.Post, propKey string, filePermissions models
 	post.AddProp(propKey, permissionBytes)
 }
 
+func purgeFilePermissions(post *model.Post, fileId string) {
+	postProps := post.GetProps()
+
+	for propName := range postProps {
+		if strings.HasPrefix(propName, ONLYOFFICE_PERMISSIONS_PROP+"_"+fileId) {
+			delete(postProps, propName)
+		}
+	}
+}
+
 func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postId string) error {
 	post, postErr := p.API.GetPost(postId)
 
@@ -93,7 +105,7 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
 	}
 
-	usernames, wildcardKey := extractUsernames(postPermissions)
+	usernames, wildcardFiles := extractUsernames(postPermissions)
 	users, usersErr := p.API.GetUsersByUsernames(usernames)
 
 	if usersErr != nil {
@@ -102,19 +114,22 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 
 	for _, postPermission := range postPermissions {
 		if post.FileIds.Contains(postPermission.FileId) {
+			if _, fileFound := wildcardFiles[postPermission.FileId]; fileFound {
+				purgeFilePermissions(post, postPermission.FileId)
+			}
 			for _, user := range users {
 				if user.Id == post.UserId {
 					continue
 				}
 
 				if user.Username == postPermission.Username {
-					propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + user.Id + "_" + postPermission.FileId
+					propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + user.Id
 
 					setFilePermissions(post, propKey, postPermission.Permissions)
 				}
 			}
-			if postPermission.Username == wildcardKey && wildcardKey != "" {
-				propKey := ONLYOFFICE_PERMISSIONS_PROP + "_*_" + postPermission.FileId
+			if postPermission.Username == ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
+				propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
 
 				setFilePermissions(post, propKey, postPermission.Permissions)
 			}
@@ -123,16 +138,5 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 
 	p.API.UpdatePost(post)
 
-	return nil
-}
-
-func (p *Plugin) PurgePostFilePermissions(postId string) error {
-	post, postErr := p.API.GetPost(postId)
-
-	if postErr != nil {
-		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
-	}
-
-	post.DelProp(ONLYOFFICE_PERMISSIONS_PROP)
 	return nil
 }
