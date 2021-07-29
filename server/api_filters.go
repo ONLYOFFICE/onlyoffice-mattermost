@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"security"
@@ -64,7 +63,6 @@ func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *htt
 	var fileId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
 
 	if request.Method == "POST" {
-		fmt.Println("POST")
 		formErr := request.ParseForm()
 		if formErr != nil {
 			m.hasError = true

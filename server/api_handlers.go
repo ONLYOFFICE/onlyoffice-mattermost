@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"models"
 	"net/http"
 	"path/filepath"
@@ -19,8 +18,6 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var fileId string = request.PostForm.Get("fileid")
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
-
-	fmt.Println("{POSTID}: ", fileInfo.PostId)
 
 	//We expect only authorized by middlewares users
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
