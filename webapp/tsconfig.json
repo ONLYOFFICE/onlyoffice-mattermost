@@ -21,10 +21,13 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "baseUrl": "./src",
-    "typeRoots": [ "./src/types", "./node_modules/@types"],
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
   },
   "include": [
-    "src"
+    "src",
   ],
   "exclude": [
     "dist",

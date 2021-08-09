@@ -1,4 +1,4 @@
-import {id as pluginId} from './manifest';
+import {id as pluginId} from '../../manifest';
 
 // Namespace your actions to avoid collisions.
 export const STATUS_CHANGE = pluginId + '_status_change';

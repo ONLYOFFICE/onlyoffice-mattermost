@@ -1,20 +1,24 @@
-/* eslint-disable no-console */
 import {AnyAction, Store} from 'redux';
 import {GlobalState} from 'mattermost-redux/types/store';
 import {FileInfo} from 'mattermost-redux/types/files';
 import {ThunkDispatch} from 'redux-thunk';
 
-import {openEditor, openPermissions} from 'actions';
+import {isExtensionSupported, isFileAuthor} from 'utils/file';
 
-import {isExtensionSupported, isFileAuthor} from 'utils/file_utils';
+import FilePreviewOverride from 'components/file_preview/file_preview';
 
-import manifest from './manifest';
-import Reducer from './reducer';
-import Editor from './components/editor';
-import Permissions from './components/permissions';
+import {openEditor, openPermissions} from 'redux/actions';
+
+import Reducer from 'redux/reducers';
+
+import manifest from 'manifest';
+
+import Editor from 'components/editor';
+import Permissions from 'components/permissions';
+import 'public/scss/icons.scss';
+import 'public/scss/classes/modal_editor.scss';
 
 export default class Plugin {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async initialize(registry: any, store: Store<GlobalState>) {
         registry.registerReducer(Reducer);
@@ -26,6 +30,14 @@ export default class Plugin {
             'Open file in ONLYOFFICE',
             (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
         );
+
+        registry.registerFilePreviewComponent(
+            (fileInfo: FileInfo) => {
+                return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
+            },
+            FilePreviewOverride,
+        );
+
         registry.registerFileDropdownMenuAction(
             (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension) && isFileAuthor(fileInfo),
             'Change access rights',

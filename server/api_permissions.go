@@ -47,13 +47,35 @@ func ConvertInterfaceToPermissions(ONLYOFFICE_PERMISSIONS_PROP interface{}) (mod
 	return permissions, nil
 }
 
-func getFilePermissionsByUserId(userId string, fileId string, post model.Post) (models.Permissions, error) {
+func getFilePermissionByFileId(fileId string, post model.Post) []UserinfoWrapper {
+	postProps := post.GetProps()
+	permissions := []UserinfoWrapper{}
+
+	for key, value := range postProps {
+		if strings.HasPrefix(key, ONLYOFFICE_PERMISSIONS_PROP+"_"+fileId) {
+			convertedPermissions, err := ConvertInterfaceToPermissions(value)
+			if err != nil {
+				continue
+			}
+			keyParts := strings.Split(key, "_")
+			permissions = append(permissions, UserinfoWrapper{
+				Id:          keyParts[3],
+				Username:    keyParts[4],
+				Permissions: convertedPermissions,
+			})
+		}
+	}
+
+	return permissions
+}
+
+func getFilePermissionsByUser(userId string, username string, fileId string, post model.Post) (models.Permissions, error) {
 	if userId == post.UserId {
 		return models.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
 	}
 
-	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + userId)
-	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY)
+	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + userId + "_" + username)
+	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY)
 
 	//If no permissions set, we want to grant default rights
 	if ONLYOFFICE_USER_PERMISSIONS_PROP == nil && ONLYOFFICE_WILDCARD_PERMISSIONS_PROP == nil {
@@ -123,13 +145,13 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 				}
 
 				if user.Username == postPermission.Username {
-					propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + user.Id
+					propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + user.Id + "_" + user.Username
 
 					setFilePermissions(post, propKey, postPermission.Permissions)
 				}
 			}
 			if postPermission.Username == ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
-				propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
+				propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
 
 				setFilePermissions(post, propKey, postPermission.Permissions)
 			}

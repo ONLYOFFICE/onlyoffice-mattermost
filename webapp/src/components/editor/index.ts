@@ -3,8 +3,9 @@ import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {closeEditor} from 'actions';
-import {isEditorModalVisible, editorModalFileInfo} from 'selectors';
+import {isEditorModalVisible, editorModalFileInfo} from 'redux/selectors';
+
+import {closeEditor} from 'redux/actions';
 
 import Editor from './editor';
 
@@ -17,4 +18,5 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closeEditor,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Editor);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default connect(mapStateToProps, mapDispatchToProps)(Editor as any);

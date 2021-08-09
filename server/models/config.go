@@ -19,25 +19,34 @@ type Document struct {
 }
 
 type Permissions struct {
-	Comment                 bool `json:"comment"`
-	Copy                    bool `json:"copy"`
-	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly"`
-	Download                bool `json:"download"`
+	Comment                 bool `json:"comment,omitempty"`
+	Copy                    bool `json:"copy,omitempty"`
+	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly,omitempty"`
+	Download                bool `json:"download,omitempty"`
 	Edit                    bool `json:"edit"`
-	EditCommentAuthorOnly   bool `json:"editCommentAuthorOnly"`
-	FillForms               bool `json:"fillForms"`
-	ModifyContentControl    bool `json:"modifyContentControl"`
-	ModifyFilter            bool `json:"modifyFilter"`
-	Print                   bool `json:"print"`
-	Review                  bool `json:"review"`
+	EditCommentAuthorOnly   bool `json:"editCommentAuthorOnly,omitempty"`
+	FillForms               bool `json:"fillForms,omitempty"`
+	ModifyContentControl    bool `json:"modifyContentControl,omitempty"`
+	ModifyFilter            bool `json:"modifyFilter,omitempty"`
+	Print                   bool `json:"print,omitempty"`
+	Review                  bool `json:"review,omitempty"`
 }
 
 type EditorConfig struct {
-	User        User   `json:"user"`
-	CallbackUrl string `json:"callbackUrl"`
+	User          User          `json:"user"`
+	CallbackUrl   string        `json:"callbackUrl"`
+	Customization Customization `json:"customization,omitempty"`
 }
 
 type User struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type Customization struct {
+	Goback Goback `json:"goback"`
+}
+
+type Goback struct {
+	RequestClose bool `json:"requestClose"`
 }

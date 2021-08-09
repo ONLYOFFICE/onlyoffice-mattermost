@@ -19,7 +19,6 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
-	//We expect only authorized by middlewares users
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
 	var username string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER)
 
@@ -29,12 +28,13 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 
 	var encryptor security.Encryptor = security.EncryptorAES{}
 	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
+	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
 
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
 	var docKey string = generateDocKey(*fileInfo, *post)
 
-	userPermissions, _ := getFilePermissionsByUserId(userId, fileInfo.Id, *post)
+	userPermissions, _ := getFilePermissionsByUser(userId, username, fileInfo.Id, *post)
 
 	var config models.Config = models.Config{
 		Document: models.Document{
@@ -47,10 +47,15 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
 			User: models.User{
-				Id:   userId,
+				Id:   userIdEnc,
 				Name: username,
 			},
 			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
+			Customization: models.Customization{
+				Goback: models.Goback{
+					RequestClose: true,
+				},
+			},
 		},
 	}
 
@@ -118,7 +123,7 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(fileContent)
 }
 
-func (p *Plugin) filePermissions(writer http.ResponseWriter, request *http.Request) {
+func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Request) {
 	var postPermissionsBody []PostPermission = []PostPermission{}
 
 	decodingErr := json.NewDecoder(request.Body).Decode(&postPermissionsBody)
@@ -169,6 +174,40 @@ func (p *Plugin) filePermissions(writer http.ResponseWriter, request *http.Reque
 	writer.WriteHeader(200)
 }
 
+func (p *Plugin) getFilePermissions(writer http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	fileId := query.Get("fileId")
+
+	fileInfo, fileInfoErr := p.API.GetFileInfo(fileId)
+
+	if fileInfoErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id")
+		writer.WriteHeader(400)
+		return
+	}
+
+	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
+	post, postErr := p.API.GetPost(fileInfo.PostId)
+
+	if post.UserId != userId {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Unauthorized request")
+		writer.WriteHeader(403)
+		return
+	}
+
+	if postErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
+		writer.WriteHeader(400)
+		return
+	}
+
+	filePermissions := getFilePermissionByFileId(fileId, *post)
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(200)
+	json.NewEncoder(writer).Encode(filePermissions)
+}
+
 func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request) {
 	query := request.URL.Query()
 	page, parsePageErr := strconv.Atoi(query.Get("page"))
@@ -190,18 +229,73 @@ func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request)
 		return
 	}
 
-	var usernames []string
+	fileId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
+	postId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
+	post, _ := p.API.GetPost(postId)
+
+	var userinfos []UserinfoWrapper
 
 	for _, user := range usersInChannel {
 		if user.Username == authorName {
 			continue
 		}
-		usernames = append(usernames, user.Username)
+		userPermissions, _ := getFilePermissionsByUser(user.Id, user.Username, fileId, *post)
+		userinfos = append(userinfos, UserinfoWrapper{
+			Username:    user.Username,
+			Permissions: userPermissions,
+		})
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
-	json.NewEncoder(writer).Encode(usernames)
+	json.NewEncoder(writer).Encode(userinfos)
+}
+
+func (p *Plugin) userPermissions(writer http.ResponseWriter, request *http.Request) {
+	channelId := request.Header.Get(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER)
+
+	query := request.URL.Query()
+	username := query.Get("username")
+
+	response := UserinfoWrapper{}
+
+	users, usersErr := p.API.GetUsersByUsernames([]string{username})
+
+	if usersErr != nil {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		json.NewEncoder(writer).Encode(response)
+		return
+	}
+
+	_, membershipErr := p.API.GetChannelMember(channelId, users[0].Id)
+
+	if membershipErr != nil {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		json.NewEncoder(writer).Encode(response)
+		return
+	}
+
+	fileId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
+	postId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
+	post, _ := p.API.GetPost(postId)
+
+	if users[0].Id == post.UserId {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		json.NewEncoder(writer).Encode(response)
+		return
+	}
+
+	userPermissions, _ := getFilePermissionsByUser(users[0].Id, users[0].Username, fileId, *post)
+	response.Id = users[0].Id
+	response.Username = users[0].Username
+	response.Permissions = userPermissions
+
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(200)
+	json.NewEncoder(writer).Encode(response)
 }
 
 func generateDocKey(fileInfo model.FileInfo, post model.Post) string {

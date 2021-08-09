@@ -3,9 +3,9 @@ import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {isPermissionsModalVisible, permissionsModalFileInfo} from 'selectors';
+import {isPermissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
 
-import {closePermissions} from 'actions';
+import {closePermissions} from 'redux/actions';
 
 import Permissions from './permissions';
 

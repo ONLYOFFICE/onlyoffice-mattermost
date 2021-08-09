@@ -1,0 +1,35 @@
+.word{
+  background-image: url("../images/icon_word.svg") !important;
+}
+
+.ppt{
+  background-image: url("../images/icon_slide.svg") !important;
+}
+
+.excel{
+  background-image: url("../images/icon_cell.svg") !important;
+}
+
+a[aria-label $= '.odt']{
+  .generic{
+    background-image: url("../images/icon_word.svg") !important;
+  }
+}
+
+a[aria-label $= '.ods']{
+  .generic{
+    background-image: url("../images/icon_cell.svg") !important;
+  }
+}
+
+a[aria-label $= '.odp']{
+  .generic{
+    background-image: url("../images/icon_slide.svg") !important;
+  }
+}
+
+a[aria-label $= '.xls']{
+  .generic{
+    background-image: url("../images/icon_cell.svg") !important;
+  }
+}

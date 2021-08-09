@@ -35,9 +35,10 @@ if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
 }
 
 module.exports = {
-    entry: [
-        './src/index.tsx',
-    ],
+    entry: {
+        main: ['./src/index.tsx', './src/utils/file/index.ts',
+            './src/utils/lodash/index.ts', './src/utils/user/index.ts'],
+    },
     resolve: {
         modules: [
             'src',
@@ -74,6 +75,14 @@ module.exports = {
                                 includePaths: ['node_modules/compass-mixins/lib', 'sass'],
                             },
                         },
+                    },
+                ],
+            },
+            {
+                test: /\.svg$/,
+                use: [
+                    {
+                        loader: 'svg-url-loader',
                     },
                 ],
             },

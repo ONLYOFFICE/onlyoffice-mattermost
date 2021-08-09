@@ -58,6 +58,8 @@
     </div>
     <script type="text/javascript" src="{{.apijs}}"></script>
     <script type="text/javascript" language="javascript">
+        const ONLYOFFICE_CLOSED_EVENT = new Event('ONLYOFFICE_CLOSED');
+        const ONLYOFFICE_EDITOR_READY = new Event('ONLYOFFICE_READY');
         var docEditor;
 
         var innerAlert = function (message) {
@@ -67,6 +69,15 @@
 
         var onAppReady = function () {  // the application is loaded into the browser
             innerAlert("Document editor ready");
+        };
+
+        var onRequestClose = function () {
+            if (window.opener) {
+                window.close();
+                return;
+            }
+            window.parent.dispatchEvent(ONLYOFFICE_CLOSED_EVENT);
+            docEditor.destroyEditor();
         };
 
         // replace the link to the document which contains a bookmark
@@ -88,10 +99,15 @@
 
         var events = {
             "onAppReady": onAppReady,
+            "onRequestClose": onRequestClose,
         };
 
+        var config = {{ .config }};
+        config["events"] = events;
+
         var connectEditor = function () {
-            docEditor = new DocsAPI.DocEditor("iframeEditor", {{ .config }});
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            window.parent.dispatchEvent(ONLYOFFICE_EDITOR_READY);
             fixSize();
         };
 

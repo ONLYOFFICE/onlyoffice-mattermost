@@ -1,6 +1,6 @@
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {id as pluginId} from './manifest';
+import {id as pluginId} from '../manifest';
 
 //@ts-ignore
 const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
