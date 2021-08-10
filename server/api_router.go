@@ -43,13 +43,13 @@ func (p *Plugin) forkRouter() *mux.Router {
 	router.Use(p.DebugRoutes)
 
 	subrouter := router.PathPrefix("/onlyofficeapi").Subrouter()
-	subrouter.HandleFunc("/download", p.downloadMiddleware(p.download)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/editor", p.userAccessMiddleware(p.editor)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/callback", p.callbackMiddleware(p.callback)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/set_file_permissions", p.permissionsMiddleware(p.setFilePermissions)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/get_file_permissions", p.permissionsMiddleware(p.getFilePermissions)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/channel_users", p.userAccessMiddleware(p.channelUsers)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/channel_user", p.userAccessMiddleware(p.userPermissions)).Methods(http.MethodGet)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_DOWNLOAD, p.callbackMiddleware(p.download)).Methods(http.MethodGet)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_EDITOR, p.userAccessMiddleware(p.editor)).Methods(http.MethodPost)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_CALLBACK, p.callbackMiddleware(p.callback)).Methods(http.MethodPost)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_SET_PERMISSIONS, p.permissionsMiddleware(p.setFilePermissions)).Methods(http.MethodPost)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_GET_PERMISSIONS, p.permissionsMiddleware(p.getFilePermissions)).Methods(http.MethodGet)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_GET_CHANNEL_USERS, p.userAccessMiddleware(p.channelUsers)).Methods(http.MethodGet)
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_GET_CHANNEL_USER, p.userAccessMiddleware(p.channelUser)).Methods(http.MethodGet)
 
 	return router
 }

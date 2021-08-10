@@ -106,13 +106,13 @@ func (m *FileValidationFilter) HasError() bool {
 }
 
 //
-type ChannelAuthorizationFilter struct {
+type PostAuthorizationFilter struct {
 	plugin   *Plugin
 	next     Filter
 	hasError bool
 }
 
-func (m *ChannelAuthorizationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
+func (m *PostAuthorizationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
 	var postId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
 
@@ -141,12 +141,12 @@ func (m *ChannelAuthorizationFilter) DoFilter(writer http.ResponseWriter, reques
 	}
 }
 
-func (m *ChannelAuthorizationFilter) SetNext(Next Filter) Filter {
+func (m *PostAuthorizationFilter) SetNext(Next Filter) Filter {
 	m.next = Next
 	return m.next
 }
 
-func (m *ChannelAuthorizationFilter) HasError() bool {
+func (m *PostAuthorizationFilter) HasError() bool {
 	if m.next == nil {
 		return m.hasError
 	}
@@ -268,8 +268,7 @@ func (m *DecryptorFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 	query := request.URL.Query()
 	fileId := query.Get("fileId")
 
-	var encryptor security.Encryptor = security.EncryptorAES{}
-	decipheredFileid, decipherErr := encryptor.Decrypt(fileId, m.plugin.internalKey)
+	decipheredFileid, decipherErr := security.EncryptorAES{}.Decrypt(fileId, m.plugin.internalKey)
 	_, err := m.plugin.API.GetFileInfo(decipheredFileid)
 
 	if err != nil || decipherErr != nil {

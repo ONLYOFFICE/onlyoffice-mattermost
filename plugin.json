@@ -44,9 +44,8 @@
             },
             {
                 "key": "DESJwtHeader",
-                "display_name": "JWT Header name: ",
+                "display_name": "JWT Header: ",
                 "type": "text",
-                "help_text": "Change the default header name.",
                 "placeholder": "Enter your secret key",
                 "default": "Authorization"
             },
@@ -54,7 +53,6 @@
                 "key": "DESJwtPrefix",
                 "display_name": "JWT Prefix: ",
                 "type": "text",
-                "help_text": "Authorization header prefix.",
                 "placeholder": "",
                 "default": "Bearer "
             }

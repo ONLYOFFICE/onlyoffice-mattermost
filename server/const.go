@@ -2,7 +2,6 @@ package main
 
 const MATTERMOST_USER_COOKIE = "MMUSERID"
 
-const ONLYOFFICE_RC4_KEY string = "ONLYOFFICE"
 const ONLYOFFICE_AUTHORIZATION_USERID_HEADER = "ONLYOFFICE_USER_ID"
 const ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER = "ONLYOFFICE_USERNAME"
 const ONLYOFFICE_FILEVALIDATION_FILEID_HEADER = "ONLYOFFICE_FILEID"
@@ -16,7 +15,12 @@ const ONLYOFFICE_COMMAND_SERVICE string = "coauthoring/CommandService.ashx"
 const ONLYOFFICE_API_JS string = "web-apps/apps/api/documents/api.js"
 const ONLYOFFICE_CONVERTER string = ""
 
-const ONLYOFFICE_PERMISSIONS_PROP = "ONLYOFFICE_PERMISSIONS"
-const ONLYOFFICE_PERMISSIONS_WILDCARD_KEY = "*"
-
 const ONLYOFFICE_API_PATH = "plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi"
+
+const ONLYOFFICE_ROUTE_EDITOR = "/editor"
+const ONLYOFFICE_ROUTE_DOWNLOAD = "/download"
+const ONLYOFFICE_ROUTE_CALLBACK = "/callback"
+const ONLYOFFICE_ROUTE_SET_PERMISSIONS = "/set_file_permissions"
+const ONLYOFFICE_ROUTE_GET_PERMISSIONS = "/get_file_permissions"
+const ONLYOFFICE_ROUTE_GET_CHANNEL_USERS = "/channel_users"
+const ONLYOFFICE_ROUTE_GET_CHANNEL_USER = "/channel_user"

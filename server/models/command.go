@@ -19,7 +19,7 @@ type CommandResponse struct {
 	IsSuccessful bool   `json:"-"`
 }
 
-func (dsr *CommandResponse) ProcessResponse() error {
+func (dsr CommandResponse) ProcessResponse() error {
 	if !dsr.IsSuccessful {
 		var err error = errors.New("[ONLYOFFICE]: No connection to the Document Service")
 		return errors.Wrap(err, err.Error())

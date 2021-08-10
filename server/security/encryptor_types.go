@@ -6,4 +6,4 @@ type Encryptor interface {
 }
 
 type EncryptorAES struct{}
-type EncryptorRC4 struct{}
+type EncryptorMD5 struct{}

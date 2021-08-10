@@ -1,64 +1,28 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"models"
 	"strings"
+	"utils"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
-type PostPermission struct {
-	FileId      string
-	Username    string
-	Permissions models.Permissions
-}
-
-func ConvertBase64ToPermissions(base64permissions string) (models.Permissions, error) {
-	jsonPermissions, jsonErr := base64.StdEncoding.DecodeString(base64permissions)
-
-	if jsonErr != nil {
-		return models.Permissions{}, jsonErr
-	}
-
-	var permissions models.Permissions
-
-	unmarshallingErr := json.Unmarshal(jsonPermissions, &permissions)
-
-	if unmarshallingErr != nil {
-		return models.Permissions{}, unmarshallingErr
-	}
-
-	return permissions, nil
-}
-
-func ConvertInterfaceToPermissions(ONLYOFFICE_PERMISSIONS_PROP interface{}) (models.Permissions, error) {
-	base64permissions := fmt.Sprintf("%v", ONLYOFFICE_PERMISSIONS_PROP)
-
-	permissions, permissionsErr := ConvertBase64ToPermissions(base64permissions)
-
-	if permissionsErr != nil {
-		return models.Permissions{}, permissionsErr
-	}
-
-	return permissions, nil
-}
-
-func getFilePermissionByFileId(fileId string, post model.Post) []UserinfoWrapper {
+func GetFilePermissionByFileId(fileId string, post model.Post) []models.UserInfoResponse {
 	postProps := post.GetProps()
-	permissions := []UserinfoWrapper{}
+	response := []models.UserInfoResponse{}
 
 	for key, value := range postProps {
-		if strings.HasPrefix(key, ONLYOFFICE_PERMISSIONS_PROP+"_"+fileId) {
-			convertedPermissions, err := ConvertInterfaceToPermissions(value)
+		if strings.HasPrefix(key, utils.CreateFilePermissionsPrefix(fileId)) {
+			convertedPermissions, err := utils.ConvertInterfaceToPermissions(value)
 			if err != nil {
 				continue
 			}
-			keyParts := strings.Split(key, "_")
-			permissions = append(permissions, UserinfoWrapper{
+			//TODO: Refactor later
+			keyParts := strings.Split(key, utils.ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR)
+			response = append(response, models.UserInfoResponse{
 				Id:          keyParts[3],
 				Username:    keyParts[4],
 				Permissions: convertedPermissions,
@@ -66,16 +30,16 @@ func getFilePermissionByFileId(fileId string, post model.Post) []UserinfoWrapper
 		}
 	}
 
-	return permissions
+	return response
 }
 
-func getFilePermissionsByUser(userId string, username string, fileId string, post model.Post) (models.Permissions, error) {
+func GetFilePermissionsByUser(userId string, username string, fileId string, post model.Post) (models.Permissions, error) {
 	if userId == post.UserId {
 		return models.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
 	}
 
-	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + userId + "_" + username)
-	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(ONLYOFFICE_PERMISSIONS_PROP + "_" + fileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY)
+	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(utils.CreateUserPermissionsPropName(fileId, userId, username))
+	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(utils.CreateWildcardPermissionsPropName(fileId))
 
 	//If no permissions set, we want to grant default rights
 	if ONLYOFFICE_USER_PERMISSIONS_PROP == nil && ONLYOFFICE_WILDCARD_PERMISSIONS_PROP == nil {
@@ -83,51 +47,37 @@ func getFilePermissionsByUser(userId string, username string, fileId string, pos
 	}
 
 	if ONLYOFFICE_USER_PERMISSIONS_PROP != nil {
-		return ConvertInterfaceToPermissions(ONLYOFFICE_USER_PERMISSIONS_PROP)
+		return utils.ConvertInterfaceToPermissions(ONLYOFFICE_USER_PERMISSIONS_PROP)
 	}
 
-	return ConvertInterfaceToPermissions(ONLYOFFICE_WILDCARD_PERMISSIONS_PROP)
+	return utils.ConvertInterfaceToPermissions(ONLYOFFICE_WILDCARD_PERMISSIONS_PROP)
 }
 
-func extractUsernames(postPermissions []PostPermission) ([]string, map[string]bool) {
-	var usernames []string = []string{}
-	var wildcardFiles map[string]bool = make(map[string]bool)
-
-	for _, postPermission := range postPermissions {
-		if postPermission.Username != ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
-			usernames = append(usernames, postPermission.Username)
-		} else {
-			wildcardFiles[postPermission.FileId] = true
-		}
-	}
-	return usernames, wildcardFiles
-}
-
-func setFilePermissions(post *model.Post, propKey string, filePermissions models.Permissions) {
+func SetFilePermissions(post *model.Post, propKey string, filePermissions models.Permissions) {
 	permissionBytes, _ := json.Marshal(filePermissions)
 
 	post.DelProp(propKey)
 	post.AddProp(propKey, permissionBytes)
 }
 
-func purgeFilePermissions(post *model.Post, fileId string) {
+func PurgeFilePermissions(post *model.Post, fileId string) {
 	postProps := post.GetProps()
 
 	for propName := range postProps {
-		if strings.HasPrefix(propName, ONLYOFFICE_PERMISSIONS_PROP+"_"+fileId) {
+		if strings.HasPrefix(propName, utils.CreateFilePermissionsPrefix(fileId)) {
 			delete(postProps, propName)
 		}
 	}
 }
 
-func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postId string) error {
+func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission, postId string) error {
 	post, postErr := p.API.GetPost(postId)
 
 	if postErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
 	}
 
-	usernames, wildcardFiles := extractUsernames(postPermissions)
+	usernames, wildcardFiles := utils.ExtractUsernames(postPermissions)
 	users, usersErr := p.API.GetUsersByUsernames(usernames)
 
 	if usersErr != nil {
@@ -137,7 +87,7 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 	for _, postPermission := range postPermissions {
 		if post.FileIds.Contains(postPermission.FileId) {
 			if _, fileFound := wildcardFiles[postPermission.FileId]; fileFound {
-				purgeFilePermissions(post, postPermission.FileId)
+				PurgeFilePermissions(post, postPermission.FileId)
 			}
 			for _, user := range users {
 				if user.Id == post.UserId {
@@ -145,15 +95,13 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []PostPermission, postI
 				}
 
 				if user.Username == postPermission.Username {
-					propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + user.Id + "_" + user.Username
-
-					setFilePermissions(post, propKey, postPermission.Permissions)
+					propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, user.Id, user.Username)
+					SetFilePermissions(post, propKey, postPermission.Permissions)
 				}
 			}
-			if postPermission.Username == ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
-				propKey := ONLYOFFICE_PERMISSIONS_PROP + "_" + postPermission.FileId + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY + "_" + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
-
-				setFilePermissions(post, propKey, postPermission.Permissions)
+			if utils.CompareUserAndWildcard(postPermission.Username) {
+				propKey := utils.CreateWildcardPermissionsPropName(postPermission.FileId)
+				SetFilePermissions(post, propKey, postPermission.Permissions)
 			}
 		}
 	}

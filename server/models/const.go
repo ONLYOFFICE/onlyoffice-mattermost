@@ -18,10 +18,5 @@ var ONLYOFFICE_AUTHOR_PERMISSIONS Permissions = Permissions{
 }
 
 var ONLYOFFICE_DEFAULT_PERMISSIONS Permissions = Permissions{
-	Comment:  false,
-	Copy:     false,
-	Download: true,
-	Edit:     false,
-	Print:    false,
-	Review:   false,
+	Edit: false,
 }

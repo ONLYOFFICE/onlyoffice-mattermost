@@ -5,9 +5,9 @@ import "net/http"
 func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	authentication := &AuthenticationFilter{plugin: p}
 	checkFile := &FileValidationFilter{plugin: p}
-	channelAccess := &ChannelAuthorizationFilter{plugin: p}
+	postAccess := &PostAuthorizationFilter{plugin: p}
 
-	authentication.SetNext(checkFile).SetNext(channelAccess)
+	authentication.SetNext(checkFile).SetNext(postAccess)
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 		authentication.DoFilter(writer, request)
@@ -22,35 +22,22 @@ func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, requ
 }
 
 func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
-	decryptorMiddleware := DecryptorFilter{plugin: p}
+	decryptorMiddlewareBody := DecryptorFilter{plugin: p}
 	bodyJwtMiddleware := BodyJwtFilter{plugin: p}
 
-	decryptorMiddleware.SetNext(&bodyJwtMiddleware)
+	decryptorMiddlewareBody.SetNext(&bodyJwtMiddleware)
 
-	return func(writer http.ResponseWriter, request *http.Request) {
-
-		decryptorMiddleware.DoFilter(writer, request)
-
-		if decryptorMiddleware.HasError() {
-			writer.WriteHeader(403)
-			return
-		}
-
-		next(writer, request)
-	}
-}
-
-func (p *Plugin) downloadMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
-	decryptorMiddleware := DecryptorFilter{plugin: p}
+	decryptorMiddlewareHeader := DecryptorFilter{plugin: p}
 	headerJwtMiddleware := HeaderJwtFilter{plugin: p}
 
-	decryptorMiddleware.SetNext(&headerJwtMiddleware)
+	decryptorMiddlewareHeader.SetNext(&headerJwtMiddleware)
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 
-		decryptorMiddleware.DoFilter(writer, request)
+		decryptorMiddlewareBody.DoFilter(writer, request)
+		decryptorMiddlewareHeader.DoFilter(writer, request)
 
-		if decryptorMiddleware.HasError() {
+		if decryptorMiddlewareBody.HasError() && decryptorMiddlewareHeader.HasError() {
 			writer.WriteHeader(403)
 			return
 		}

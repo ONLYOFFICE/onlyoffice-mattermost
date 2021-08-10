@@ -40,5 +40,4 @@ func (bot *ONLYOFFICE_BOT) BOT_CREATE_REPLY(message string, channelId string, pa
 		bot.P.API.LogError(ONLYOFFICE_BOT_LOGGER_PREFIX + "Post creation error")
 		return
 	}
-	bot.P.API.LogInfo(bot.LoggerPrefix + "Created a new reply")
 }

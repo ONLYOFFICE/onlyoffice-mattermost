@@ -58,9 +58,9 @@ const manifestStr = `
       },
       {
         "key": "DESJwtHeader",
-        "display_name": "JWT Header name: ",
+        "display_name": "JWT Header: ",
         "type": "text",
-        "help_text": "Change the default header name.",
+        "help_text": "",
         "placeholder": "Enter your secret key",
         "default": "Authorization"
       },
@@ -68,7 +68,7 @@ const manifestStr = `
         "key": "DESJwtPrefix",
         "display_name": "JWT Prefix: ",
         "type": "text",
-        "help_text": "Authorization header prefix.",
+        "help_text": "",
         "placeholder": "",
         "default": "Bearer "
       }

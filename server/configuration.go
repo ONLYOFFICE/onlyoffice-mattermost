@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"security"
+	"strings"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"
@@ -92,6 +93,12 @@ func (c *configuration) SanitizeConfiguration() {
 	if DESAddress[len(DESAddress)-1:] != "/" {
 		c.DESAddress = fmt.Sprintf("%s%s", DESAddress, "/")
 	}
+	if c.DESJwtHeader != "" {
+		c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
+	}
+	if c.DESJwtPrefix != "" {
+		c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
+	}
 }
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
@@ -110,10 +117,18 @@ func (p *Plugin) OnConfigurationChange() error {
 		Command: models.ONLYOFFICE_COMMAND_VERSION,
 	}
 	body.Token, _ = security.JwtSign(body, []byte(p.configuration.DESJwt))
+	var headers []Header = []Header{
+		{
+			Key:   configuration.DESJwtHeader,
+			Value: configuration.DESJwtPrefix + " " + configuration.DESJwt,
+		},
+	}
 
 	var response = new(models.CommandResponse)
 
-	p.GetHTTPClient().PostRequest(configuration.DESAddress+ONLYOFFICE_COMMAND_SERVICE, &body, response)
+	p.GetHTTPClient().PostRequest(configuration.DESAddress+ONLYOFFICE_COMMAND_SERVICE, &body,
+		headers, response)
+
 	var err = response.ProcessResponse()
 
 	if err != nil {

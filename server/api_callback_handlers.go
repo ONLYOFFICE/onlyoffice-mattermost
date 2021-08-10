@@ -6,11 +6,20 @@ import (
 	"security"
 	"utils"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/mitchellh/mapstructure"
 )
 
-func processJwtBody(body *models.CallbackBody, jwtKey []byte) error {
-	decodedCallback, jwtDecodingErr := security.JwtDecode(body.Token, jwtKey)
+//TODO: Generalize the function
+func ConvertJwtToBody(body *models.CallbackBody, jwtKey []byte, jwtString string) error {
+	var decodedCallback jwt.MapClaims
+	var jwtDecodingErr error
+
+	if jwtString == "" {
+		decodedCallback, jwtDecodingErr = security.JwtDecode(body.Token, jwtKey)
+	} else {
+		decodedCallback, jwtDecodingErr = security.JwtDecode(jwtString, jwtKey)
+	}
 
 	if jwtDecodingErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not process JWT in callback body")
@@ -52,8 +61,11 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 		post, _ := p.API.GetPost(fileInfo.PostId)
 		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
-		user, _ := p.API.GetUser(body.Users[0])
+
+		decryptedUser, _ := security.EncryptorAES{}.Decrypt(body.Users[0], p.internalKey)
+		user, _ := p.API.GetUser(decryptedUser)
 		var newReplyMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
+
 		p.onlyoffice_bot.BOT_CREATE_REPLY(newReplyMessage, post.ChannelId, post.Id)
 	}
 

@@ -17,14 +17,21 @@ type Header struct {
 }
 
 //TODO: Rebuild this function
-func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, responseBody interface {
-	Succeeded()
-	Failed()
-}) {
+func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, headers []Header,
+	responseBody interface {
+		Succeeded()
+		Failed()
+	}) {
 	body := &requestBody
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(body)
 	req, _ := http.NewRequest("POST", url, buf)
+
+	if len(headers) > 0 {
+		for _, header := range headers {
+			req.Header.Add(header.Key, header.Value)
+		}
+	}
 
 	res, _ := httpClient.client.Do(req)
 

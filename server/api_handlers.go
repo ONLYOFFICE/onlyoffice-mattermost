@@ -26,22 +26,22 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	bundlePath, _ := p.API.GetBundlePath()
 	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	var encryptor security.Encryptor = security.EncryptorAES{}
+	encryptor := security.EncryptorAES{}
 	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
 	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
 
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
-	var docKey string = generateDocKey(*fileInfo, *post)
+	var docKey string = GenerateDocKey(*fileInfo, *post)
 
-	userPermissions, _ := getFilePermissionsByUser(userId, username, fileInfo.Id, *post)
+	userPermissions, _ := GetFilePermissionsByUser(userId, username, fileInfo.Id, *post)
 
 	var config models.Config = models.Config{
 		Document: models.Document{
 			FileType: fileInfo.Extension,
 			Key:      docKey,
 			Title:    fileInfo.Name,
-			Url:      serverURL + "/download?fileId=" + fileId,
+			Url:      serverURL + ONLYOFFICE_ROUTE_DOWNLOAD + "?fileId=" + fileId,
 			P:        userPermissions,
 		},
 		DocumentType: docType,
@@ -50,7 +50,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 				Id:   userIdEnc,
 				Name: username,
 			},
-			CallbackUrl: serverURL + "/callback?fileId=" + fileId,
+			CallbackUrl: serverURL + ONLYOFFICE_ROUTE_CALLBACK + "?fileId=" + fileId,
 			Customization: models.Customization{
 				Goback: models.Goback{
 					RequestClose: true,
@@ -59,7 +59,6 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		},
 	}
 
-	//TODO: Think up a better JWT logic
 	if p.configuration.DESJwt != "" {
 		jwtString, _ := security.JwtSign(config, []byte(p.configuration.DESJwt))
 		config.Token = jwtString
@@ -87,7 +86,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	if p.configuration.DESJwt != "" {
-		jwtBodyProcessingErr := processJwtBody(&body, []byte(p.configuration.DESJwt))
+		jwtBodyProcessingErr := ConvertJwtToBody(&body, []byte(p.configuration.DESJwt), request.Header.Get(p.configuration.DESJwtHeader))
 
 		if jwtBodyProcessingErr != nil {
 			p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "JWT Body processing error")
@@ -104,8 +103,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	var encryptor security.Encryptor = security.EncryptorAES{}
-	fileId, _ := encryptor.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
+	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
 	body.FileId = fileId
 
 	handler(&body, p)
@@ -116,15 +114,14 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
-	var encryptor security.Encryptor = security.EncryptorAES{}
-	fileId, _ := encryptor.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
+	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
 	fileContent, _ := p.API.GetFile(fileId)
 
 	writer.Write(fileContent)
 }
 
 func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Request) {
-	var postPermissionsBody []PostPermission = []PostPermission{}
+	var postPermissionsBody []models.PostPermission = []models.PostPermission{}
 
 	decodingErr := json.NewDecoder(request.Body).Decode(&postPermissionsBody)
 	if decodingErr != nil {
@@ -201,7 +198,7 @@ func (p *Plugin) getFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	filePermissions := getFilePermissionByFileId(fileId, *post)
+	filePermissions := GetFilePermissionByFileId(fileId, *post)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
@@ -233,14 +230,15 @@ func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request)
 	postId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
 	post, _ := p.API.GetPost(postId)
 
-	var userinfos []UserinfoWrapper
+	var response []models.UserInfoResponse
 
 	for _, user := range usersInChannel {
 		if user.Username == authorName {
 			continue
 		}
-		userPermissions, _ := getFilePermissionsByUser(user.Id, user.Username, fileId, *post)
-		userinfos = append(userinfos, UserinfoWrapper{
+		userPermissions, _ := GetFilePermissionsByUser(user.Id, user.Username, fileId, *post)
+		response = append(response, models.UserInfoResponse{
+			Id:          user.Id,
 			Username:    user.Username,
 			Permissions: userPermissions,
 		})
@@ -248,16 +246,16 @@ func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
-	json.NewEncoder(writer).Encode(userinfos)
+	json.NewEncoder(writer).Encode(response)
 }
 
-func (p *Plugin) userPermissions(writer http.ResponseWriter, request *http.Request) {
+func (p *Plugin) channelUser(writer http.ResponseWriter, request *http.Request) {
 	channelId := request.Header.Get(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER)
 
 	query := request.URL.Query()
 	username := query.Get("username")
 
-	response := UserinfoWrapper{}
+	response := models.UserInfoResponse{}
 
 	users, usersErr := p.API.GetUsersByUsernames([]string{username})
 
@@ -288,7 +286,7 @@ func (p *Plugin) userPermissions(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	userPermissions, _ := getFilePermissionsByUser(users[0].Id, users[0].Username, fileId, *post)
+	userPermissions, _ := GetFilePermissionsByUser(users[0].Id, users[0].Username, fileId, *post)
 	response.Id = users[0].Id
 	response.Username = users[0].Username
 	response.Permissions = userPermissions
@@ -298,11 +296,10 @@ func (p *Plugin) userPermissions(writer http.ResponseWriter, request *http.Reque
 	json.NewEncoder(writer).Encode(response)
 }
 
-func generateDocKey(fileInfo model.FileInfo, post model.Post) string {
+func GenerateDocKey(fileInfo model.FileInfo, post model.Post) string {
 	var postUpdatedAt string = strconv.FormatInt(post.UpdateAt, 10)
 
-	var encryptor security.Encryptor = security.EncryptorRC4{}
-	docKey, _ := encryptor.Encrypt(fileInfo.Id+postUpdatedAt, []byte(ONLYOFFICE_RC4_KEY))
+	docKey, _ := security.EncryptorMD5{}.Encrypt(fileInfo.Id+postUpdatedAt, nil)
 
 	return docKey
 }
