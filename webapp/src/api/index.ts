@@ -1,15 +1,12 @@
-export const apiGET = async <T>(url: string, headers?: HeadersInit): Promise<T> => {
-    let json: T;
+export const apiGET = async (url: string, headers?: HeadersInit) => {
+    let json;
+    const response = await fetch(url, {
+        method: 'GET',
+        headers,
+    });
 
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers,
-        });
-
+    if (response.body) {
         json = await response.json();
-    } catch {
-        throw new Error('API GET call error');
     }
 
     return json;

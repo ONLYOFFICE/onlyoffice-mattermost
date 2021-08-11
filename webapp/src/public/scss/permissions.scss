@@ -2,6 +2,16 @@
     font-family: 'Open sans';
 }
 
+.onlyoffice-permissions-modal__body{
+    opacity: 1;
+    visibility: visible;
+    transition: visibility 0.1s linear, opacity 0.1s linear;
+}
+
+.filtered-user-list{
+    scrollbar-width: none;
+}
+
 .react-select__value-container{
     max-width: 40rem;
 }
@@ -9,5 +19,12 @@
 @media all and (max-width: 640px){
     .react-select__value-container{
         max-width: 30rem;
+    }
+}
+
+@media all and (max-height: 293px){
+    .onlyoffice-permissions-modal__body{
+        opacity: 0;
+        visibility: hidden;
     }
 }

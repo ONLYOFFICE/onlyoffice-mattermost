@@ -44,7 +44,10 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
 
     useEffect(() => {
         if (visible) {
-            apiGET<User[]>(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id).then((resUser: User[]) => {
+            apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id).then((resUser: User[]) => {
+                if (!resUser) {
+                    return;
+                }
                 const permissions: AutocompleteUser[] = [];
                 // eslint-disable-next-line max-nested-callbacks
                 resUser.forEach((user: User) => {
@@ -72,7 +75,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             callback([]);
             return;
         }
-        apiGET<User>(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
+        apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
             ONLYOFFICE_FILEID: fileInfo.id,
         }).then((resUser: User) => {
             if (!resUser.id) {
@@ -168,7 +171,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                     <span className='sr-only'>Close</span>
                 </button>
             </Modal.Header>
-            <div>
+            <div className='onlyoffice-permissions-modal__body'>
                 <div className='filtered-user-list'>
                     <div
                         className='filter-row'
