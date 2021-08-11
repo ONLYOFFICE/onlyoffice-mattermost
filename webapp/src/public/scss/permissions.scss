@@ -1,0 +1,13 @@
+#onlyoffice-permissions-modal{
+    font-family: 'Open sans';
+}
+
+.react-select__value-container{
+    max-width: 40rem;
+}
+
+@media all and (max-width: 640px){
+    .react-select__value-container{
+        max-width: 30rem;
+    }
+}

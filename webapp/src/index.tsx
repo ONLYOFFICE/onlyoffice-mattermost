@@ -16,7 +16,7 @@ import manifest from 'manifest';
 import Editor from 'components/editor';
 import Permissions from 'components/permissions';
 import 'public/scss/icons.scss';
-import 'public/scss/classes/modal_editor.scss';
+import 'public/scss/modal_editor.scss';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

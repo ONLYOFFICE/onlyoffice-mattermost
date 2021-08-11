@@ -1,8 +1,8 @@
-@import '../colors.scss';
-@import '../mixins.scss';
-@import '../animations.scss';
+@import './colors.scss';
+@import './mixins.scss';
+@import './animations.scss';
 
-.plugin-modal__backdrop{
+.onlyoffice-modal__backdrop{
     @include parent_size();
     position: fixed;
     left: 0;
@@ -14,12 +14,12 @@
     animation-duration: 0.3s
 }
 
-.plugin-modal__backdrop_hide{
+.onlyoffice-modal__backdrop_hide{
   animation-name: fadeOut;
   animation-duration: 0.3s;
 }
 
-.plugin-modal__frame{
+.onlyoffice-modal__frame{
     @include parent_size();
     padding: 0;
     overflow: hidden;
@@ -30,6 +30,6 @@
     animation-duration: 0.3s
 }
 
-.plugin-editor__loader{
+.onlyoffice-editor__loader{
     @include absolute_center();
 }

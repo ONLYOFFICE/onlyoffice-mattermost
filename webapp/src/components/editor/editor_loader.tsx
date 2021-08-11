@@ -2,16 +2,21 @@ import React from 'react';
 
 export const EditorLoader = () => {
     const [loading, setLoading] = React.useState(true);
-    React.useEffect(() => {
-        window.addEventListener('ONLYOFFICE_READY', () => setLoading(false));
 
-        return () => window.removeEventListener('ONLYOFFICE_READY', () => setLoading(false));
+    const disableLoading = () => {
+        setLoading(false);
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('ONLYOFFICE_READY', disableLoading);
+
+        return () => window.removeEventListener('ONLYOFFICE_READY', disableLoading);
     }, []);
     return (
         <>
             {loading ? (
                 <div
-                    className='plugin-editor__loader'
+                    className='onlyoffice-editor__loader'
                     id='editor-spinner'
                 >
                     <></>

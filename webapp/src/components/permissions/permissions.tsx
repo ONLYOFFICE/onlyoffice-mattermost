@@ -1,27 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/jsx-no-literals */
 import React, {useState, useEffect} from 'react';
-
+import {Dispatch} from 'redux';
 import {FileInfo} from 'mattermost-redux/types/files';
 
-import {Dispatch} from 'redux';
-
-import 'public/scss/classes/onlyoffice_permissions.scss';
-import {Modal, Button} from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
+import Select, {OptionTypeBase, OptionsType} from 'react-select';
 import makeAnimated from 'react-select/animated';
+import {Modal, Button} from 'react-bootstrap';
 
-import {OptionTypeBase, OptionsType, ActionMeta} from 'react-select';
-
-import {FileAccess, FilePermissions, getFileAccess, getPermissionsMap, SubmitPermissionsPayload} from 'utils/file';
-
+import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_CHANNEL_USER,
+    ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS, ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
-
-import {id as pluginName} from 'manifest';
+import {FilePermissions, getFileAccess, getPermissionsMap, SubmitPermissionsPayload} from 'utils/file';
 import {AutocompleteUser, mapUserToAutocompleteUser, User} from 'utils/user';
 
-import {UserRow} from './permissions_user';
+import {UserRow} from './permissions_user_row';
+import {PermissionsFooter} from './permissions_footer';
+import {UserList} from './permissions_user_list';
+import {PermissionsHeaderFilter} from './permissions_header_filter';
 
-const animatedComponents = makeAnimated();
+import 'public/scss/permissions.scss';
 
 type PermissionsProps = {
     visible: boolean,
@@ -29,15 +28,22 @@ type PermissionsProps = {
     fileInfo: FileInfo,
 };
 
+const animatedComponents = makeAnimated();
+
 const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: PermissionsProps) => {
     const [allAccess, setAllAccess] = useState(FilePermissions.READ_ONLY.toString());
     const [current, setCurrent] = useState<AutocompleteUser[]>([]);
     const [users, setUsers] = useState<AutocompleteUser[]>([]);
-    const permissionsMap = getPermissionsMap();
+    const permissionsMap = getPermissionsMap().map((entry: FilePermissions) => {
+        return {
+            value: entry.toString(),
+            label: entry.toString(),
+        };
+    });
 
     useEffect(() => {
         if (visible) {
-            fetch(`/plugins/${pluginName}/onlyofficeapi/get_file_permissions?fileId=${fileInfo.id}`, {
+            fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id, {
                 method: 'GET',
             }).then((res) => {
                 return res.json();
@@ -46,29 +52,30 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                 // eslint-disable-next-line max-nested-callbacks
                 resUser.forEach((user: User) => {
                     const mappedUser = mapUserToAutocompleteUser(user);
-                    if (user.id === '*') {
+                    if (user.id === ONLYOFFICE_WILDCARD_USER) {
                         setAllAccess(mappedUser.permissions);
                     } else {
                         permissions.push(mappedUser);
                     }
                 });
                 setUsers(permissions);
-            }).catch((err) => {
-                console.log(err);
-            });
+            }).catch();
         }
-    }, [visible]);
+    }, [visible, fileInfo]);
 
     if (!visible) {
         return null;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const load = debounce((input: any, callback: any) => {
         if (!input) {
             return;
         }
-        fetch(`/plugins/${pluginName}/onlyofficeapi/channel_user?username=${input}`, {
+        if (users.find((user: AutocompleteUser) => user.label === input)) {
+            callback([]);
+            return;
+        }
+        fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
             method: 'GET',
             headers: {
                 ONLYOFFICE_FILEID: fileInfo.id,
@@ -85,17 +92,32 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         }).catch(() => {
             callback([]);
         });
-    }, 3000);
+    }, 2000);
 
-    const onChange = (value: OptionTypeBase | OptionsType<OptionTypeBase> | null, action: ActionMeta<OptionTypeBase>) => {
+    const onChange = (value: OptionTypeBase | OptionsType<OptionTypeBase> | null) => {
         setCurrent((value as AutocompleteUser[]));
     };
 
-    const handleOnExit = () => {
+    const onAllChange = (value: any) => {
+        if (value.label) {
+            setAllAccess(value.label);
+        }
+    };
+
+    const onExit = () => {
         setAllAccess(FilePermissions.READ_ONLY.toString());
         setCurrent([]);
         setUsers([]);
-        close();
+
+        const modal = document.getElementById('onlyoffice-permissions-modal');
+        const backdrop = modal?.previousElementSibling;
+
+        // eslint-disable-next-line no-unused-expressions
+        modal?.classList.remove('in');
+        // eslint-disable-next-line no-unused-expressions
+        backdrop?.classList.remove('in');
+
+        setTimeout(() => close(), 300);
     };
 
     const onRemoveUser = (username: string) => {
@@ -111,7 +133,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         }));
     };
 
-    const handleSubmitPermissions = () => {
+    const onSubmitPermissions = () => {
         const payload: SubmitPermissionsPayload[] = [];
         const allUsers: SubmitPermissionsPayload = {
             FileId: fileInfo.id,
@@ -127,24 +149,21 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             });
         });
 
-        fetch(`/plugins/${pluginName}/onlyofficeapi/set_file_permissions`, {
+        fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, {
             method: 'POST',
             body: JSON.stringify(payload),
-        }).then((res) => {
-            console.log(res);
-            close();
-        }).catch((err) => {
-            console.log(err);
-        });
+        }).then(() => {
+            onExit();
+        }).catch();
     };
 
     return (
         <Modal
             show={visible}
-            onHide={handleOnExit}
-            onExited={handleOnExit}
+            onHide={onExit}
+            onExited={onExit}
             role='dialog'
-            className='permissions-modal'
+            id='onlyoffice-permissions-modal'
         >
             <Modal.Header
                 closeButton={true}
@@ -154,7 +173,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                     type='button'
                     className='close'
                     aria-label='Close'
-                    onClick={handleOnExit}
+                    onClick={onExit}
                 >
                     <span aria-hidden='true'>×</span>
                     <span className='sr-only'>Close</span>
@@ -166,92 +185,83 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                         className='filter-row'
                         style={{marginBottom: '1rem', marginTop: '1rem'}}
                     >
-                        <div
-                            className='col-xs-12'
-                            style={{marginBottom: '1rem'}}
-                        >
-                            <div style={{display: 'flex'}}>
-                                <div style={{flexGrow: 1, marginRight: '2rem'}}>
-                                    <AsyncSelect
-                                        closeMenuOnSelect={false}
-                                        components={animatedComponents}
-                                        isMulti={true}
-                                        loadOptions={load}
-                                        onChange={onChange}
-                                        value={current}
-                                    />
-                                </div>
-                                <Button
-                                    style={{backgroundColor: '#166DE0', color: '#FFFFFF', border: 'none'}}
-                                    disabled={current.length === 0}
-                                    onClick={() => {
-                                        if (current) {
-                                            setUsers((prevUsers: AutocompleteUser[]) => [...new Set([...prevUsers, ...current])]);
-                                            setCurrent([]);
-                                        }
-                                    }}
-                                >Invite</Button>
+                        <PermissionsHeaderFilter>
+                            <div style={{flexGrow: 1, marginRight: '2rem'}}>
+                                <AsyncSelect
+                                    id='onlyoffice-permissions-select'
+                                    className='react-select-container'
+                                    classNamePrefix='react-select'
+                                    closeMenuOnSelect={false}
+                                    components={animatedComponents}
+                                    isMulti={true}
+                                    loadOptions={load}
+                                    onChange={onChange}
+                                    value={current}
+                                />
                             </div>
-                        </div>
+                            <Button
+                                className='btn btn-md btn-primary'
+                                disabled={current.length === 0}
+                                onClick={() => {
+                                    if (current) {
+                                        setUsers((prevUsers: AutocompleteUser[]) => [...prevUsers, ...current]);
+                                        setCurrent([]);
+                                    }
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </PermissionsHeaderFilter>
                         <div
                             className='col-sm-12'
                             style={{marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
                         >
                             <span
+                                style={{flexGrow: 2}}
                                 className='member-count pull-left'
                             >
                                 <span>Default access rights for chat members</span>
                             </span>
-                            <select
-                                style={{marginRight: '2.5rem'}}
-                                value={allAccess}
-                                onChange={(e) => setAllAccess(e.target.value)}
-                            >
-                                {permissionsMap.map((value: [FilePermissions, FileAccess]) => {
-                                    const permString = value[0].toString();
-                                    return (
-                                        <option
-                                            key={permString}
-                                            value={permString}
-                                        >{permString}</option>
-                                    );
-                                })}
-                            </select>
+                            <div style={{marginRight: '2.5rem', width: '10rem'}}>
+                                <Select
+                                    isSearchable={false}
+                                    value={{
+                                        value: allAccess,
+                                        label: allAccess,
+                                    }}
+                                    options={permissionsMap}
+                                    onChange={onAllChange}
+                                />
+                            </div>
                         </div>
                     </div>
-                    <div className='more-modal__list'>
-                        <div>
-                            {users.map((user: AutocompleteUser) => {
-                                return (
-                                    <UserRow
-                                        key={user.value}
-                                        user={user}
-                                        changePermissions={onChangeUserPermissions}
-                                        removeUser={onRemoveUser}
-                                    />
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div
-                        className='filter-controls'
-                        style={{display: 'flex', justifyContent: 'flex-end', padding: 0, margin: '1rem'}}
-                    >
+                    <UserList>
+                        {users.map((user: AutocompleteUser) => {
+                            return (
+                                <UserRow
+                                    key={user.value}
+                                    user={user}
+                                    changePermissions={onChangeUserPermissions}
+                                    removeUser={onRemoveUser}
+                                />
+                            );
+                        })}
+                    </UserList>
+                    <PermissionsFooter>
                         <Button
-                            style={{backgroundColor: 'white', border: 'none'}}
-                            onClick={() => close()}
+                            className='btn btn-md'
+                            style={{marginRight: '1rem', border: 'none'}}
+                            onClick={onExit}
                         >
                             <span style={{color: '#2389D7'}}>Cancel</span>
                         </Button>
                         <Button
-                            style={{backgroundColor: '#166DE0', color: '#FFFFFF', border: 'none'}}
-                            onClick={() => {
-                                handleSubmitPermissions();
-                            }}
+                            className='btn btn-md btn-primary'
+                            onClick={onSubmitPermissions}
                         >
                             Save
                         </Button>
-                    </div>
+                    </PermissionsFooter>
                 </div>
             </div>
         </Modal>

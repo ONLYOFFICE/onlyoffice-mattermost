@@ -40,8 +40,8 @@ const FilePermissionsMap: Map<FilePermissions, FileAccess> = new Map<FilePermiss
     [FilePermissions.READ_ONLY, READ],
 ]);
 
-export function getPermissionsMap(): [FilePermissions, FileAccess][] {
-    return [...FilePermissionsMap.entries()];
+export function getPermissionsMap(): FilePermissions[] {
+    return [...FilePermissionsMap.keys()];
 }
 
 export function getFileAccess(permissionType: FilePermissions): FileAccess {

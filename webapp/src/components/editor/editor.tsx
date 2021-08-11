@@ -4,7 +4,7 @@ import {FileInfo} from 'mattermost-redux/types/files';
 
 import {Dispatch} from 'redux';
 
-import {id as pluginName} from 'manifest';
+import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_EDITOR} from 'utils';
 
 import {EditorLoader} from './editor_loader';
 
@@ -22,12 +22,12 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
         const editorBackdrop = document.getElementById('editor-backdrop');
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        editorBackdrop!.classList.add('plugin-modal__backdrop_hide');
+        editorBackdrop!.classList.add('onlyoffice-modal__backdrop_hide');
 
         setTimeout(() => close(), 300);
     }, [close, visible]);
 
-    const escFunction = useCallback((event: any) => {
+    const onEscape = useCallback((event) => {
         if (event.keyCode === 27) {
             handleClose();
         }
@@ -37,25 +37,25 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
         if (!visible || !fileInfo) {
             return;
         }
-        (document.getElementById('editorForm') as HTMLFormElement).action = `/plugins/${pluginName}/onlyofficeapi/editor`;
+        (document.getElementById('editorForm') as HTMLFormElement).action = ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_EDITOR;
         (document.getElementById('file-id') as HTMLInputElement).value = fileInfo.id;
         (document.getElementById('editorForm') as HTMLFormElement).submit();
         window.addEventListener('ONLYOFFICE_CLOSED', handleClose);
-        document.addEventListener('keydown', escFunction, false);
+        document.addEventListener('keydown', onEscape, false);
 
         // eslint-disable-next-line consistent-return
         return () => {
             window.removeEventListener('ONLYOFFICE_CLOSED', handleClose);
-            document.removeEventListener('keydown', escFunction, false);
+            document.removeEventListener('keydown', onEscape, false);
         };
-    }, [fileInfo, visible, handleClose, escFunction]);
+    }, [fileInfo, visible, handleClose, onEscape]);
 
     return (
         <>
             {visible && (
                 <div
                     id='editor-backdrop'
-                    className='plugin-modal__backdrop'
+                    className='onlyoffice-modal__backdrop'
                 >
                     <EditorLoader/>
                     <form
@@ -72,7 +72,7 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
                         />
                     </form>
                     <iframe
-                        className='plugin-modal__frame'
+                        className='onlyoffice-modal__frame'
                         name='iframeEditor'
                     />
                 </div>
