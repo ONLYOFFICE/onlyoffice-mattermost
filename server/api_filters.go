@@ -116,11 +116,6 @@ func (m *PostAuthorizationFilter) DoFilter(writer http.ResponseWriter, request *
 	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
 	var postId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
 
-	if postId == "" || userId == "" {
-		m.hasError = true
-		return
-	}
-
 	post, postErr := m.plugin.API.GetPost(postId)
 
 	if postErr != nil {

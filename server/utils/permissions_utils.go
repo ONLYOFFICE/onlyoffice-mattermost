@@ -67,5 +67,5 @@ func CreateWildcardPermissionsPropName(fileId string) string {
 }
 
 func CreateFilePermissionsPrefix(fileId string) string {
-	return ONLYOFFICE_PERMISSIONS_PROP + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + fileId
+	return ONLYOFFICE_PERMISSIONS_PROP + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + fileId + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR
 }

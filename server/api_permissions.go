@@ -10,7 +10,7 @@ import (
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
-func GetFilePermissionByFileId(fileId string, post model.Post) []models.UserInfoResponse {
+func GetFilePermissionsByFileId(fileId string, post model.Post) []models.UserInfoResponse {
 	postProps := post.GetProps()
 	response := []models.UserInfoResponse{}
 
@@ -78,17 +78,19 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission
 	}
 
 	usernames, wildcardFiles := utils.ExtractUsernames(postPermissions)
+
 	users, usersErr := p.API.GetUsersByUsernames(usernames)
 
 	if usersErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid users while setting file permissions")
 	}
 
+	for fileId := range wildcardFiles {
+		PurgeFilePermissions(post, fileId)
+	}
+
 	for _, postPermission := range postPermissions {
 		if post.FileIds.Contains(postPermission.FileId) {
-			if _, fileFound := wildcardFiles[postPermission.FileId]; fileFound {
-				PurgeFilePermissions(post, postPermission.FileId)
-			}
 			for _, user := range users {
 				if user.Id == post.UserId {
 					continue

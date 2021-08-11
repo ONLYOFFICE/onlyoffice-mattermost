@@ -198,7 +198,7 @@ func (p *Plugin) getFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	filePermissions := GetFilePermissionByFileId(fileId, *post)
+	filePermissions := GetFilePermissionsByFileId(fileId, *post)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
