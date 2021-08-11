@@ -9,6 +9,7 @@ import Select, {OptionTypeBase, OptionsType} from 'react-select';
 import makeAnimated from 'react-select/animated';
 import {Modal, Button} from 'react-bootstrap';
 
+import {apiGET, apiPOST} from 'api';
 import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_CHANNEL_USER,
     ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS, ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
@@ -43,11 +44,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
 
     useEffect(() => {
         if (visible) {
-            fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id, {
-                method: 'GET',
-            }).then((res) => {
-                return res.json();
-            }).then((resUser: User[]) => {
+            apiGET<User[]>(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id).then((resUser: User[]) => {
                 const permissions: AutocompleteUser[] = [];
                 // eslint-disable-next-line max-nested-callbacks
                 resUser.forEach((user: User) => {
@@ -75,13 +72,8 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             callback([]);
             return;
         }
-        fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
-            method: 'GET',
-            headers: {
-                ONLYOFFICE_FILEID: fileInfo.id,
-            },
-        }).then((res) => {
-            return res.json();
+        apiGET<User>(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
+            ONLYOFFICE_FILEID: fileInfo.id,
         }).then((resUser: User) => {
             if (!resUser.id) {
                 callback([]);
@@ -149,10 +141,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             });
         });
 
-        fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, {
-            method: 'POST',
-            body: JSON.stringify(payload),
-        }).then(() => {
+        apiPOST(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, JSON.stringify(payload)).then(() => {
             onExit();
         }).catch();
     };
