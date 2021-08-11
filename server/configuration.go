@@ -120,7 +120,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	var headers []Header = []Header{
 		{
 			Key:   configuration.DESJwtHeader,
-			Value: configuration.DESJwtPrefix + " " + configuration.DESJwt,
+			Value: configuration.DESJwtPrefix + " " + body.Token,
 		},
 	}
 

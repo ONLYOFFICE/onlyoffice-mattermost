@@ -4,6 +4,7 @@ import (
 	"errors"
 	"models"
 	"security"
+	"strings"
 	"utils"
 
 	"github.com/golang-jwt/jwt"
@@ -18,7 +19,7 @@ func ConvertJwtToBody(body *models.CallbackBody, jwtKey []byte, jwtString string
 	if jwtString == "" {
 		decodedCallback, jwtDecodingErr = security.JwtDecode(body.Token, jwtKey)
 	} else {
-		decodedCallback, jwtDecodingErr = security.JwtDecode(jwtString, jwtKey)
+		decodedCallback, jwtDecodingErr = security.JwtDecode(strings.Split(jwtString, " ")[1], jwtKey)
 	}
 
 	if jwtDecodingErr != nil {

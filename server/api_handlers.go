@@ -89,7 +89,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		jwtBodyProcessingErr := ConvertJwtToBody(&body, []byte(p.configuration.DESJwt), request.Header.Get(p.configuration.DESJwtHeader))
 
 		if jwtBodyProcessingErr != nil {
-			p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "JWT Body processing error")
+			p.API.LogError(jwtBodyProcessingErr.Error())
 			writer.WriteHeader(500)
 			return
 		}
