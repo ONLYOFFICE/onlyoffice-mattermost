@@ -25,3 +25,15 @@ export const mapUserToAutocompleteUser = (user: User): AutocompleteUser => {
         permissions: getPermissionsTypeByPermissions(user.permissions),
     };
 };
+
+export const sortAutocompleteUsers = (users: AutocompleteUser[]) => {
+    users.sort((a, b) => {
+        if (a.label < b.label) {
+            return -1;
+        }
+        if (a.label > b.label) {
+            return 1;
+        }
+        return 0;
+    });
+};

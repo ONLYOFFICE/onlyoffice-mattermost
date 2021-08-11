@@ -14,7 +14,7 @@ import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_CHANNEL_USER,
     ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS, ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
 import {FilePermissions, getFileAccess, getPermissionsMap, SubmitPermissionsPayload} from 'utils/file';
-import {AutocompleteUser, mapUserToAutocompleteUser, User} from 'utils/user';
+import {AutocompleteUser, mapUserToAutocompleteUser, sortAutocompleteUsers, User} from 'utils/user';
 
 import {UserRow} from './permissions_user_row';
 import {PermissionsFooter} from './permissions_footer';
@@ -58,6 +58,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                         permissions.push(mappedUser);
                     }
                 });
+                sortAutocompleteUsers(permissions);
                 setUsers(permissions);
             }).catch();
         }
