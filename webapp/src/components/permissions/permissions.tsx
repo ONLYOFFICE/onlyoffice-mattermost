@@ -193,6 +193,8 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                 disabled={current.length === 0}
                                 onClick={() => {
                                     if (current) {
+                                        const contentSection = document.getElementById('scroller-dummy');
+                                        setTimeout(() => contentSection?.scrollIntoView({behavior: 'smooth'}), 300);
                                         setUsers((prevUsers: AutocompleteUser[]) => [...prevUsers, ...current]);
                                         setCurrent([]);
                                     }
@@ -235,6 +237,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                 />
                             );
                         })}
+                        <div id='scroller-dummy'/>
                     </UserList>
                     <PermissionsFooter>
                         <Button
