@@ -4,6 +4,7 @@ export type User = {
     id: string,
     username: string,
     permissions: FileAccess,
+    email: string,
 };
 
 export type AutocompleteUser = {
@@ -11,6 +12,7 @@ export type AutocompleteUser = {
     label: string,
     avatarUrl: string,
     permissions: string,
+    email: string,
 };
 
 const getUserAvatarUrl = (id: string): string => {
@@ -23,6 +25,7 @@ export const mapUserToAutocompleteUser = (user: User): AutocompleteUser => {
         label: user.username,
         avatarUrl: getUserAvatarUrl(user.id),
         permissions: getPermissionsTypeByPermissions(user.permissions),
+        email: user.email,
     };
 };
 

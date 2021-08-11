@@ -34,7 +34,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 
 	var docKey string = GenerateDocKey(*fileInfo, *post)
 
-	userPermissions, _ := GetFilePermissionsByUser(userId, username, fileInfo.Id, *post)
+	userPermissions, _ := GetFilePermissionsByUser(userId, fileInfo.Id, *post)
 
 	var config models.Config = models.Config{
 		Document: models.Document{
@@ -198,7 +198,7 @@ func (p *Plugin) getFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	filePermissions := GetFilePermissionsByFileId(fileId, *post)
+	filePermissions := GetPostPermissionsByFileId(fileId, *post, p)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
@@ -236,7 +236,7 @@ func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request)
 		if user.Username == authorName {
 			continue
 		}
-		userPermissions, _ := GetFilePermissionsByUser(user.Id, user.Username, fileId, *post)
+		userPermissions, _ := GetFilePermissionsByUser(user.Id, fileId, *post)
 		response = append(response, models.UserInfoResponse{
 			Id:          user.Id,
 			Username:    user.Username,
@@ -286,10 +286,11 @@ func (p *Plugin) channelUser(writer http.ResponseWriter, request *http.Request) 
 		return
 	}
 
-	userPermissions, _ := GetFilePermissionsByUser(users[0].Id, users[0].Username, fileId, *post)
+	userPermissions, _ := GetFilePermissionsByUser(users[0].Id, fileId, *post)
 	response.Id = users[0].Id
 	response.Username = users[0].Username
 	response.Permissions = userPermissions
+	response.Email = users[0].Email
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)

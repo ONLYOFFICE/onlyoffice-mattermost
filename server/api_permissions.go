@@ -10,7 +10,7 @@ import (
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
-func GetFilePermissionsByFileId(fileId string, post model.Post) []models.UserInfoResponse {
+func GetPostPermissionsByFileId(fileId string, post model.Post, p *Plugin) []models.UserInfoResponse {
 	postProps := post.GetProps()
 	response := []models.UserInfoResponse{}
 
@@ -20,25 +20,38 @@ func GetFilePermissionsByFileId(fileId string, post model.Post) []models.UserInf
 			if err != nil {
 				continue
 			}
-			//TODO: Refactor later
+			//TODO: Refactor
 			keyParts := strings.Split(key, utils.ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR)
-			response = append(response, models.UserInfoResponse{
-				Id:          keyParts[3],
-				Username:    keyParts[4],
-				Permissions: convertedPermissions,
-			})
+			userId := keyParts[3]
+
+			if userId != utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
+				user, _ := p.API.GetUser(userId)
+				response = append(response, models.UserInfoResponse{
+					Id:          userId,
+					Username:    user.Username,
+					Email:       user.Email,
+					Permissions: convertedPermissions,
+				})
+			} else {
+				response = append(response, models.UserInfoResponse{
+					Id:          userId,
+					Username:    userId,
+					Email:       "",
+					Permissions: convertedPermissions,
+				})
+			}
 		}
 	}
 
 	return response
 }
 
-func GetFilePermissionsByUser(userId string, username string, fileId string, post model.Post) (models.Permissions, error) {
+func GetFilePermissionsByUser(userId string, fileId string, post model.Post) (models.Permissions, error) {
 	if userId == post.UserId {
 		return models.ONLYOFFICE_AUTHOR_PERMISSIONS, nil
 	}
 
-	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(utils.CreateUserPermissionsPropName(fileId, userId, username))
+	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(utils.CreateUserPermissionsPropName(fileId, userId))
 	ONLYOFFICE_WILDCARD_PERMISSIONS_PROP := post.GetProp(utils.CreateWildcardPermissionsPropName(fileId))
 
 	//If no permissions set, we want to grant default rights
@@ -97,7 +110,7 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission
 				}
 
 				if user.Username == postPermission.Username {
-					propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, user.Id, user.Username)
+					propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, user.Id)
 					SetFilePermissions(post, propKey, postPermission.Permissions)
 				}
 			}

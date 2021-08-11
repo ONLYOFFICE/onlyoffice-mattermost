@@ -24,7 +24,10 @@ export const UserRow = ({user, removeUser, changePermissions}: {user: Autocomple
                 alt={`${user.label} profile image`}
                 src={user.avatarUrl}
             />
-            <UserDetails username={user.label}/>
+            <UserDetails
+                username={user.label}
+                email={user.email}
+            />
             <UserActions>
                 <div style={{width: '10rem'}}>
                     <Select

@@ -55,14 +55,13 @@ func CompareUserAndWildcard(username string) bool {
 	return username == ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
 }
 
-func CreateUserPermissionsPropName(fileId string, userId string, username string) string {
+func CreateUserPermissionsPropName(fileId string, userId string) string {
 	return ONLYOFFICE_PERMISSIONS_PROP + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR +
-		fileId + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + userId + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + username
+		fileId + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + userId
 }
 
 func CreateWildcardPermissionsPropName(fileId string) string {
 	return ONLYOFFICE_PERMISSIONS_PROP + ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + fileId +
-		ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY +
 		ONLYOFFICE_PERMISSIONS_PROP_SEPARATOR + ONLYOFFICE_PERMISSIONS_WILDCARD_KEY
 }
 
