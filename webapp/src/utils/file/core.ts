@@ -1,5 +1,16 @@
 import {FileInfo} from 'mattermost-redux/types/files';
 
+import xls from 'public/images/xls.svg';
+import xlsx from 'public/images/xlsx.svg';
+import csv from 'public/images/csv.svg';
+import doc from 'public/images/doc.svg';
+import docx from 'public/images/docx.svg';
+import ppt from 'public/images/ppt.svg';
+import pptx from 'public/images/pptx.svg';
+import word from 'public/images/generic_word.svg';
+import cell from 'public/images/generic_cell.svg';
+import slide from 'public/images/generic_slide.svg';
+
 const ONLYOFFICE_CELL = 'cell';
 const ONLYOFFICE_WORD = 'word';
 const ONLYOFFICE_SLIDE = 'slide';
@@ -37,8 +48,29 @@ const AllowedExtensionsMap = new Map([
     ['fodt', ONLYOFFICE_WORD],
     ['ott', ONLYOFFICE_WORD],
     ['rtf', ONLYOFFICE_WORD],
-    ['pdf', ONLYOFFICE_WORD],
 ]);
+
+const ExtensionIcons = new Map([
+    ['xls', xls],
+    ['xlsx', xlsx],
+    ['csv', csv],
+    ['ppt', ppt],
+    ['pptx', pptx],
+    ['doc', doc],
+    ['docx', docx],
+    [ONLYOFFICE_WORD, word],
+    [ONLYOFFICE_CELL, cell],
+    [ONLYOFFICE_SLIDE, slide],
+]);
+
+export function getIconByExt(fileExt: string): string {
+    if (ExtensionIcons.has(fileExt)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return ExtensionIcons.get(fileExt)!;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return ExtensionIcons.get(getFileTypeByExt(fileExt))!;
+}
 
 export function getFileTypeByExt(fileExt: string): string {
     if (AllowedExtensionsMap.has(fileExt)) {

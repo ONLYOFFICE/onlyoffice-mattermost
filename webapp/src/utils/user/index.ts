@@ -1,4 +1,6 @@
-import {FileAccess, getPermissionsTypeByPermissions} from 'utils/file';
+import {UserProfile} from 'mattermost-redux/types/users';
+
+import {FileAccess, FilePermissions, getPermissionsTypeByPermissions} from 'utils/file';
 
 export type User = {
     id: string,
@@ -17,6 +19,23 @@ export type AutocompleteUser = {
 
 const getUserAvatarUrl = (id: string): string => {
     return `/api/v4/users/${id}/image?_=0`;
+};
+
+export const getUniqueAutocompleteUsers = (userProfile: UserProfile[], users: AutocompleteUser[]): AutocompleteUser[] => {
+    const permissions: AutocompleteUser[] = [];
+    userProfile.forEach((u) => {
+        if (!users.find((us) => us.value === u.id)) {
+            const user: AutocompleteUser = {
+                avatarUrl: getUserAvatarUrl(u.id),
+                email: u.email,
+                label: u.username,
+                value: u.id,
+                permissions: FilePermissions.EDIT_ONLY.toString(),
+            };
+            permissions.push(user);
+        }
+    });
+    return permissions;
 };
 
 export const mapUserToAutocompleteUser = (user: User): AutocompleteUser => {

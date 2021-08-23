@@ -1,35 +1,54 @@
 .word{
-  background-image: url("../images/icon_word.svg") !important;
+  background-image: url("../images/docx.svg") !important;
 }
 
 .ppt{
-  background-image: url("../images/icon_slide.svg") !important;
+  background-image: url("../images/ppt.svg") !important;
 }
 
 .excel{
-  background-image: url("../images/icon_cell.svg") !important;
+  background-image: url("../images/xlsx.svg") !important;
 }
 
-a[aria-label $= '.odt']{
-  .generic{
-    background-image: url("../images/icon_word.svg") !important;
+a[aria-label $= '.doc']{
+  .word{
+    background-image: url("../images/doc.svg") !important;
   }
 }
 
-a[aria-label $= '.ods']{
-  .generic{
-    background-image: url("../images/icon_cell.svg") !important;
-  }
-}
-
-a[aria-label $= '.odp']{
-  .generic{
-    background-image: url("../images/icon_slide.svg") !important;
+a[aria-label $= '.pptx']{
+  .ppt{
+    background-image: url("../images/pptx.svg") !important;
   }
 }
 
 a[aria-label $= '.xls']{
   .generic{
-    background-image: url("../images/icon_cell.svg") !important;
+    background-image: url("../images/xls.svg") !important;
   }
 }
+
+a[aria-label $= '.csv']{
+  .generic{
+    background-image: url("../images/csv.svg") !important;
+  }
+}
+
+a[aria-label $= '.odt']{
+  .generic{
+    background-image: url("../images/generic_word.svg") !important;
+  }
+}
+
+a[aria-label $= '.ods']{
+  .generic{
+    background-image: url("../images/generic_cell.svg") !important;
+  }
+}
+
+a[aria-label $= '.odp']{
+  .generic{
+    background-image: url("../images/generic_slide.svg") !important;
+  }
+}
+

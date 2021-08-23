@@ -3,18 +3,21 @@
 import React, {useState, useEffect} from 'react';
 import {Dispatch} from 'redux';
 import {FileInfo} from 'mattermost-redux/types/files';
+import {Client4} from 'mattermost-redux/client';
 
 import AsyncSelect from 'react-select/async';
 import Select, {OptionTypeBase, OptionsType} from 'react-select';
 import makeAnimated from 'react-select/animated';
 import {Modal, Button} from 'react-bootstrap';
 
+import {Channel} from 'mattermost-redux/types/channels';
+
 import {apiGET, apiPOST} from 'api';
-import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_CHANNEL_USER,
-    ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS, ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
+import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS,
+    ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
 import {FilePermissions, getFileAccess, getPermissionsMap, SubmitPermissionsPayload} from 'utils/file';
-import {AutocompleteUser, mapUserToAutocompleteUser, sortAutocompleteUsers, User} from 'utils/user';
+import {AutocompleteUser, mapUserToAutocompleteUser, sortAutocompleteUsers, User, getUniqueAutocompleteUsers} from 'utils/user';
 
 import {UserRow} from './permissions_user_row';
 import {PermissionsFooter} from './permissions_footer';
@@ -35,6 +38,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
     const [allAccess, setAllAccess] = useState(FilePermissions.READ_ONLY.toString());
     const [current, setCurrent] = useState<AutocompleteUser[]>([]);
     const [users, setUsers] = useState<AutocompleteUser[]>([]);
+    const [channel, setChannel] = useState<Channel>();
     const permissionsMap = getPermissionsMap().map((entry: FilePermissions) => {
         return {
             value: entry.toString(),
@@ -44,13 +48,14 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
 
     useEffect(() => {
         if (visible) {
-            apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id).then((resUser: User[]) => {
-                if (!resUser) {
+            (async () => {
+                const resUsers: User[] = await apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id);
+                if (!resUsers) {
                     return;
                 }
                 const permissions: AutocompleteUser[] = [];
                 // eslint-disable-next-line max-nested-callbacks
-                resUser.forEach((user: User) => {
+                resUsers.forEach((user: User) => {
                     const mappedUser = mapUserToAutocompleteUser(user);
                     if (user.id === ONLYOFFICE_WILDCARD_USER) {
                         setAllAccess(mappedUser.permissions);
@@ -60,7 +65,10 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                 });
                 sortAutocompleteUsers(permissions);
                 setUsers(permissions);
-            }).catch();
+                const post = await Client4.getPost((fileInfo as any).post_id);
+                const chnl = await Client4.getChannel(post.channel_id);
+                setChannel(chnl);
+            })();
         }
     }, [visible, fileInfo]);
 
@@ -72,22 +80,19 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         if (!input) {
             return;
         }
-        if (users.find((user: AutocompleteUser) => user.label === input)) {
-            callback([]);
-            return;
+
+        if (channel) {
+            (async () => {
+                let res = await Client4.searchUsers(input, {
+                    in_channel_id: channel.id,
+                    team_id: channel.team_id,
+                });
+                // eslint-disable-next-line max-nested-callbacks
+                res = res.filter((user) => user.id !== fileInfo.user_id);
+                const permissions = getUniqueAutocompleteUsers(res, users);
+                callback(permissions);
+            })();
         }
-        apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_CHANNEL_USER + input, {
-            ONLYOFFICE_FILEID: fileInfo.id,
-        }).then((resUser: User) => {
-            if (!resUser.id) {
-                callback([]);
-                return;
-            }
-            const user = mapUserToAutocompleteUser(resUser);
-            callback([user]);
-        }).catch(() => {
-            callback([]);
-        });
     }, 2000);
 
     const onChange = (value: OptionTypeBase | OptionsType<OptionTypeBase> | null) => {
@@ -217,7 +222,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                             >
                                 <span>Default access rights for chat members</span>
                             </span>
-                            <div style={{marginRight: '2.5rem', width: '10rem'}}>
+                            <div style={{marginRight: '2.5rem', width: '10rem', minWidth: '100px'}}>
                                 <Select
                                     isSearchable={false}
                                     value={{

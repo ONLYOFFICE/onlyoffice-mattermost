@@ -3,13 +3,9 @@ import React from 'react';
 import {FileInfo} from 'mattermost-redux/types/files';
 import {useDispatch} from 'react-redux';
 
-import {getFileTypeByExt} from 'utils/file';
+import {getIconByExt} from 'utils/file';
 
 import {openEditor} from 'redux/actions';
-
-import word from 'public/images/icon_word.svg';
-import cell from 'public/images/icon_cell.svg';
-import slide from 'public/images/icon_slide.svg';
 
 type Props = {
     fileInfo: FileInfo;
@@ -17,9 +13,7 @@ type Props = {
 
 export default function FilePreviewOverride(props: Props) {
     const dispatch = useDispatch();
-    const fileType = getFileTypeByExt(props.fileInfo.extension);
-    // eslint-disable-next-line no-nested-ternary
-    const icon = fileType === 'cell' ? cell : fileType === 'slide' ? slide : word;
+    const icon = getIconByExt(props.fileInfo.extension);
     return (
         <div className='modal-image-backround'>
             <div className='modal-image__content'>

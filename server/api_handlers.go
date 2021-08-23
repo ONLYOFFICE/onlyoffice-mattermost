@@ -249,54 +249,6 @@ func (p *Plugin) channelUsers(writer http.ResponseWriter, request *http.Request)
 	json.NewEncoder(writer).Encode(response)
 }
 
-func (p *Plugin) channelUser(writer http.ResponseWriter, request *http.Request) {
-	channelId := request.Header.Get(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER)
-
-	query := request.URL.Query()
-	username := query.Get("username")
-
-	response := models.UserInfoResponse{}
-
-	users, usersErr := p.API.GetUsersByUsernames([]string{username})
-
-	if usersErr != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		json.NewEncoder(writer).Encode(response)
-		return
-	}
-
-	_, membershipErr := p.API.GetChannelMember(channelId, users[0].Id)
-
-	if membershipErr != nil {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		json.NewEncoder(writer).Encode(response)
-		return
-	}
-
-	fileId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
-	postId := request.Header.Get(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER)
-	post, _ := p.API.GetPost(postId)
-
-	if users[0].Id == post.UserId {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		json.NewEncoder(writer).Encode(response)
-		return
-	}
-
-	userPermissions, _ := GetFilePermissionsByUser(users[0].Id, fileId, *post)
-	response.Id = users[0].Id
-	response.Username = users[0].Username
-	response.Permissions = userPermissions
-	response.Email = users[0].Email
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(200)
-	json.NewEncoder(writer).Encode(response)
-}
-
 func GenerateDocKey(fileInfo model.FileInfo, post model.Post) string {
 	var postUpdatedAt string = strconv.FormatInt(post.UpdateAt, 10)
 

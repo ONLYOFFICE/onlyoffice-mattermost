@@ -1,5 +1,6 @@
 #onlyoffice-permissions-modal{
     font-family: 'Open sans';
+    padding-left: 0px !important;
 }
 
 .onlyoffice-permissions-modal__body{
@@ -10,21 +11,9 @@
 
 .filtered-user-list{
     scrollbar-width: none;
+    min-height: 400px;
 }
 
 .react-select__value-container{
     max-width: 40rem;
-}
-
-@media all and (max-width: 640px){
-    .react-select__value-container{
-        max-width: 30rem;
-    }
-}
-
-@media all and (max-height: 293px){
-    .onlyoffice-permissions-modal__body{
-        opacity: 0;
-        visibility: hidden;
-    }
 }
