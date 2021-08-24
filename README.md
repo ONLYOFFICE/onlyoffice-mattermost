@@ -43,10 +43,10 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
   The URL (and port) of the ONLYOFFICE Docs that provides the editing functionality.
 
 - **Secret key**:
-  Is required provided your document server uses JWT security (further information can be found [here] (https://api.onlyoffice.com/editors/signature/))
+  Is required provided your document server uses JWT security (further information can be found [here](https://api.onlyoffice.com/editors/signature/))
 
 - **JWT Header**:
-  If JWT security is enabled, it is necessary to specify a custom header name since Mattermost's security policy blocks external 'Authorization' Headers. However, this header should be reflected in the ONLYOFFICE Docs signature settings (further information can be found [here] (https://api.onlyoffice.com/editors/signature/))
+  If JWT security is enabled, it is necessary to specify a custom header name since Mattermost's security policy blocks external 'Authorization' Headers. However, this header should be reflected in the ONLYOFFICE Docs signature settings (further information can be found [here](https://api.onlyoffice.com/editors/signature/))
 
 - **JWT Prefix**:
   Is used to specify the ONLYOFFICE Docs prefix
