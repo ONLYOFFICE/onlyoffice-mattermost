@@ -15,7 +15,7 @@ const manifestStr = `
   "id": "com.onlyoffice.mattermost-plugin",
   "name": "ONLYOFFICE",
   "description": "This plugin allows users to edit office documents from Mattermost using ONLYOFFICE Docs.",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "min_server_version": "5.12.0",
   "server": {
     "executables": {
