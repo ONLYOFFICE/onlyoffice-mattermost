@@ -29,7 +29,7 @@ a[aria-label $= '.xls']{
 }
 
 a[aria-label $= '.csv']{
-  .generic{
+  .excel{
     background-image: url("../images/csv.svg") !important;
   }
 }
