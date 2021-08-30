@@ -36,7 +36,7 @@ const manifestStr = `
         "key": "DESAddress",
         "display_name": "Document Editing Service address: ",
         "type": "text",
-        "help_text": "ONLYOFFICE Document Service Location specifies the address of the server with yhe document services installed. Please change the '\u003cdocumentserver\u003e' for the server address in the below line.",
+        "help_text": "ONLYOFFICE Document Service Location specifies the address of the server with the document services installed. Please change the '\u003cdocumentserver\u003e' for the server address in the below line.",
         "placeholder": "https://\u003cdocumentserver\u003e:\u003cport\u003e/",
         "default": "https://\u003cdocumentserver\u003e:\u003cport\u003e/"
       },
