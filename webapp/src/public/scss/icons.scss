@@ -1,54 +1,54 @@
 .word{
-  background-image: url("../images/docx.svg") !important;
+  background-image: url("../images/docx_icon.svg") !important;
 }
 
 .ppt{
-  background-image: url("../images/ppt.svg") !important;
+  background-image: url("../images/ppt_icon.svg") !important;
 }
 
 .excel{
-  background-image: url("../images/xlsx.svg") !important;
+  background-image: url("../images/xlsx_icon.svg") !important;
 }
 
 a[aria-label $= '.doc']{
   .word{
-    background-image: url("../images/doc.svg") !important;
+    background-image: url("../images/doc_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.pptx']{
   .ppt{
-    background-image: url("../images/pptx.svg") !important;
+    background-image: url("../images/pptx_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.xls']{
   .generic{
-    background-image: url("../images/xls.svg") !important;
+    background-image: url("../images/xls_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.csv']{
   .excel{
-    background-image: url("../images/csv.svg") !important;
+    background-image: url("../images/csv_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.odt']{
   .generic{
-    background-image: url("../images/generic_word.svg") !important;
+    background-image: url("../images/generic_word_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.ods']{
   .generic{
-    background-image: url("../images/generic_cell.svg") !important;
+    background-image: url("../images/generic_cell_icon.svg") !important;
   }
 }
 
 a[aria-label $= '.odp']{
   .generic{
-    background-image: url("../images/generic_slide.svg") !important;
+    background-image: url("../images/generic_slide_icon.svg") !important;
   }
 }
 

@@ -15,6 +15,12 @@ const ONLYOFFICE_CELL = 'cell';
 const ONLYOFFICE_WORD = 'word';
 const ONLYOFFICE_SLIDE = 'slide';
 
+const EditExtensionsMap = new Map([
+    ['docx', ONLYOFFICE_WORD],
+    ['xlsx', ONLYOFFICE_CELL],
+    ['pptx', ONLYOFFICE_SLIDE],
+]);
+
 const AllowedExtensionsMap = new Map([
     ['xls', ONLYOFFICE_CELL],
     ['xlsx', ONLYOFFICE_CELL],
@@ -80,7 +86,13 @@ export function getFileTypeByExt(fileExt: string): string {
     return '';
 }
 
-export function isExtensionSupported(fileExt: string): boolean {
+export function isExtensionSupported(fileExt: string, editOnly?: boolean): boolean {
+    if (editOnly) {
+        if (EditExtensionsMap.has(fileExt)) {
+            return true;
+        }
+        return false;
+    }
     if (AllowedExtensionsMap.has(fileExt)) {
         return true;
     }

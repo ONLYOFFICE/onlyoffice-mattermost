@@ -34,7 +34,11 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 
 	var docKey string = GenerateDocKey(*fileInfo, *post)
 
-	userPermissions, _ := GetFilePermissionsByUser(userId, fileInfo.Id, *post)
+	var userPermissions models.Permissions = models.ONLYOFFICE_DEFAULT_PERMISSIONS
+
+	if utils.IsExtensionEditable(fileInfo.Extension) {
+		userPermissions, _ = GetFilePermissionsByUser(userId, fileInfo.Id, *post)
+	}
 
 	var config models.Config = models.Config{
 		Document: models.Document{

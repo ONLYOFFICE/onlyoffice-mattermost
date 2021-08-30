@@ -39,7 +39,7 @@ export default class Plugin {
         );
 
         registry.registerFileDropdownMenuAction(
-            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension) && isFileAuthor(fileInfo),
+            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
             'Change access rights',
             (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
         );

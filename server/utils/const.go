@@ -6,6 +6,12 @@ const ONLYOFFICE_WORD_TYPE string = "word"
 const ONLYOFFICE_CELL_TYPE string = "cell"
 const ONLYOFFICE_SLIDE_TYPE string = "slide"
 
+var ONLYOFFICE_EDITABLE_EXTENSION_MAP map[string]string = map[string]string{
+	"xlsx": ONLYOFFICE_CELL_TYPE,
+	"pptx": ONLYOFFICE_SLIDE_TYPE,
+	"docx": ONLYOFFICE_WORD_TYPE,
+}
+
 var ONLYOFFICE_EXTENSION_TYPE_MAP map[string]string = map[string]string{
 	"xls":  ONLYOFFICE_CELL_TYPE,
 	"xlsx": ONLYOFFICE_CELL_TYPE,

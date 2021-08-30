@@ -12,6 +12,14 @@ func IsExtensionSupported(fileExt string) bool {
 	return false
 }
 
+func IsExtensionEditable(fileExt string) bool {
+	_, exists := ONLYOFFICE_EDITABLE_EXTENSION_MAP[fileExt]
+	if exists {
+		return true
+	}
+	return false
+}
+
 func GetFileType(fileExt string) (string, error) {
 	fileType, exists := ONLYOFFICE_EXTENSION_TYPE_MAP[fileExt]
 	if !exists {
