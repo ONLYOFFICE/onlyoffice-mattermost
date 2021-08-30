@@ -20,7 +20,7 @@ You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvabl
 
 Document Server and Mattermost can be installed either on different computers, or on the same machine. 
 
-If you use one machine, set up a custom port for Document Server as by default both Document Server and ownCloud work on port 80.
+If you use one machine, set up a custom port for Document Server.
 
 You can install free [Community version of ONLYOFFICE Docs](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) or scalable [Enterprise Edition with pro features](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
 
