@@ -5,7 +5,7 @@ The app which enables the users to edit office documents from Mattermost using O
 
 The app allows to:
 
-* Create and edit text documents, spreadsheets, and presentations.
+* Edit text documents, spreadsheets, and presentations.
 * Share files with basic permission types - viewing/editing.
 * Co-edit documents in real-time.
 
