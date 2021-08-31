@@ -16,6 +16,8 @@
  *
  */
 
+import {getTranslations} from 'utils/i18n';
+
 interface IObjectKeys {
     [key: string]: boolean | undefined;
 }
@@ -49,8 +51,8 @@ const READ: FileAccess = {
 };
 
 export enum FilePermissions {
-    EDIT_ONLY = 'Edit',
-    READ_ONLY = 'Read'
+    EDIT_ONLY = getTranslations()['types.permissions.edit'],
+    READ_ONLY = getTranslations()['types.permissions.read']
 }
 
 const FilePermissionsMap: Map<FilePermissions, FileAccess> = new Map<FilePermissions, FileAccess>([

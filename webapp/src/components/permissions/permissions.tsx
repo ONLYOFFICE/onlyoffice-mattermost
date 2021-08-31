@@ -34,6 +34,7 @@ import {apiGET, apiPOST} from 'api';
 import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS,
     ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
+import {getTranslations} from 'utils/i18n';
 import {FilePermissions, getFileAccess, getPermissionsMap, SubmitPermissionsPayload} from 'utils/file';
 import {AutocompleteUser, mapUserToAutocompleteUser, sortAutocompleteUsers, User, getUniqueAutocompleteUsers} from 'utils/user';
 
@@ -54,11 +55,12 @@ const animatedComponents = makeAnimated();
 
 //TODO: Refactoring
 const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: PermissionsProps) => {
+    const i18n = getTranslations();
     const [allAccess, setAllAccess] = useState(FilePermissions.READ_ONLY.toString());
     const [current, setCurrent] = useState<AutocompleteUser[]>([]);
     const [users, setUsers] = useState<AutocompleteUser[]>([]);
     const [channel, setChannel] = useState<Channel>();
-    const [accessHeaderText, setAccessHeaderText] = useState<string>('Loading...');
+    const [accessHeaderText, setAccessHeaderText] = useState<string>(i18n['permissions.loading']);
     const permissionsMap = getPermissionsMap().map((entry: FilePermissions) => {
         return {
             value: entry.toString(),
@@ -72,9 +74,9 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                 const response = await apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id);
                 if (response[1].get('Channel-Type') === 'D') {
                     const arr = window.location.href.split('/');
-                    setAccessHeaderText(`Access rights for ${arr[arr.length - 1]}`);
+                    setAccessHeaderText(`${i18n['permissions.access_header']} ${arr[arr.length - 1]}`);
                 } else {
-                    setAccessHeaderText('Default access rights for chat members');
+                    setAccessHeaderText(i18n['permissions.access_header_default']);
                     const post = await Client4.getPost((fileInfo as any).post_id);
                     const chnl = await Client4.getChannel(post.channel_id);
                     setChannel(chnl);
@@ -146,7 +148,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             setAllAccess(FilePermissions.READ_ONLY.toString());
             setCurrent([]);
             setUsers([]);
-            setAccessHeaderText('Loading...');
+            setAccessHeaderText(i18n['permissions.loading']);
             // eslint-disable-next-line no-undefined
             setChannel(undefined);
         }, 300);
@@ -197,7 +199,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             <Modal.Header
                 closeButton={true}
             >
-                {`Sharing Settings ${fileInfo.name.split('.')[0]}`}
+                {`${i18n['permissions.modal_header']} ${fileInfo.name.split('.')[0]}`}
                 <button
                     type='button'
                     className='close'
@@ -246,7 +248,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                         }
                                     }}
                                 >
-                                    Add
+                                    {i18n['permissions.modal_button_add']}
                                 </Button>
                             </PermissionsHeaderFilter>
                         )}
@@ -260,7 +262,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                             >
                                 <span>{accessHeaderText}</span>
                             </span>
-                            <div style={{marginRight: '2.5rem', width: '10rem', minWidth: '100px'}}>
+                            <div style={{marginRight: '2.5rem', marginLeft: '10px', width: '15rem'}}>
                                 <Select
                                     isSearchable={false}
                                     value={{
@@ -294,13 +296,13 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                             style={{marginRight: '1rem', border: 'none'}}
                             onClick={onExit}
                         >
-                            <span style={{color: '#2389D7'}}>Cancel</span>
+                            <span style={{color: '#2389D7'}}>{i18n['permissions.modal_button_cancel']}</span>
                         </Button>
                         <Button
                             className='btn btn-md btn-primary'
                             onClick={onSubmitPermissions}
                         >
-                            Save
+                            {i18n['permissions.modal_button_save']}
                         </Button>
                     </PermissionsFooter>
                 </div>

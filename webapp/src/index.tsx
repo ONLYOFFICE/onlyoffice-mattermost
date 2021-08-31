@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 import {AnyAction, Store} from 'redux';
 import {GlobalState} from 'mattermost-redux/types/store';
 import {FileInfo} from 'mattermost-redux/types/files';
@@ -35,17 +34,20 @@ import Editor from 'components/editor';
 import Permissions from 'components/permissions';
 import 'public/scss/icons.scss';
 import 'public/scss/modal_editor.scss';
+import {getTranslations} from 'utils/i18n';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async initialize(registry: any, store: Store<GlobalState>) {
+        registry.registerTranslations(getTranslations);
+        const i18n = getTranslations();
         registry.registerReducer(Reducer);
         registry.registerRootComponent(Editor);
         registry.registerRootComponent(Permissions);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
         registry.registerFileDropdownMenuAction(
             (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
-            'Open file in ONLYOFFICE',
+            i18n['plugin.open_button'],
             (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
         );
 
@@ -58,7 +60,7 @@ export default class Plugin {
 
         registry.registerFileDropdownMenuAction(
             (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
-            'Change access rights',
+            i18n['plugin.access_button'],
             (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
         );
     }

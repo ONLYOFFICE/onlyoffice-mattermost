@@ -47,7 +47,7 @@ export const UserRow = ({user, removeUser, changePermissions}: {user: Autocomple
                 email={user.email}
             />
             <UserActions>
-                <div style={{width: '10rem'}}>
+                <div style={{width: '15rem'}}>
                     <Select
                         isSearchable={false}
                         value={{

@@ -22,6 +22,7 @@ import {FileInfo} from 'mattermost-redux/types/files';
 import {useDispatch} from 'react-redux';
 
 import {getIconByExt} from 'utils/file';
+import {getTranslations} from 'utils/i18n';
 
 import {openEditor} from 'redux/actions';
 
@@ -59,7 +60,7 @@ export default function FilePreviewOverride(props: Props) {
                             type='button'
                             onClick={() => dispatch(openEditor(props.fileInfo))}
                         >
-                            {'Open in ONLYOFFICE'}
+                            {getTranslations()['preview.open_button']}
                         </button>
                     </div>
                 </div>
