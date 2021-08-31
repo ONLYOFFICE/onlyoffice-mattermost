@@ -19,6 +19,8 @@
 package main
 
 import (
+	"utils"
+
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
@@ -26,6 +28,28 @@ type ONLYOFFICE_BOT struct {
 	Id           string
 	LoggerPrefix string
 	P            *Plugin
+}
+
+func (bot *ONLYOFFICE_BOT) BOT_CREATE_DM(message string, userId string) {
+	direct, _ := bot.P.API.GetDirectChannel(bot.Id, userId)
+	timestamp := utils.GetTimestamp()
+
+	//Welcome message (TODO: registry)
+	if timestamp == direct.CreateAt {
+		bot.P.API.CreatePost(&model.Post{
+			Message:   "Welcome! Run your private office with the ONLYOFFICE :)",
+			ChannelId: direct.Id,
+			UserId:    bot.Id,
+		})
+	}
+
+	ONLYOFFICE_BOT_POST := model.Post{
+		Message:   message,
+		ChannelId: direct.Id,
+		UserId:    bot.Id,
+	}
+
+	bot.P.API.SendEphemeralPost(userId, &ONLYOFFICE_BOT_POST)
 }
 
 func (bot *ONLYOFFICE_BOT) BOT_CREATE_POST(message string, channelId string) {

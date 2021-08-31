@@ -52,11 +52,13 @@ type PermissionsProps = {
 
 const animatedComponents = makeAnimated();
 
+//TODO: Refactoring
 const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: PermissionsProps) => {
     const [allAccess, setAllAccess] = useState(FilePermissions.READ_ONLY.toString());
     const [current, setCurrent] = useState<AutocompleteUser[]>([]);
     const [users, setUsers] = useState<AutocompleteUser[]>([]);
     const [channel, setChannel] = useState<Channel>();
+    const [accessHeaderText, setAccessHeaderText] = useState<string>('Loading...');
     const permissionsMap = getPermissionsMap().map((entry: FilePermissions) => {
         return {
             value: entry.toString(),
@@ -67,7 +69,17 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
     useEffect(() => {
         if (visible) {
             (async () => {
-                const resUsers: User[] = await apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id);
+                const response = await apiGET(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS + fileInfo.id);
+                if (response[1].get('Channel-Type') === 'D') {
+                    const arr = window.location.href.split('/');
+                    setAccessHeaderText(`Access rights for ${arr[arr.length - 1]}`);
+                } else {
+                    setAccessHeaderText('Default access rights for chat members');
+                    const post = await Client4.getPost((fileInfo as any).post_id);
+                    const chnl = await Client4.getChannel(post.channel_id);
+                    setChannel(chnl);
+                }
+                const resUsers: User[] = response[0];
                 if (!resUsers) {
                     return;
                 }
@@ -83,9 +95,6 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                 });
                 sortAutocompleteUsers(permissions);
                 setUsers(permissions);
-                const post = await Client4.getPost((fileInfo as any).post_id);
-                const chnl = await Client4.getChannel(post.channel_id);
-                setChannel(chnl);
             })();
         }
     }, [visible, fileInfo]);
@@ -124,10 +133,6 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
     };
 
     const onExit = () => {
-        setAllAccess(FilePermissions.READ_ONLY.toString());
-        setCurrent([]);
-        setUsers([]);
-
         const modal = document.getElementById('onlyoffice-permissions-modal');
         const backdrop = modal?.previousElementSibling;
 
@@ -136,7 +141,15 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         // eslint-disable-next-line no-unused-expressions
         backdrop?.classList.remove('in');
 
-        setTimeout(() => close(), 300);
+        setTimeout(() => {
+            close();
+            setAllAccess(FilePermissions.READ_ONLY.toString());
+            setCurrent([]);
+            setUsers([]);
+            setAccessHeaderText('Loading...');
+            // eslint-disable-next-line no-undefined
+            setChannel(undefined);
+        }, 300);
     };
 
     const onRemoveUser = (username: string) => {
@@ -195,41 +208,48 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                     <span className='sr-only'>Close</span>
                 </button>
             </Modal.Header>
-            <div className='onlyoffice-permissions-modal__body'>
-                <div className='filtered-user-list'>
+            <div
+                className='onlyoffice-permissions-modal__body'
+                style={channel ? {} : {maxHeight: '20rem'}}
+            >
+                <div
+                    className='filtered-user-list'
+                >
                     <div
                         className='filter-row'
-                        style={{marginBottom: '1rem', marginTop: '1rem'}}
+                        style={channel ? {marginBottom: '1rem', marginTop: '1rem'} : {maxHeight: '10rem'}}
                     >
-                        <PermissionsHeaderFilter>
-                            <div style={{flexGrow: 1, marginRight: '2rem'}}>
-                                <AsyncSelect
-                                    id='onlyoffice-permissions-select'
-                                    className='react-select-container'
-                                    classNamePrefix='react-select'
-                                    closeMenuOnSelect={false}
-                                    components={animatedComponents}
-                                    isMulti={true}
-                                    loadOptions={load}
-                                    onChange={onChange}
-                                    value={current}
-                                />
-                            </div>
-                            <Button
-                                className='btn btn-md btn-primary'
-                                disabled={current.length === 0}
-                                onClick={() => {
-                                    if (current) {
-                                        const contentSection = document.getElementById('scroller-dummy');
-                                        setTimeout(() => contentSection?.scrollIntoView({behavior: 'smooth'}), 300);
-                                        setUsers((prevUsers: AutocompleteUser[]) => [...prevUsers, ...current]);
-                                        setCurrent([]);
-                                    }
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </PermissionsHeaderFilter>
+                        {channel && (
+                            <PermissionsHeaderFilter>
+                                <div style={{flexGrow: 1, marginRight: '2rem'}}>
+                                    <AsyncSelect
+                                        id='onlyoffice-permissions-select'
+                                        className='react-select-container'
+                                        classNamePrefix='react-select'
+                                        closeMenuOnSelect={false}
+                                        components={animatedComponents}
+                                        isMulti={true}
+                                        loadOptions={load}
+                                        onChange={onChange}
+                                        value={current}
+                                    />
+                                </div>
+                                <Button
+                                    className='btn btn-md btn-primary'
+                                    disabled={current.length === 0}
+                                    onClick={() => {
+                                        if (current) {
+                                            const contentSection = document.getElementById('scroller-dummy');
+                                            setTimeout(() => contentSection?.scrollIntoView({behavior: 'smooth'}), 300);
+                                            setUsers((prevUsers: AutocompleteUser[]) => [...prevUsers, ...current]);
+                                            setCurrent([]);
+                                        }
+                                    }}
+                                >
+                                    Add
+                                </Button>
+                            </PermissionsHeaderFilter>
+                        )}
                         <div
                             className='col-sm-12'
                             style={{marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
@@ -238,7 +258,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                 style={{flexGrow: 2}}
                                 className='member-count pull-left'
                             >
-                                <span>Default access rights for chat members</span>
+                                <span>{accessHeaderText}</span>
                             </span>
                             <div style={{marginRight: '2.5rem', width: '10rem', minWidth: '100px'}}>
                                 <Select
@@ -253,19 +273,21 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                             </div>
                         </div>
                     </div>
-                    <UserList>
-                        {users.map((user: AutocompleteUser) => {
-                            return (
-                                <UserRow
-                                    key={user.value}
-                                    user={user}
-                                    changePermissions={onChangeUserPermissions}
-                                    removeUser={onRemoveUser}
-                                />
-                            );
-                        })}
-                        <div id='scroller-dummy'/>
-                    </UserList>
+                    {channel && (
+                        <UserList>
+                            {users.map((user: AutocompleteUser) => {
+                                return (
+                                    <UserRow
+                                        key={user.value}
+                                        user={user}
+                                        changePermissions={onChangeUserPermissions}
+                                        removeUser={onRemoveUser}
+                                    />
+                                );
+                            })}
+                            <div id='scroller-dummy'/>
+                        </UserList>
+                    )}
                     <PermissionsFooter>
                         <Button
                             className='btn btn-md'

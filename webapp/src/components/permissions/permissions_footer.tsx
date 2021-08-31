@@ -26,7 +26,7 @@ export const PermissionsFooter = ({children}: PermissionsFooterProps) => {
     return (
         <div
             className='filter-controls'
-            style={{display: 'flex', justifyContent: 'flex-end', padding: 0, margin: '1rem'}}
+            style={{display: 'flex', justifyContent: 'flex-end', padding: 0, margin: '1rem', maxHeight: '4rem'}}
         >
             {children}
         </div>

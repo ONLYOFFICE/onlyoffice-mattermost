@@ -25,6 +25,13 @@ import (
 	"models"
 )
 
+func GetPermissionsName(permissions models.Permissions) string {
+	if permissions.Edit {
+		return "Edit"
+	}
+	return "Read only"
+}
+
 func ConvertBase64ToPermissions(base64permissions string) (models.Permissions, error) {
 	jsonPermissions, jsonErr := base64.StdEncoding.DecodeString(base64permissions)
 

@@ -27,7 +27,7 @@ export const apiGET = async (url: string, headers?: HeadersInit) => {
         json = await response.json();
     }
 
-    return json;
+    return [json, response.headers];
 };
 
 export const apiPOST = async (url: string, body: string, headers?: HeadersInit) => {

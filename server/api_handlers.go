@@ -182,12 +182,21 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
+	propKey := utils.CreateWildcardPermissionsPropName(fileInfo.Id)
+	prevWildcardPermissions, _ := utils.ConvertInterfaceToPermissions(post.GetProp(propKey))
+
 	setPermissionsErr := p.SetPostFilesPermissions(postPermissionsBody, post.Id)
 
 	if setPermissionsErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Permissions update error")
 		writer.WriteHeader(500)
 		return
+	}
+
+	//Permissions[0] = wildcard permissions
+	if prevWildcardPermissions.Edit != postPermissionsBody[0].Permissions.Edit {
+		permissionsName := utils.GetPermissionsName(postPermissionsBody[0].Permissions)
+		p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
 	}
 
 	writer.WriteHeader(200)
@@ -220,9 +229,12 @@ func (p *Plugin) getFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
+	channel, _ := p.API.GetChannel(post.ChannelId)
+
 	filePermissions := GetPostPermissionsByFileId(fileId, *post, p)
 
 	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Add("Channel-Type", channel.Type)
 	writer.WriteHeader(200)
 	json.NewEncoder(writer).Encode(filePermissions)
 }

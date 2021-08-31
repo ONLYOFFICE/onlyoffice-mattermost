@@ -120,16 +120,21 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission
 		PurgeFilePermissions(post, fileId)
 	}
 
+	channel, _ := p.API.GetChannel(post.ChannelId)
+	team, _ := p.API.GetTeam(channel.TeamId)
+
 	for _, postPermission := range postPermissions {
 		if post.FileIds.Contains(postPermission.FileId) {
 			for _, user := range users {
 				if user.Id == post.UserId {
 					continue
 				}
-
 				if user.Username == postPermission.Username {
 					propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, user.Id)
 					SetFilePermissions(post, propKey, postPermission.Permissions)
+					fileInfo, _ := p.API.GetFileInfo(postPermission.FileId)
+					permissionsName := utils.GetPermissionsName(postPermission.Permissions)
+					p.onlyoffice_bot.BOT_CREATE_DM("Your "+fileInfo.Name+" file permissions have been changed to "+permissionsName+": "+*p.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+MATTERMOST_COPY_POST_LINK_SEPARATOR+post.Id, user.Id)
 				}
 			}
 			if utils.CompareUserAndWildcard(postPermission.Username) {
