@@ -49,7 +49,10 @@ func (bot *ONLYOFFICE_BOT) BOT_CREATE_DM(message string, userId string) {
 		UserId:    bot.Id,
 	}
 
-	bot.P.API.SendEphemeralPost(userId, &ONLYOFFICE_BOT_POST)
+	_, creationErr := bot.P.API.CreatePost(&ONLYOFFICE_BOT_POST)
+	if creationErr != nil {
+		bot.P.API.LogError(ONLYOFFICE_BOT_LOGGER_PREFIX + "Post creation error")
+	}
 }
 
 func (bot *ONLYOFFICE_BOT) BOT_CREATE_POST(message string, channelId string) {

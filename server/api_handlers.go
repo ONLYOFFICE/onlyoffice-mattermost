@@ -142,6 +142,7 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	writer.Write(fileContent)
 }
 
+//TODO: Refactoring
 func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Request) {
 	var postPermissionsBody []models.PostPermission = []models.PostPermission{}
 
@@ -182,8 +183,7 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	propKey := utils.CreateWildcardPermissionsPropName(fileInfo.Id)
-	prevWildcardPermissions, _ := utils.ConvertInterfaceToPermissions(post.GetProp(propKey))
+	prevPermissions := GetPostPermissionsByFileId(fileInfo.Id, *post, p)
 
 	setPermissionsErr := p.SetPostFilesPermissions(postPermissionsBody, post.Id)
 
@@ -193,10 +193,21 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	//Permissions[0] = wildcard permissions
-	if prevWildcardPermissions.Edit != postPermissionsBody[0].Permissions.Edit {
-		permissionsName := utils.GetPermissionsName(postPermissionsBody[0].Permissions)
-		p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
+	channel, _ := p.API.GetChannel(post.ChannelId)
+	team, _ := p.API.GetTeam(channel.TeamId)
+
+	for _, prevPermission := range prevPermissions {
+		for _, permissionBody := range postPermissionsBody {
+			if prevPermission.Username == permissionBody.Username &&
+				prevPermission.Permissions.Edit != permissionBody.Permissions.Edit {
+				permissionsName := utils.GetPermissionsName(permissionBody.Permissions)
+				if prevPermission.Username == utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
+					p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
+				} else {
+					p.onlyoffice_bot.BOT_CREATE_DM("Your "+fileInfo.Name+" file permissions have been changed to "+permissionsName+": "+*p.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+MATTERMOST_COPY_POST_LINK_SEPARATOR+post.Id, prevPermission.Id)
+				}
+			}
+		}
 	}
 
 	writer.WriteHeader(200)
