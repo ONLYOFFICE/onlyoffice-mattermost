@@ -18,6 +18,7 @@
 
 package main
 
+//TODO: Refactoring. Move some part to utils
 import (
 	"encoding/json"
 	"errors"
@@ -91,6 +92,11 @@ func SetFilePermissions(post *model.Post, propKey string, filePermissions models
 	post.AddProp(propKey, permissionBytes)
 }
 
+func UserHasFilePermissions(userId string, fileId string, post *model.Post) bool {
+	ONLYOFFICE_USER_PERMISSIONS_PROP := post.GetProp(utils.CreateUserPermissionsPropName(fileId, userId))
+	return ONLYOFFICE_USER_PERMISSIONS_PROP != nil
+}
+
 func PurgeFilePermissions(post *model.Post, fileId string) {
 	postProps := post.GetProps()
 
@@ -108,13 +114,7 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid post id")
 	}
 
-	usernames, wildcardFiles := utils.ExtractUsernames(postPermissions)
-
-	users, usersErr := p.API.GetUsersByUsernames(usernames)
-
-	if usersErr != nil {
-		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid users while setting file permissions")
-	}
+	_, wildcardFiles := utils.ExtractUsernames(postPermissions)
 
 	for fileId := range wildcardFiles {
 		PurgeFilePermissions(post, fileId)
@@ -122,16 +122,12 @@ func (p *Plugin) SetPostFilesPermissions(postPermissions []models.PostPermission
 
 	for _, postPermission := range postPermissions {
 		if post.FileIds.Contains(postPermission.FileId) {
-			for _, user := range users {
-				if user.Id == post.UserId {
-					continue
-				}
-				if user.Username == postPermission.Username {
-					propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, user.Id)
-					SetFilePermissions(post, propKey, postPermission.Permissions)
-				}
+			if postPermission.Id == post.UserId {
+				continue
 			}
-			if utils.CompareUserAndWildcard(postPermission.Username) {
+			propKey := utils.CreateUserPermissionsPropName(postPermission.FileId, postPermission.Id)
+			SetFilePermissions(post, propKey, postPermission.Permissions)
+			if utils.CompareUserAndWildcard(postPermission.Id) {
 				propKey := utils.CreateWildcardPermissionsPropName(postPermission.FileId)
 				SetFilePermissions(post, propKey, postPermission.Permissions)
 			}

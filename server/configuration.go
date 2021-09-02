@@ -44,10 +44,10 @@ import (
 // copy appropriate for your types.
 type configuration struct {
 	DESAddress   string
-	DESEnableTLS bool
 	DESJwt       string
 	DESJwtHeader string
 	DESJwtPrefix string
+	Active       bool
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -55,10 +55,10 @@ type configuration struct {
 func (c *configuration) Clone() *configuration {
 	return &configuration{
 		DESAddress:   c.DESAddress,
-		DESEnableTLS: c.DESEnableTLS,
 		DESJwt:       c.DESJwt,
 		DESJwtHeader: c.DESJwtHeader,
 		DESJwtPrefix: c.DESJwtPrefix,
+		Active:       c.Active,
 	}
 }
 
@@ -101,6 +101,7 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 	}
 
 	configuration.SanitizeConfiguration()
+	configuration.Active = true
 
 	p.configuration = configuration
 }
@@ -119,13 +120,20 @@ func (c *configuration) SanitizeConfiguration() {
 	}
 }
 
+func (p *Plugin) DeactivatePlugin() {
+	p.configurationLock.Lock()
+	defer p.configurationLock.Unlock()
+
+	p.configuration.Active = false
+}
+
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
 	var configuration = new(configuration)
 
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
-		return errors.Wrap(err, "failed to load plugin configuration")
+		return errors.New("Failed to load ONLYOFFICE configuration")
 	}
 
 	p.setConfiguration(configuration)
@@ -150,16 +158,18 @@ func (p *Plugin) OnConfigurationChange() error {
 	var err = response.ProcessResponse()
 
 	if err != nil {
-		return errors.Cause(err)
+		p.DeactivatePlugin()
+		return err
 	}
 
 	bot_id, creationErr := p.Helpers.EnsureBot(&model.Bot{
-		Username:    "ONLYOFFICE",
+		Username:    "onlyoffice",
 		DisplayName: "ONLYOFFICE",
 		Description: "ONLYOFFICE Helper",
 	}, plugin.ProfileImagePath(filepath.Join("assets", "logo.png")))
 	if creationErr != nil {
-		return errors.Wrap(creationErr, "Failed to create an ONLYOFFICE bot")
+		p.DeactivatePlugin()
+		return errors.New("Failed to create an ONLYOFFICE bot")
 	}
 
 	p.onlyoffice_bot = ONLYOFFICE_BOT{

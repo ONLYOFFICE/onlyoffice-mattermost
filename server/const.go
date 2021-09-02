@@ -36,6 +36,7 @@ const ONLYOFFICE_CONVERTER string = ""
 
 const ONLYOFFICE_API_PATH = "plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi"
 
+const ONLYOFFICE_ROUTE_HEALTH = "/health"
 const ONLYOFFICE_ROUTE_EDITOR = "/editor"
 const ONLYOFFICE_ROUTE_DOWNLOAD = "/download"
 const ONLYOFFICE_ROUTE_CALLBACK = "/callback"

@@ -172,6 +172,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         const allUsers: SubmitPermissionsPayload = {
             FileId: fileInfo.id,
             Username: '*',
+            Id: '*',
             Permissions: FilePermissions.READ_ONLY.toString() === allAccess ? getFileAccess(FilePermissions.READ_ONLY) : getFileAccess(FilePermissions.EDIT_ONLY),
         };
         payload.push(allUsers);
@@ -179,6 +180,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             payload.push({
                 FileId: fileInfo.id,
                 Username: user.label,
+                Id: user.value,
                 Permissions: FilePermissions.READ_ONLY.toString() === user.permissions ? getFileAccess(FilePermissions.READ_ONLY) : getFileAccess(FilePermissions.EDIT_ONLY),
             });
         });

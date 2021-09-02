@@ -20,6 +20,7 @@ package models
 
 type PostPermission struct {
 	FileId      string
+	Id          string
 	Username    string
 	Permissions Permissions
 }

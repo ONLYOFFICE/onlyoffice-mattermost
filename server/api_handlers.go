@@ -31,6 +31,14 @@ import (
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
+func (p *Plugin) health(writer http.ResponseWriter, request *http.Request) {
+	if !p.configuration.Active {
+		writer.WriteHeader(500)
+		return
+	}
+	writer.WriteHeader(200)
+}
+
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")
@@ -185,6 +193,17 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 
 	prevPermissions := GetPostPermissionsByFileId(fileInfo.Id, *post, p)
 
+	channel, _ := p.API.GetChannel(post.ChannelId)
+	team, _ := p.API.GetTeam(channel.TeamId)
+
+	//TODO: Wrong order
+	for _, permissionBody := range postPermissionsBody {
+		if !UserHasFilePermissions(permissionBody.Id, fileInfo.Id, post) && permissionBody.Id != utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
+			permissionsName := utils.GetPermissionsName(permissionBody.Permissions)
+			p.onlyoffice_bot.BOT_CREATE_DM("Your "+fileInfo.Name+" file permissions have been changed to "+permissionsName+": "+*p.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+MATTERMOST_COPY_POST_LINK_SEPARATOR+post.Id, permissionBody.Id)
+		}
+	}
+
 	setPermissionsErr := p.SetPostFilesPermissions(postPermissionsBody, post.Id)
 
 	if setPermissionsErr != nil {
@@ -193,12 +212,10 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	channel, _ := p.API.GetChannel(post.ChannelId)
-	team, _ := p.API.GetTeam(channel.TeamId)
-
+	//TODO: Replace with maps and write proper util functions
 	for _, prevPermission := range prevPermissions {
 		for _, permissionBody := range postPermissionsBody {
-			if prevPermission.Username == permissionBody.Username &&
+			if prevPermission.Id == permissionBody.Id &&
 				prevPermission.Permissions.Edit != permissionBody.Permissions.Edit {
 				permissionsName := utils.GetPermissionsName(permissionBody.Permissions)
 				if prevPermission.Username == utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {

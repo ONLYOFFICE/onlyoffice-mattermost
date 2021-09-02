@@ -35,10 +35,16 @@ import Permissions from 'components/permissions';
 import 'public/scss/icons.scss';
 import 'public/scss/modal_editor.scss';
 import {getTranslations} from 'utils/i18n';
+import {apiHealth} from 'api';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async initialize(registry: any, store: Store<GlobalState>) {
+        //TODO: Plugin lifetime healthchecks
+        const isAlive = await apiHealth();
+        if (!isAlive) {
+            return;
+        }
         registry.registerTranslations(getTranslations);
         const i18n = getTranslations();
         registry.registerReducer(Reducer);

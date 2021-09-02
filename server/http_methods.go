@@ -43,7 +43,12 @@ func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, he
 	body := &requestBody
 	buf := new(bytes.Buffer)
 	json.NewEncoder(buf).Encode(body)
-	req, _ := http.NewRequest("POST", url, buf)
+	req, err := http.NewRequest("POST", url, buf)
+
+	if err != nil {
+		responseBody.Failed()
+		return
+	}
 
 	if len(headers) > 0 {
 		for _, header := range headers {
@@ -51,7 +56,12 @@ func (httpClient HTTPClient) PostRequest(url string, requestBody interface{}, he
 		}
 	}
 
-	res, _ := httpClient.client.Do(req)
+	res, err := httpClient.client.Do(req)
+
+	if err != nil {
+		responseBody.Failed()
+		return
+	}
 
 	if res.StatusCode < 300 {
 		responseBody.Succeeded()

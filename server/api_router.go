@@ -27,16 +27,10 @@ import (
 )
 
 func (p *Plugin) GetHTTPClient() *HTTPClient {
-	config := p.getConfiguration()
-
-	var client HTTPClient = HTTPClient{client: http.Client{}}
-
-	if !config.DESEnableTLS {
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		client = HTTPClient{client: http.Client{Transport: tr}}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
+	client := HTTPClient{client: http.Client{Transport: tr}}
 
 	return &client
 }
@@ -61,6 +55,7 @@ func (p *Plugin) forkRouter() *mux.Router {
 	router.Use(p.DebugRoutes)
 
 	subrouter := router.PathPrefix("/onlyofficeapi").Subrouter()
+	subrouter.HandleFunc(ONLYOFFICE_ROUTE_HEALTH, p.health).Methods(http.MethodGet)
 	subrouter.HandleFunc(ONLYOFFICE_ROUTE_DOWNLOAD, p.callbackMiddleware(p.download)).Methods(http.MethodGet)
 	subrouter.HandleFunc(ONLYOFFICE_ROUTE_EDITOR, p.userAccessMiddleware(p.editor)).Methods(http.MethodPost)
 	subrouter.HandleFunc(ONLYOFFICE_ROUTE_CALLBACK, p.callbackMiddleware(p.callback)).Methods(http.MethodPost)

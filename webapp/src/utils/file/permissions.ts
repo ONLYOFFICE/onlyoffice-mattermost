@@ -25,6 +25,7 @@ interface IObjectKeys {
 export interface SubmitPermissionsPayload {
     FileId: string,
     Username: string,
+    Id: string,
     Permissions: FileAccess,
 }
 

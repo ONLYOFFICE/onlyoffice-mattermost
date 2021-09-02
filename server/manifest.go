@@ -41,14 +41,6 @@ const manifestStr = `
         "default": "https://\u003cdocumentserver\u003e:\u003cport\u003e/"
       },
       {
-        "key": "DESCertificate",
-        "display_name": "Enable certificate verification (disabling is insecure): ",
-        "type": "bool",
-        "help_text": "Enable or disable certificate verification.",
-        "placeholder": "",
-        "default": true
-      },
-      {
         "key": "DESJwt",
         "display_name": "Secret key (leave blank to disable): ",
         "type": "text",

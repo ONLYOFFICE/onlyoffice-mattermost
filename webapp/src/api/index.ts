@@ -16,6 +16,16 @@
  *
  */
 
+import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_HEALTH} from 'utils';
+
+export const apiHealth = async () => {
+    const response = await fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_HEALTH, {
+        method: 'GET',
+    });
+
+    return response.status === 200;
+};
+
 export const apiGET = async (url: string, headers?: HeadersInit) => {
     let json;
     const response = await fetch(url, {
