@@ -52,6 +52,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	bundlePath, _ := p.API.GetBundlePath()
 	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
+	p.API.KVSetWithExpiry(fileInfo.Id, []byte{}, 60*10)
 	encryptor := security.EncryptorAES{}
 	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
 	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
@@ -212,18 +213,25 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	//TODO: Replace with maps and write proper util functions
-	for _, prevPermission := range prevPermissions {
-		for _, permissionBody := range postPermissionsBody {
-			if prevPermission.Id == permissionBody.Id &&
-				prevPermission.Permissions.Edit != permissionBody.Permissions.Edit {
-				permissionsName := utils.GetPermissionsName(permissionBody.Permissions)
-				if prevPermission.Username == utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
-					p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
-				} else {
-					p.onlyoffice_bot.BOT_CREATE_DM("Your "+fileInfo.Name+" file permissions have been changed to "+permissionsName+": "+*p.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+MATTERMOST_COPY_POST_LINK_SEPARATOR+post.Id, prevPermission.Id)
+	//TODO: Replace with maps and write proper util functions (it is just a workaround)
+	if len(prevPermissions) > 0 {
+		for _, prevPermission := range prevPermissions {
+			for _, permissionBody := range postPermissionsBody {
+				if prevPermission.Id == permissionBody.Id &&
+					prevPermission.Permissions.Edit != permissionBody.Permissions.Edit {
+					permissionsName := utils.GetPermissionsName(permissionBody.Permissions)
+					if prevPermission.Username == utils.ONLYOFFICE_PERMISSIONS_WILDCARD_KEY {
+						p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
+					} else {
+						p.onlyoffice_bot.BOT_CREATE_DM("Your "+fileInfo.Name+" file permissions have been changed to "+permissionsName+": "+*p.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+MATTERMOST_COPY_POST_LINK_SEPARATOR+post.Id, prevPermission.Id)
+					}
 				}
 			}
+		}
+	} else {
+		if postPermissionsBody[0].Permissions.Edit {
+			permissionsName := utils.GetPermissionsName(postPermissionsBody[0].Permissions)
+			p.onlyoffice_bot.BOT_CREATE_REPLY(fileInfo.Name+" permissions have been changed to "+permissionsName, post.ChannelId, post.Id)
 		}
 	}
 
