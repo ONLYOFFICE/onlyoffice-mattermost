@@ -12,7 +12,7 @@ The app allows to:
 Supported formats:
 
 * For viewing and editing: DOCX, XLSX, PPTX.
-* For viewing only: XLS, XLSX, XLSM, XLT, XLTM, ODS, FODS, OTS, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP, DOC, DOCX, DOCM, DOT, DOTX, DOTM, ODT, FODT, OTT, RTF.
+* For viewing only: XLS, XLSX, CSV, XLSM, XLT, XLTM, ODS, FODS, OTS, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP, DOC, DOCX, DOCM, DOT, DOTX, DOTM, ODT, FODT, OTT, RTF.
 
 ## Installing ONLYOFFICE Docs
 
@@ -22,9 +22,9 @@ Document Server and Mattermost can be installed either on different computers or
 
 You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
 
-To install free Community version, use [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or follow [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx) for Debian, Ubuntu, or derivatives.
+To install free Community version, useÂ [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or followÂ [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx)Â for Debian, Ubuntu, or derivatives.
 
-To install Enterprise Edition, follow the instructions [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
+To install Enterprise Edition, follow the instructionsÂ [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
