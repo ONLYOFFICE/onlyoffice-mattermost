@@ -56,6 +56,7 @@ const animatedComponents = makeAnimated();
 //TODO: Refactoring
 const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: PermissionsProps) => {
     const i18n = getTranslations();
+    const [isLoading, setIsLoading] = useState(true);
     const [allAccess, setAllAccess] = useState(FilePermissions.READ_ONLY.toString());
     const [current, setCurrent] = useState<AutocompleteUser[]>([]);
     const [users, setUsers] = useState<AutocompleteUser[]>([]);
@@ -100,6 +101,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                 });
                 sortAutocompleteUsers(permissions);
                 setUsers(permissions);
+                setIsLoading(false);
             })();
         }
     }, [visible, fileInfo]);
@@ -154,6 +156,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             setAccessHeaderText(i18n['permissions.loading']);
             // eslint-disable-next-line no-undefined
             setChannel(undefined);
+            setIsLoading(true);
         }, 300);
     };
 
@@ -210,6 +213,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                     className='close'
                     aria-label='Close'
                     onClick={onExit}
+                    disabled={isLoading}
                 >
                     <span aria-hidden='true'>×</span>
                     <span className='sr-only'>Close</span>
@@ -239,11 +243,12 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                         loadOptions={load}
                                         onChange={onChange}
                                         value={current}
+                                        isDisabled={isLoading}
                                     />
                                 </div>
                                 <Button
                                     className='btn btn-md btn-primary'
-                                    disabled={current.length === 0}
+                                    disabled={current.length === 0 || isLoading}
                                     onClick={() => {
                                         if (current) {
                                             const contentSection = document.getElementById('scroller-dummy');
@@ -276,6 +281,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                     }}
                                     options={permissionsMap}
                                     onChange={onAllChange}
+                                    isDisabled={isLoading}
                                 />
                             </div>
                         </div>
@@ -300,12 +306,14 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                             className='btn btn-md'
                             style={{marginRight: '1rem', border: 'none'}}
                             onClick={onExit}
+                            disabled={isLoading}
                         >
                             <span style={{color: '#2389D7'}}>{i18n['permissions.modal_button_cancel']}</span>
                         </Button>
                         <Button
                             className='btn btn-md btn-primary'
                             onClick={onSubmitPermissions}
+                            disabled={isLoading}
                         >
                             {i18n['permissions.modal_button_save']}
                         </Button>
