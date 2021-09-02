@@ -33,8 +33,9 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 1. Clone the [master branch](https://github.com/ONLYOFFICE/onlyoffice-mattermost).
 2. Go to the project root.
 3. Run: 
-    ```
-    {make dist}
+
+    ```sh
+    make dist
     ```
 4. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
 5. Choose the compiled plugin from your dist folder and press Upload.
@@ -55,7 +56,9 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 ## ONLYOFFICE Docs editions
 
-ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers. **ONLYOFFICE Docs** packaged as Document Server:
+ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers. 
+
+**ONLYOFFICE Docs** packaged as Document Server:
 
 * Community Edition (`onlyoffice-documentserver` package)
 * Enterprise Edition (`onlyoffice-documentserver-ee` package)
