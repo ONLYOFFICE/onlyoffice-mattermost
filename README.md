@@ -1,5 +1,5 @@
 # Mattermost ONLYOFFICE integration plugin
-The app which enables the users to edit office documents from Mattermost using ONLYOFFICE Document Server, allows multiple users to collaborate in real-time and to save back those changes to Mattermost
+This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
 
 ## Features
 
@@ -12,57 +12,62 @@ The app allows to:
 Supported formats:
 
 * For viewing and editing: DOCX, XLSX, PPTX.
-* For viewing only: XLS, XLSX, XLSM, XLT, XLTM, ODS, FODS, OTS, ÑÛÌá PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP, DOC, DOCX, DOCM, DOT, DOTX, DOTM, ODT, FODT, OTT, RTF.
+* For viewing only: XLS, XLSX, CSV, XLSM, XLT, XLTM, ODS, FODS, OTS, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP, DOC, DOCX, DOCM, DOT, DOTX, DOTM, ODT, FODT, OTT, RTF.
 
-## ONLYOFFICE Docs
+## Installing ONLYOFFICE Docs
 
-You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Mattermost and any end clients.
+You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Mattermost and any end clients. ONLYOFFICE Document Server must also be able to POST to Mattermost directly.
 
-Document Server and Mattermost can be installed either on different computers, or on the same machine. 
+Document Server and Mattermost can be installed either on different computers or on the same machine. In case you choose the latter option, you need to set up a custom port for Document Server. 
 
-If you use one machine, set up a custom port for Document Server.
+You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
 
-You can install free [Community version of ONLYOFFICE Docs](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) or scalable [Enterprise Edition with pro features](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
+To install free Community version, useÂ [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or followÂ [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx)Â for Debian, Ubuntu, or derivatives.
+
+To install Enterprise Edition, follow the instructionsÂ [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
-## Installation
+## Installing Mattermost ONLYOFFICE integration plugin
 
-1. Clone the [master branch](https://github.com/ONLYOFFICE/onlyoffice-mattermost)
-2. Go to the project root
-3. Run 
+1. Clone the [master branch](https://github.com/ONLYOFFICE/onlyoffice-mattermost).
+2. Go to the project root.
+3. Run: 
+
     ```sh
     make dist
     ```
-4. Go to <your_mattermost_host>/admin_console/plugins/plugin_management
-5. Choose the compiled plugin from your dist folder and press upload
+4. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
+5. Choose the compiled plugin from your dist folder and press Upload.
 
 ### Plugin settings
 
 - **Document Editing Service address**:
-  The URL (and port) of the ONLYOFFICE Docs that provides the editing functionality.
+  The URL and port of the installed ONLYOFFICE Document Server.
 
 - **Secret key**:
-  Is required provided your document server uses JWT security (further information can be found [here](https://api.onlyoffice.com/editors/signature/))
+  Enables JWT to protect your documents from unauthorized access (further information can be found [here](https://api.onlyoffice.com/editors/signature/)).
 
 - **JWT Header**:
-  If JWT security is enabled, it is necessary to specify a custom header name since Mattermost's security policy blocks external 'Authorization' Headers. However, this header should be reflected in the ONLYOFFICE Docs signature settings (further information can be found [here](https://api.onlyoffice.com/editors/signature/))
+  If JWT protection is enabled, it is necessary to specify a custom header name since the Mattermost security policy blocks external 'Authorization' Headers. This header should be specified in the ONLYOFFICE Docs signature settings as well (further information can be found [here](https://api.onlyoffice.com/editors/signature/)).
 
 - **JWT Prefix**:
-  Is used to specify the ONLYOFFICE Docs prefix
+  Used to specify the ONLYOFFICE Docs prefix.
 
 ## ONLYOFFICE Docs editions
 
-ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers.
+ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers. 
+
+**ONLYOFFICE Docs** packaged as Document Server:
 
 * Community Edition (`onlyoffice-documentserver` package)
 * Enterprise Edition (`onlyoffice-documentserver-ee` package)
 
-The table below will help you to make the right choice.
+The table below will help you make the right choice.
 
 | Pricing and licensing | Community Edition | Enterprise Edition |
 | ------------- | ------------- | ------------- |
-| | [Get it now](https://www.onlyoffice.com/download.aspx)  | [Start Free Trial](https://www.onlyoffice.com/enterprise-edition-free.aspx)  |
+| | [Get it now](https://www.onlyoffice.com/download-docs.aspx#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx#docs-enterprise)  |
 | Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices.aspx)  |
 | Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
 | Number of users | up to 20 recommended | As in chosen pricing plan |
@@ -79,7 +84,7 @@ The table below will help you to make the right choice.
 | Dark theme                             | + | + |
 | 150% scaling                           | + | + |
 | White Label                            | - | - |
-| Integrated test example (node.js)*     | + | + |
+| Integrated test example (node.js)     | + | + |
 | Mobile web editors | - | + |
 | Access to pro features via desktop     | - | + |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
@@ -101,7 +106,7 @@ The table below will help you to make the right choice.
 | Table of contents               | + | + |
 | Navigation panel                | + | + |
 | Mail Merge                      | + | + |
-| Comparing Documents             | - | +* |
+| Comparing Documents             | - | + |
 | **Spreadsheet Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
@@ -109,7 +114,7 @@ The table below will help you to make the right choice.
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
 | Data validation                 | + | + |
-| Conditional formatting  for viewing | +** | +** |
+| Conditional formatting | + | + |
 | Sheet Views                     | - | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
@@ -117,8 +122,4 @@ The table below will help you to make the right choice.
 | Transitions                     | + | + |
 | Presenter mode                  | + | + |
 | Notes                           | + | + |
-| | [Get it now](https://www.onlyoffice.com/download.aspx)  | [Start Free Trial](https://www.onlyoffice.com/enterprise-edition-free.aspx)  |
-
-\*  It's possible to add documents for comparison from your local drive and from URL.
-
-\** Support for all conditions and gradient. Adding/Editing capabilities are coming soon
+| | [Get it now](https://www.onlyoffice.com/download-docs.aspx#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx#docs-enterprise)  |
