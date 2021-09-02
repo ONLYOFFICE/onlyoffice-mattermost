@@ -77,8 +77,11 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                     setAccessHeaderText(`${i18n['permissions.access_header']} ${arr[arr.length - 1]}`);
                 } else {
                     setAccessHeaderText(i18n['permissions.access_header_default']);
-                    const post = await Client4.getPost((fileInfo as any).post_id);
-                    const chnl = await Client4.getChannel(post.channel_id);
+
+                    //TODO: Think of a better way to get current channel (fileInfo.post_id is not consistent)
+                    const arr = window.location.href.split('/');
+                    const team = await Client4.getTeamByName(arr[arr.length - 3]);
+                    const chnl = await Client4.getChannelByName(team.id, arr[arr.length - 1]);
                     setChannel(chnl);
                 }
                 const resUsers: User[] = response[0];
