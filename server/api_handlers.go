@@ -52,7 +52,6 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	bundlePath, _ := p.API.GetBundlePath()
 	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	p.API.KVSet(fileInfo.Id, []byte{})
 	encryptor := security.EncryptorAES{}
 	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
 	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
@@ -138,7 +137,6 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	body.FileId = fileId
 
 	handler(&body, p)
-	p.API.KVDelete(fileId)
 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)

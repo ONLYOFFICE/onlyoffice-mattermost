@@ -282,7 +282,7 @@ func (m *DecryptorFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 	fileId := query.Get("fileId")
 
 	decipheredFileid, decipherErr := security.EncryptorAES{}.Decrypt(fileId, m.plugin.internalKey)
-	_, err := m.plugin.API.KVGet(decipheredFileid)
+	_, err := m.plugin.API.GetFileInfo(decipheredFileid)
 
 	if err != nil || decipherErr != nil {
 		m.hasError = true

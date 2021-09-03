@@ -56,7 +56,11 @@ func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, reques
 		decryptorMiddlewareHeader.DoFilter(writer, request)
 
 		if decryptorMiddlewareBody.HasError() && decryptorMiddlewareHeader.HasError() {
+			decryptorMiddlewareBody.hasError = false
+			decryptorMiddlewareHeader.hasError = false
+			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(403)
+			writer.Write([]byte("{\"error\": 1}"))
 			return
 		}
 
