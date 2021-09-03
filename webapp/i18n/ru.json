@@ -6,9 +6,9 @@
     "preview.open_button": "Открыть в ONLYOFFICE",
     "permissions.loading": "Загрузка...",
     "permissions.access_header": "Права доступа для",
-    "permissions.access_header_default": "Права доступа для участников чата по-умолчанию",
+    "permissions.access_header_default": "Права доступа для участников чата по умолчанию",
     "permissions.modal_header": "Настройки предоставления прав к",
     "permissions.modal_button_add": "Добавить",
-    "permissions.modal_button_cancel": "Отмена",
+    "permissions.modal_button_cancel": "Отменить",
     "permissions.modal_button_save": "Сохранить"
 }
