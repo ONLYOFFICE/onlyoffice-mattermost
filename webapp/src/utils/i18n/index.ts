@@ -4,9 +4,9 @@ import ru from 'i18n/ru.json';
 export function getTranslations(locale?: string) {
     //TODO: Replace with FormattedMessage (at the moment there is a bug with IntlProvider)
     if (locale) {
-        window.localStorage.setItem('temp_locale', locale);
+        window.localStorage.setItem('onlyoffice_locale', locale);
     }
-    const currentLocale = locale || window.localStorage.getItem('temp_locale');
+    const currentLocale = locale || window.localStorage.getItem('onlyoffice_locale');
     switch (currentLocale) {
     case 'en':
         return en;

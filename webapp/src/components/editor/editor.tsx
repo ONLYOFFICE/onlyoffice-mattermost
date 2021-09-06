@@ -57,6 +57,7 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
         }
         (document.getElementById('editorForm') as HTMLFormElement).action = ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_EDITOR;
         (document.getElementById('file-id') as HTMLInputElement).value = fileInfo.id;
+        (document.getElementById('lang') as HTMLInputElement).value = localStorage.getItem('onlyoffice_locale') || 'en';
         (document.getElementById('editorForm') as HTMLFormElement).submit();
         window.addEventListener('ONLYOFFICE_CLOSED', handleClose);
         document.addEventListener('keydown', onEscape, false);
@@ -85,6 +86,12 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
                         <input
                             id='file-id'
                             name='fileid'
+                            value=''
+                            type='hidden'
+                        />
+                        <input
+                            id='lang'
+                            name='lang'
                             value=''
                             type='hidden'
                         />

@@ -54,6 +54,7 @@ type EditorConfig struct {
 	User          User          `json:"user"`
 	CallbackUrl   string        `json:"callbackUrl"`
 	Customization Customization `json:"customization,omitempty"`
+	Lang          string        `json:"lang,omitempty"`
 }
 
 type User struct {

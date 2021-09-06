@@ -42,6 +42,7 @@ func (p *Plugin) health(writer http.ResponseWriter, request *http.Request) {
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")
+	var lang string = request.PostForm.Get("lang")
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
@@ -86,6 +87,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 					RequestClose: true,
 				},
 			},
+			Lang: lang,
 		},
 	}
 
