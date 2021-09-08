@@ -1,0 +1,14 @@
+{
+    "types.permissions.edit": "Bearbeiten",
+    "types.permissions.read": "Schreibgeschützt",
+    "plugin.open_button": "In ONLYOFFICE öffnen",
+    "plugin.access_button": "Zugriffsrechte ändern",
+    "preview.open_button": "In ONLYOFFICE öffnen",
+    "permissions.loading": "Ladevorgang...",
+    "permissions.access_header": "Zugriffsrechte für",
+    "permissions.access_header_default": "Standardmäßige Zugriffsrechte für Mitglieder des Chats",
+    "permissions.modal_header": "Freigabeeinstellungen",
+    "permissions.modal_button_add": "Hinzufügen",
+    "permissions.modal_button_cancel": "Abbrechen",
+    "permissions.modal_button_save": "Speichern"
+}

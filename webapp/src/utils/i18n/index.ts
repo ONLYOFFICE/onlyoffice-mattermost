@@ -8,8 +8,16 @@ export function getTranslations(locale?: string) {
     }
     const currentLocale = locale || window.localStorage.getItem('onlyoffice_locale');
     switch (currentLocale) {
+    case 'de':
+        return de;
     case 'en':
         return en;
+    case 'es':
+        return es;
+    case 'fr':
+        return fr;
+    case 'it':
+        return it;
     case 'ru':
         return ru;
     default:

@@ -1,0 +1,14 @@
+{
+    "types.permissions.edit": "Modifier",
+    "types.permissions.read": "Afficher",
+    "plugin.open_button": "Ouvrir le fichier dans ONLYOFFICE",
+    "plugin.access_button": "Modifier les droits d'accès",
+    "preview.open_button": "Ouvrir dans ONLYOFFICE",
+    "permissions.loading": "Chargement...",
+    "permissions.access_header": "Droits d'accès pour",
+    "permissions.access_header_default": "Droits d'accès par défaut pour les membres du chat",
+    "permissions.modal_header": "Paramètres de partage",
+    "permissions.modal_button_add": "Ajouter",
+    "permissions.modal_button_cancel": "Supprimer",
+    "permissions.modal_button_save": "Enregistrer"
+}
