@@ -10,5 +10,8 @@
     "permissions.modal_header": "Настройки предоставления прав к",
     "permissions.modal_button_add": "Добавить",
     "permissions.modal_button_cancel": "Отменить",
-    "permissions.modal_button_save": "Сохранить"
+    "permissions.modal_button_save": "Сохранить",
+    "permissions.modal_search_placeholder": "Выбрать...",
+    "permissions.modal_search_loading_placeholder": "Загрузка...",
+    "permissions.modal_search_no_options_placeholder": "Нет опций"
 }

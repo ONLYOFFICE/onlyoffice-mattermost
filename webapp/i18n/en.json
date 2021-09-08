@@ -10,5 +10,8 @@
     "permissions.modal_header": "Sharing Settings",
     "permissions.modal_button_add": "Add",
     "permissions.modal_button_cancel": "Cancel",
-    "permissions.modal_button_save": "Save"
+    "permissions.modal_button_save": "Save",
+    "permissions.modal_search_placeholder": "Select...",
+    "permissions.modal_search_loading_placeholder": "Loading...",
+    "permissions.modal_search_no_options_placeholder": "No options"
 }

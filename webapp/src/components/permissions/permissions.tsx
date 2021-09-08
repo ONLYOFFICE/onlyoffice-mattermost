@@ -235,6 +235,9 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
                                 <div style={{flexGrow: 1, marginRight: '2rem'}}>
                                     <AsyncSelect
                                         id='onlyoffice-permissions-select'
+                                        placeholder={i18n['permissions.modal_search_placeholder'] || 'Select...'}
+                                        loadingMessage={() => i18n['permissions.modal_search_loading_placeholder'] || 'Loading...'}
+                                        noOptionsMessage={() => i18n['permissions.modal_search_no_options_placeholder'] || 'No options'}
                                         className='react-select-container'
                                         classNamePrefix='react-select'
                                         closeMenuOnSelect={false}
