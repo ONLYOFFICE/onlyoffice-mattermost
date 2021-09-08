@@ -32,6 +32,7 @@ type Filter interface {
 	DoFilter(writer http.ResponseWriter, request *http.Request)
 	SetNext(Filter) Filter
 	HasError() bool
+	Reset()
 }
 
 //
@@ -68,6 +69,14 @@ func (m *AuthenticationFilter) HasError() bool {
 		return m.hasError
 	}
 	return m.hasError || m.next.HasError()
+}
+
+func (m *AuthenticationFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
 }
 
 //
@@ -123,6 +132,14 @@ func (m *FileValidationFilter) HasError() bool {
 	return m.hasError || m.next.HasError()
 }
 
+func (m *FileValidationFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
+}
+
 //
 type PostAuthorizationFilter struct {
 	plugin   *Plugin
@@ -164,6 +181,14 @@ func (m *PostAuthorizationFilter) HasError() bool {
 		return m.hasError
 	}
 	return m.hasError || m.next.HasError()
+}
+
+func (m *PostAuthorizationFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
 }
 
 //
@@ -225,6 +250,14 @@ func (m *BodyJwtFilter) HasError() bool {
 	return m.hasError
 }
 
+func (m *BodyJwtFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
+}
+
 //
 type HeaderJwtFilter struct {
 	plugin   *Plugin
@@ -270,6 +303,14 @@ func (m *HeaderJwtFilter) HasError() bool {
 	return m.hasError
 }
 
+func (m *HeaderJwtFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
+}
+
 //
 type DecryptorFilter struct {
 	plugin   *Plugin
@@ -304,4 +345,12 @@ func (m *DecryptorFilter) HasError() bool {
 		return m.hasError || m.next.HasError()
 	}
 	return m.hasError
+}
+
+func (m *DecryptorFilter) Reset() {
+	m.hasError = false
+
+	if m.next != nil {
+		m.next.Reset()
+	}
 }

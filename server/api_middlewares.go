@@ -31,6 +31,7 @@ func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, requ
 		authentication.DoFilter(writer, request)
 
 		if authentication.HasError() {
+			authentication.Reset()
 			writer.WriteHeader(403)
 			return
 		}
@@ -56,8 +57,8 @@ func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, reques
 		decryptorMiddlewareHeader.DoFilter(writer, request)
 
 		if decryptorMiddlewareBody.HasError() && decryptorMiddlewareHeader.HasError() {
-			decryptorMiddlewareBody.hasError = false
-			decryptorMiddlewareHeader.hasError = false
+			decryptorMiddlewareBody.Reset()
+			decryptorMiddlewareHeader.Reset()
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(403)
 			writer.Write([]byte("{\"error\": 1}"))
@@ -76,6 +77,7 @@ func (p *Plugin) permissionsMiddleware(next func(writer http.ResponseWriter, req
 		authenticationMiddleware.DoFilter(writer, request)
 
 		if authenticationMiddleware.HasError() {
+			authenticationMiddleware.Reset()
 			writer.WriteHeader(403)
 			return
 		}
