@@ -47,7 +47,6 @@ type configuration struct {
 	DESJwt       string
 	DESJwtHeader string
 	DESJwtPrefix string
-	Active       bool
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -58,7 +57,6 @@ func (c *configuration) Clone() *configuration {
 		DESJwt:       c.DESJwt,
 		DESJwtHeader: c.DESJwtHeader,
 		DESJwtPrefix: c.DESJwtPrefix,
-		Active:       c.Active,
 	}
 }
 
@@ -101,7 +99,6 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 	}
 
 	configuration.SanitizeConfiguration()
-	configuration.Active = true
 
 	p.configuration = configuration
 }
