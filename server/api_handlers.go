@@ -31,14 +31,6 @@ import (
 	"github.com/mattermost/mattermost-server/v5/model"
 )
 
-func (p *Plugin) health(writer http.ResponseWriter, request *http.Request) {
-	if !p.configuration.Active {
-		writer.WriteHeader(500)
-		return
-	}
-	writer.WriteHeader(200)
-}
-
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")

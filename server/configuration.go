@@ -120,19 +120,13 @@ func (c *configuration) SanitizeConfiguration() {
 	}
 }
 
-func (p *Plugin) DeactivatePlugin() {
-	p.configurationLock.Lock()
-	defer p.configurationLock.Unlock()
-
-	p.configuration.Active = false
-}
-
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
 	var configuration = new(configuration)
 
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
+		p.API.DisablePlugin(manifest.Id)
 		return errors.New("Failed to load ONLYOFFICE configuration")
 	}
 
@@ -158,7 +152,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	var err = response.ProcessResponse()
 
 	if err != nil {
-		p.DeactivatePlugin()
+		p.API.DisablePlugin(manifest.Id)
 		return err
 	}
 
@@ -168,7 +162,7 @@ func (p *Plugin) OnConfigurationChange() error {
 		Description: "ONLYOFFICE Helper",
 	}, plugin.ProfileImagePath(filepath.Join("assets", "logo.png")))
 	if creationErr != nil {
-		p.DeactivatePlugin()
+		p.API.DisablePlugin(manifest.Id)
 		return errors.New("Failed to create an ONLYOFFICE bot")
 	}
 
