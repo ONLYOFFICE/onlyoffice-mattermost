@@ -16,7 +16,7 @@ const manifestStr = `
   "name": "ONLYOFFICE",
   "description": "This plugin allows users to edit office documents from Mattermost using ONLYOFFICE Docs.",
   "version": "1.0.0",
-  "min_server_version": "5.12.0",
+  "min_server_version": "5.37.2",
   "server": {
     "executables": {
       "linux-amd64": "server/dist/plugin-linux-amd64",

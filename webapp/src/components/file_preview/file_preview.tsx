@@ -24,7 +24,7 @@ import {useDispatch} from 'react-redux';
 import {getIconByExt} from 'utils/file';
 import {getTranslations} from 'utils/i18n';
 
-import {openEditor} from 'redux/actions';
+import {openEditor, openPermissions} from 'redux/actions';
 
 type Props = {
     fileInfo: FileInfo;
@@ -39,13 +39,14 @@ export default function FilePreviewOverride(props: Props) {
                 <div className='file-details__container'>
                     <a
                         className='file-details__preview'
-                        style={{cursor: 'default'}}
+                        style={{cursor: 'pointer'}}
                         onClick={(e) => e.preventDefault()}
                     >
                         <span className='file-details__preview-helper'/>
                         <img
                             alt='file preview'
                             src={icon}
+                            onClick={() => dispatch(openPermissions(props.fileInfo))}
                         />
                     </a>
                     <div

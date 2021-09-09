@@ -45,23 +45,25 @@ export default class Plugin {
         registry.registerRootComponent(Editor);
         registry.registerRootComponent(Permissions);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
-        registry.registerFileDropdownMenuAction(
-            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
-            i18n['plugin.open_button'],
-            (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
-        );
+
+        if (registry.registerFileDropdownMenuAction) {
+            registry.registerFileDropdownMenuAction(
+                (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
+                i18n['plugin.open_button'],
+                (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
+            );
+            registry.registerFileDropdownMenuAction(
+                (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
+                i18n['plugin.access_button'],
+                (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
+            );
+        }
 
         registry.registerFilePreviewComponent(
             (fileInfo: FileInfo) => {
                 return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
             },
             FilePreviewOverride,
-        );
-
-        registry.registerFileDropdownMenuAction(
-            (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
-            i18n['plugin.access_button'],
-            (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
         );
     }
 }

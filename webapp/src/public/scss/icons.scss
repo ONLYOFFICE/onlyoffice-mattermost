@@ -172,6 +172,18 @@ a[aria-label $= '.xlt']{
   }
 }
 
+a[aria-label $= '.xltx']{
+  .generic{
+    background-image: url("../images/generic_cell_icon.svg") !important;
+  }
+}
+
+a[aria-label $= '.xltm']{
+  .generic{
+    background-image: url("../images/generic_cell_icon.svg") !important;
+  }
+}
+
 a[aria-label $= '.xlmt']{
   .generic{
     background-image: url("../images/generic_cell_icon.svg") !important;
