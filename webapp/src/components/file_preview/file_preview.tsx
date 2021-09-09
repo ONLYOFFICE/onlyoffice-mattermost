@@ -21,7 +21,7 @@ import React from 'react';
 import {FileInfo} from 'mattermost-redux/types/files';
 import {useDispatch} from 'react-redux';
 
-import {getIconByExt} from 'utils/file';
+import {getIconByExt, isExtensionSupported, isFileAuthor} from 'utils/file';
 import {getTranslations} from 'utils/i18n';
 
 import {openEditor, openPermissions} from 'redux/actions';
@@ -33,6 +33,7 @@ type Props = {
 export default function FilePreviewOverride(props: Props) {
     const dispatch = useDispatch();
     const icon = getIconByExt(props.fileInfo.extension);
+    const permissionsWindow = isExtensionSupported(props.fileInfo.extension, true) && isFileAuthor(props.fileInfo);
     return (
         <div className='modal-image-backround'>
             <div className='modal-image__content'>
@@ -46,7 +47,7 @@ export default function FilePreviewOverride(props: Props) {
                         <img
                             alt='file preview'
                             src={icon}
-                            onClick={() => dispatch(openPermissions(props.fileInfo))}
+                            onClick={() => permissionsWindow && dispatch(openPermissions(props.fileInfo))}
                         />
                     </a>
                     <div
