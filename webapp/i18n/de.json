@@ -10,5 +10,8 @@
     "permissions.modal_header": "Freigabeeinstellungen",
     "permissions.modal_button_add": "Hinzufügen",
     "permissions.modal_button_cancel": "Abbrechen",
-    "permissions.modal_button_save": "Speichern"
+    "permissions.modal_button_save": "Speichern",
+    "permissions.modal_search_placeholder": "Auswählen...",
+    "permissions.modal_search_loading_placeholder": "Ladevorgang...",
+    "permissions.modal_search_no_options_placeholder": "Keine Optionen"
 }

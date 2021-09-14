@@ -10,5 +10,8 @@
     "permissions.modal_header": "Paramètres de partage",
     "permissions.modal_button_add": "Ajouter",
     "permissions.modal_button_cancel": "Supprimer",
-    "permissions.modal_button_save": "Enregistrer"
+    "permissions.modal_button_save": "Enregistrer",
+    "permissions.modal_search_placeholder": "Sélectionner...",
+    "permissions.modal_search_loading_placeholder": "Chargement...",
+    "permissions.modal_search_no_options_placeholder": "Aucune option"
 }
