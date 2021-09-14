@@ -20,11 +20,13 @@ package main
 
 import (
 	"fmt"
-	"models"
 	"path/filepath"
 	"reflect"
-	"security"
 	"strings"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin"

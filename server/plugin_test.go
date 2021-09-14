@@ -24,15 +24,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"models"
 	"net/http"
 	"net/http/httptest"
-	"security"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 	"github.com/mattermost/mattermost-server/v5/plugin/plugintest"

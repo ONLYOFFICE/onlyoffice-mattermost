@@ -76,10 +76,6 @@ React-Bootstrap - React-Bootstrap is compatible with various versions of Bootstr
 License:        MIT
 License File:   react-bootstrap.license
 
-React-loadable - A higher order component for loading components with dynamic imports. (https://github.com/jamiebuilds/react-loadable)
-License:        MIT
-License File:   react-loadable.license
-
 React Redux   - Official React bindings for Redux. (https://github.com/reduxjs/react-redux)
 License:        MIT
 License File:   react-redux.license

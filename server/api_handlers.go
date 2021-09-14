@@ -20,13 +20,16 @@ package main
 
 import (
 	"encoding/json"
-	"models"
 	"net/http"
 	"path/filepath"
-	"security"
 	"strconv"
 	"text/template"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )

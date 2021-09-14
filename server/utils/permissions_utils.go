@@ -22,7 +22,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"models"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 )
 
 func GetPermissionsName(permissions models.Permissions) string {

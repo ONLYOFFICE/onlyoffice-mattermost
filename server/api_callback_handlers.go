@@ -20,10 +20,13 @@ package main
 
 import (
 	"errors"
-	"models"
-	"security"
 	"strings"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/mitchellh/mapstructure"

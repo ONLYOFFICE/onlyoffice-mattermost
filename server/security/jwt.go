@@ -20,7 +20,8 @@ package security
 
 import (
 	"errors"
-	"models"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/golang-jwt/jwt"
 )

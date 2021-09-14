@@ -21,7 +21,8 @@ package main
 import (
 	"net/http"
 	"sync"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/v5/plugin"

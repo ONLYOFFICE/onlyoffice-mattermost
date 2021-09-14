@@ -22,9 +22,11 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"models"
 	"strings"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
 	"github.com/mattermost/mattermost-server/v5/model"
 )

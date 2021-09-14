@@ -18,12 +18,8 @@
 
 import {FileInfo} from 'mattermost-redux/types/files';
 
-import xls from 'public/images/xls.svg';
 import xlsx from 'public/images/xlsx.svg';
-import csv from 'public/images/csv.svg';
-import doc from 'public/images/doc.svg';
 import docx from 'public/images/docx.svg';
-import ppt from 'public/images/ppt.svg';
 import pptx from 'public/images/pptx.svg';
 import word from 'public/images/generic_word.svg';
 import cell from 'public/images/generic_cell.svg';
@@ -75,12 +71,8 @@ const AllowedExtensionsMap = new Map([
 ]);
 
 const ExtensionIcons = new Map([
-    ['xls', xls],
     ['xlsx', xlsx],
-    ['csv', csv],
-    ['ppt', ppt],
     ['pptx', pptx],
-    ['doc', doc],
     ['docx', docx],
     [ONLYOFFICE_WORD, word],
     [ONLYOFFICE_CELL, cell],

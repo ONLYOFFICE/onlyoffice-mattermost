@@ -23,9 +23,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"security"
 	"strings"
-	"utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
 )
 
 type Filter interface {
