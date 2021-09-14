@@ -12,10 +12,14 @@ var manifest *model.Manifest
 
 const manifestStr = `
 {
-  "id": "com.onlyoffice.mattermost-plugin",
+  "id": "com.onlyoffice.mattermost",
   "name": "ONLYOFFICE",
   "description": "This plugin allows users to edit office documents from Mattermost using ONLYOFFICE Docs.",
+  "homepage_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost",
+  "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
   "version": "1.0.0",
+  "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
+  "icon_path": "assets/logo.svg",
   "min_server_version": "5.37.2",
   "server": {
     "executables": {
@@ -29,8 +33,8 @@ const manifestStr = `
     "bundle_path": "webapp/dist/main.js"
   },
   "settings_schema": {
-    "header": "",
-    "footer": "",
+    "header": "ONLYOFFICE Docs is an open-source office suite which comprises powerful collaborative editors for text documents, spreadsheets, and presentations highly compatible with OOXML formats.",
+    "footer": "Check https://www.onlyoffice.com/office-suite.aspx for more information.",
     "settings": [
       {
         "key": "DESAddress",

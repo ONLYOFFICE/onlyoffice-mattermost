@@ -34,7 +34,7 @@ const ONLYOFFICE_COMMAND_SERVICE string = "coauthoring/CommandService.ashx"
 const ONLYOFFICE_API_JS string = "web-apps/apps/api/documents/api.js"
 const ONLYOFFICE_CONVERTER string = ""
 
-const ONLYOFFICE_API_PATH = "plugins/com.onlyoffice.mattermost-plugin/onlyofficeapi"
+const ONLYOFFICE_API_PATH = "plugins/com.onlyoffice.mattermost/onlyofficeapi"
 
 const ONLYOFFICE_ROUTE_EDITOR = "/editor"
 const ONLYOFFICE_ROUTE_DOWNLOAD = "/download"
