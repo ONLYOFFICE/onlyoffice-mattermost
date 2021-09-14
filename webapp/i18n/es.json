@@ -10,5 +10,8 @@
     "permissions.modal_header": "Ajustes de uso compartido",
     "permissions.modal_button_add": "Añadir",
     "permissions.modal_button_cancel": "Cancelar",
-    "permissions.modal_button_save": "Guardar"
+    "permissions.modal_button_save": "Guardar",
+    "permissions.modal_search_placeholder": "Seleccionar...",
+    "permissions.modal_search_loading_placeholder": "Cargando...",
+    "permissions.modal_search_no_options_placeholder": "No hay opciones"
 }
