@@ -40,7 +40,9 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 4. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
 5. Choose the compiled plugin from your dist folder and press Upload.
 
-### Plugin settings
+## Plugin settings
+
+![Settings](assets/screen_settings.png)
 
 - **Document Editing Service address**:
   The URL and port of the installed ONLYOFFICE Document Server.
@@ -53,6 +55,29 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 - **JWT Prefix**:
   Used to specify the ONLYOFFICE Docs prefix.
+
+## Using Mattermost ONLYOFFICE integration plugin
+
+Users are able to open files sent in personal and group Mattermost chats for viewing and co-editing.
+
+When files are sent in the chat message, the following actions are available in the file context menu by clicking the ⋮ symbol: 
+
+- **Open file in ONLYOFFICE** and **Change access rights** — for the author of the message. 
+- **Open file in ONLYOFFICE** — for the recipient of the message.
+
+![Settings](assets/screen_actions.png)
+
+When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFFICE editor opens in the same window.
+
+![Settings](assets/screen_editor.png)
+
+The author of the message with attached documents is able to change access rights to the file via the context menu using the **Change access rights** option. This action is available both in personal and group chats.
+
+![Settings](assets/screen_share.png)
+
+ONLYOFFICE bot sends notifications about changes in the document specifying the name of the user who made those changes.
+
+![Settings](assets/screen_bot.png)
 
 ## ONLYOFFICE Docs editions
 
