@@ -38,7 +38,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")
 	var lang string = request.PostForm.Get("lang")
-	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Got an editor request with id: ", fileId)
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "Got an editor request")
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
@@ -123,7 +123,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Got a valid callback payload with status: ", body.Status)
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "Got a valid callback payload")
 
 	if p.configuration.DESJwt != "" {
 		jwtBodyProcessingErr := ConvertJwtToBody(&body, []byte(p.configuration.DESJwt), request.Header.Get(p.configuration.DESJwtHeader))
@@ -167,7 +167,7 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Downloading the file with id: ", fileId)
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "Downloading a file")
 
 	writer.Write(fileContent)
 }
