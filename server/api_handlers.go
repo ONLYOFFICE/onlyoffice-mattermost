@@ -38,6 +38,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
 	var fileId string = request.PostForm.Get("fileid")
 	var lang string = request.PostForm.Get("lang")
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Got an editor request with id: ", fileId)
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
@@ -112,6 +113,8 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Got a valid callback payload with status: ", body.Status)
+
 	if p.configuration.DESJwt != "" {
 		jwtBodyProcessingErr := ConvertJwtToBody(&body, []byte(p.configuration.DESJwt), request.Header.Get(p.configuration.DESJwtHeader))
 
@@ -133,8 +136,17 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
 	body.FileId = fileId
 
-	handler(&body, p)
+	handlingErr := handler(&body, p)
 
+	if handlingErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX+"A callback handling error has occured: ", handlingErr.Error())
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		writer.Write([]byte("{\"error\": 1}"))
+		return
+	}
+
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "The callback request had no errors")
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(200)
 	writer.Write([]byte("{\"error\": 0}"))
@@ -142,7 +154,14 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
-	fileContent, _ := p.API.GetFile(fileId)
+	fileContent, fileErr := p.API.GetFile(fileId)
+
+	if fileErr != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id when trying to download")
+		return
+	}
+
+	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX+"Downloading the file with id: ", fileId)
 
 	writer.Write(fileContent)
 }
