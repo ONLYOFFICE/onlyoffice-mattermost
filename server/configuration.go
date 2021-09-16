@@ -100,23 +100,33 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 		panic("setConfiguration called with the existing configuration")
 	}
 
-	configuration.SanitizeConfiguration()
+	err := configuration.SanitizeConfiguration()
+
+	if err != nil {
+		p.API.LogError(err.Error())
+		p.API.DisablePlugin(manifest.Id)
+		return
+	}
 
 	p.configuration = configuration
 }
 
 // Sanitize config to get just the right format
-func (c *configuration) SanitizeConfiguration() {
+func (c *configuration) SanitizeConfiguration() error {
 	DESAddress := c.DESAddress
 	if DESAddress[len(DESAddress)-1:] != "/" {
 		c.DESAddress = fmt.Sprintf("%s%s", DESAddress, "/")
 	}
 	if c.DESJwtHeader != "" {
+		if strings.TrimSpace(c.DESJwtHeader) == "Authorization" {
+			return errors.New("[ONLYOFFICE]: Do not use 'Authorization' header")
+		}
 		c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	}
 	if c.DESJwtPrefix != "" {
 		c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
 	}
+	return nil
 }
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
@@ -126,7 +136,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	// Load the public configuration fields from the Mattermost server configuration.
 	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
 		p.API.DisablePlugin(manifest.Id)
-		return errors.New("Failed to load ONLYOFFICE configuration")
+		return errors.New("[ONLYOFFICE]: Failed to load ONLYOFFICE configuration")
 	}
 
 	p.setConfiguration(configuration)

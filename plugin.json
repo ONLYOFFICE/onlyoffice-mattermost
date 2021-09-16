@@ -43,7 +43,7 @@
                 "display_name": "JWT Header: ",
                 "type": "text",
                 "placeholder": "Enter your secret key",
-                "default": "Authorization"
+                "default": "Auth"
             },
             {
                 "key": "DESJwtPrefix",
