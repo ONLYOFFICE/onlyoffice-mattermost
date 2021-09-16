@@ -109,7 +109,9 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 	if decodingErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Callback body decoding error")
-		writer.WriteHeader(500)
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		writer.Write([]byte("{\"error\": 1}"))
 		return
 	}
 
@@ -120,7 +122,9 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 		if jwtBodyProcessingErr != nil {
 			p.API.LogError(jwtBodyProcessingErr.Error())
-			writer.WriteHeader(500)
+			writer.Header().Set("Content-Type", "application/json")
+			writer.WriteHeader(200)
+			writer.Write([]byte("{\"error\": 1}"))
 			return
 		}
 	}
@@ -129,7 +133,9 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 	if !exists {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Could not find a proper callback handler")
-		writer.WriteHeader(500)
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(200)
+		writer.Write([]byte("{\"error\": 1}"))
 		return
 	}
 
