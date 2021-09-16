@@ -17,9 +17,9 @@ const manifestStr = `
   "description": "This plugin allows users to edit office documents from Mattermost using ONLYOFFICE Docs.",
   "homepage_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost",
   "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
-  "version": "1.0.0",
   "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
   "icon_path": "assets/logo.svg",
+  "version": "1.0.0",
   "min_server_version": "5.37.2",
   "server": {
     "executables": {

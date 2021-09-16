@@ -103,15 +103,23 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	htmlTemplate.ExecuteTemplate(writer, "editor.html", data)
 }
 
+func sendDocumentServerResponse(writer http.ResponseWriter, isError bool) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(200)
+	if isError {
+		writer.Write([]byte("{\"error\": 1}"))
+	} else {
+		writer.Write([]byte("{\"error\": 0}"))
+	}
+}
+
 func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	body := models.CallbackBody{}
 	decodingErr := json.NewDecoder(request.Body).Decode(&body)
 
 	if decodingErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Callback body decoding error")
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		writer.Write([]byte("{\"error\": 1}"))
+		sendDocumentServerResponse(writer, true)
 		return
 	}
 
@@ -122,9 +130,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 		if jwtBodyProcessingErr != nil {
 			p.API.LogError(jwtBodyProcessingErr.Error())
-			writer.Header().Set("Content-Type", "application/json")
-			writer.WriteHeader(200)
-			writer.Write([]byte("{\"error\": 1}"))
+			sendDocumentServerResponse(writer, true)
 			return
 		}
 	}
@@ -133,9 +139,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 	if !exists {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Could not find a proper callback handler")
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		writer.Write([]byte("{\"error\": 1}"))
+		sendDocumentServerResponse(writer, true)
 		return
 	}
 
@@ -146,16 +150,12 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 
 	if handlingErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX+"A callback handling error has occured: ", handlingErr.Error())
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(200)
-		writer.Write([]byte("{\"error\": 1}"))
+		sendDocumentServerResponse(writer, true)
 		return
 	}
 
 	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "The callback request had no errors")
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(200)
-	writer.Write([]byte("{\"error\": 0}"))
+	sendDocumentServerResponse(writer, false)
 }
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
