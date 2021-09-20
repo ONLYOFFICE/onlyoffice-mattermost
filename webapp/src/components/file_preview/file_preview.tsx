@@ -26,6 +26,10 @@ import {getTranslations} from 'utils/i18n';
 
 import {openEditor, openPermissions} from 'redux/actions';
 
+import 'public/scss/preview.scss';
+import editor from 'public/images/editor.svg';
+import permissions from 'public/images/permissions.svg';
+
 type Props = {
     fileInfo: FileInfo;
 };
@@ -40,14 +44,12 @@ export default function FilePreviewOverride(props: Props) {
                 <div className='file-details__container'>
                     <a
                         className='file-details__preview'
-                        style={{cursor: 'pointer'}}
                         onClick={(e) => e.preventDefault()}
                     >
                         <span className='file-details__preview-helper'/>
                         <img
                             alt='file preview'
                             src={icon}
-                            onClick={() => permissionsWindow && dispatch(openPermissions(props.fileInfo))}
                         />
                     </a>
                     <div
@@ -56,14 +58,25 @@ export default function FilePreviewOverride(props: Props) {
                     >
                         <div className='file-details__name'>{props.fileInfo.name}</div>
                         <div className='file-details__info'>{`File type ${props.fileInfo.extension.toUpperCase()}`}</div>
-                        <button
-                            className='btn btn-primary'
+                        {
+                            permissionsWindow &&
+                            (
+                                <img
+                                    className='onlyoffice_preview__btn'
+                                    style={{position: 'absolute', right: '6.5rem', bottom: '2rem'}}
+                                    alt={getTranslations()['plugin.access_button']}
+                                    onClick={() => dispatch(openPermissions(props.fileInfo))}
+                                    src={permissions}
+                                />
+                            )
+                        }
+                        <img
+                            className='onlyoffice_preview__btn'
                             style={{position: 'absolute', right: '2rem', bottom: '2rem'}}
-                            type='button'
+                            alt={getTranslations()['preview.open_button']}
                             onClick={() => dispatch(openEditor(props.fileInfo))}
-                        >
-                            {getTranslations()['preview.open_button']}
-                        </button>
+                            src={editor}
+                        />
                     </div>
                 </div>
             </div>
