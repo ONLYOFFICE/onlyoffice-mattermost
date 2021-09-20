@@ -21,12 +21,10 @@ package security
 import (
 	"errors"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
-
 	"github.com/golang-jwt/jwt"
 )
 
-func JwtSign(payload models.JwtPayload, key []byte) (string, error) {
+func JwtSign(payload jwt.Claims, key []byte) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	ss, err := token.SignedString(key)
 
