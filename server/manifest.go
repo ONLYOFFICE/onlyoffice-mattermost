@@ -58,7 +58,7 @@ const manifestStr = `
         "type": "text",
         "help_text": "",
         "placeholder": "Enter your secret key",
-        "default": "Auth"
+        "default": "AuthorizationJWT"
       },
       {
         "key": "DESJwtPrefix",
