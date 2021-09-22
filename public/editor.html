@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <!--
+    *
+    * (c) Copyright Ascensio System SIA 2021
+    *
+    * Licensed under the Apache License, Version 2.0 (the "License");
+    * you may not use this file except in compliance with the License.
+    * You may obtain a copy of the License at
+    *
+    *     http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+    *
+    -->
+    <title>ONLYOFFICE</title>
+    <style>
+        body {
+            background: #fff;
+            color: #333;
+            font-family: Arial, Tahoma, sans-serif;
+            font-size: 12px;
+            font-weight: normal;
+            height: 100%;
+            margin: 0;
+            overflow-y: hidden;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        .form {
+            height: 100%;
+        }
+
+        div {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form">
+        <div id="iframeEditor">
+        </div>
+    </div>
+    <script type="text/javascript" src="{{.apijs}}"></script>
+    <script type="text/javascript" language="javascript">
+        const ONLYOFFICE_CLOSED_EVENT = new Event('ONLYOFFICE_CLOSED');
+        const ONLYOFFICE_EDITOR_READY = new Event('ONLYOFFICE_READY');
+        var docEditor;
+
+        var innerAlert = function (message) {
+            if (console && console.log)
+                console.log(message);
+        };
+
+        var onAppReady = function () {  // the application is loaded into the browser
+            innerAlert("Document editor ready");
+        };
+
+        var onRequestClose = function () {
+            if (window.opener) {
+                window.close();
+                return;
+            }
+            window.parent.dispatchEvent(ONLYOFFICE_CLOSED_EVENT);
+            docEditor.destroyEditor();
+        };
+
+        // replace the link to the document which contains a bookmark
+        var replaceActionLink = function (href, linkParam) {
+            var link;
+            var actionIndex = href.indexOf("&action=");
+            if (actionIndex != -1) {
+                var endIndex = href.indexOf("&", actionIndex + "&action=".length);
+                if (endIndex != -1) {
+                    link = href.substring(0, actionIndex) + href.substring(endIndex) + "&action=" + encodeURIComponent(linkParam);
+                } else {
+                    link = href.substring(0, actionIndex) + "&action=" + encodeURIComponent(linkParam);
+                }
+            } else {
+                link = href + "&action=" + encodeURIComponent(linkParam);
+            }
+            return link;
+        }
+
+        var events = {
+            "onAppReady": onAppReady,
+            "onRequestClose": onRequestClose,
+        };
+
+        var config = {{ .config }};
+        config["events"] = events;
+
+        var connectEditor = function () {
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            window.parent.dispatchEvent(ONLYOFFICE_EDITOR_READY);
+            fixSize();
+        };
+
+        var fixSize = function () {
+            var wrapEl = document.getElementsByClassName("form");
+            if (wrapEl.length) {
+                wrapEl[0].style.height = screen.availHeight + "px";
+                window.scrollTo(0, -1);
+                wrapEl[0].style.height = window.innerHeight + "px";
+            }
+        };
+
+        if (window.addEventListener) {
+            window.addEventListener("load", connectEditor);
+            window.addEventListener("resize", fixSize);
+        } else if (window.attachEvent) {
+            window.attachEvent("onload", connectEditor);
+            window.attachEvent("onresize", fixSize);
+        }
+    </script>
+</body>
+
+</html>

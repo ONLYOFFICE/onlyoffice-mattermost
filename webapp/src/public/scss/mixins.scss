@@ -1,0 +1,16 @@
+@mixin parent_size {
+  height: 100%;
+  width: 100%;
+}
+
+@mixin absolute_center{
+  position: absolute;
+  top: 50%;
+}
+
+@mixin flex_center($direction){
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+}

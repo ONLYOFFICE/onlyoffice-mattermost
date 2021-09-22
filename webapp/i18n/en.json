@@ -1,0 +1,17 @@
+{
+    "types.permissions.edit": "Edit",
+    "types.permissions.read": "Read",
+    "plugin.open_button": "Open file in ONLYOFFICE",
+    "plugin.access_button": "Change access rights",
+    "preview.open_button": "Open in ONLYOFFICE",
+    "permissions.loading": "Loading...",
+    "permissions.access_header": "Access rights for",
+    "permissions.access_header_default": "Default access rights for chat members",
+    "permissions.modal_header": "Sharing Settings",
+    "permissions.modal_button_add": "Add",
+    "permissions.modal_button_cancel": "Cancel",
+    "permissions.modal_button_save": "Save",
+    "permissions.modal_search_placeholder": "Select...",
+    "permissions.modal_search_loading_placeholder": "Loading...",
+    "permissions.modal_search_no_options_placeholder": "No options"
+}

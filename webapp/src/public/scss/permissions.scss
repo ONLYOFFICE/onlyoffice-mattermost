@@ -1,0 +1,19 @@
+#onlyoffice-permissions-modal{
+    font-family: 'Open sans';
+    padding-left: 0px !important;
+}
+
+.onlyoffice-permissions-modal__body{
+    opacity: 1;
+    visibility: visible;
+    transition: visibility 0.1s linear, opacity 0.1s linear;
+}
+
+.filtered-user-list{
+    scrollbar-width: none;
+    min-height: 400px;
+}
+
+.react-select__value-container{
+    max-width: 40rem;
+}
