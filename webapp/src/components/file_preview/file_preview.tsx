@@ -38,6 +38,9 @@ export default function FilePreviewOverride(props: Props) {
     const dispatch = useDispatch();
     const icon = getIconByExt(props.fileInfo.extension);
     const permissionsWindow = isExtensionSupported(props.fileInfo.extension, true) && isFileAuthor(props.fileInfo);
+
+    //A temporary solution to close mm-6.0 modal
+    const modalCloseBtn = document.querySelector('div.file-preview-modal-main-actions__actions > button') as HTMLButtonElement;
     return (
         <div className='modal-image-backround'>
             <div className='modal-image__content'>
@@ -74,7 +77,12 @@ export default function FilePreviewOverride(props: Props) {
                             className='onlyoffice_preview__btn'
                             style={{position: 'absolute', right: '2rem', bottom: '2rem'}}
                             alt={getTranslations()['preview.open_button']}
-                            onClick={() => dispatch(openEditor(props.fileInfo))}
+                            onClick={() => {
+                                if (modalCloseBtn) {
+                                    modalCloseBtn.click();
+                                }
+                                dispatch(openEditor(props.fileInfo));
+                            }}
                             src={editor}
                         />
                     </div>

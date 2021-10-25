@@ -4,14 +4,14 @@
 
 .onlyoffice-modal__backdrop{
     @include parent_size();
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     z-index: 2000;
     overflow: hidden;
     background-color: $backdrop_color;
     animation-name: fadeIn;
-    animation-duration: 0.3s
+    animation-duration: 0.3s;
 }
 
 .onlyoffice-modal__backdrop_hide{
