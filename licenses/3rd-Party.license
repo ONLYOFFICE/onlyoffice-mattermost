@@ -64,9 +64,9 @@ Mattermost-Webapp - Mattermost is an open source, self-hosted Slack-alternative 
 License:        Apache License 2.0
 License File:   mattermost-webapp.license
 
-Node-sass     - Node-sass is a library that provides binding for Node.js to LibSass, the C version of the popular stylesheet preprocessor, Sass. (https://github.com/sass/node-sass)
+sass          - A Dart implementation of Sass. (https://github.com/sass/dart-sass)
 License:        MIT
-License File:   node-sass.license
+License File:   sass.license
 
 React         - A JavaScript library for building user interfaces. (https://github.com/facebook/react)
 License:        MIT

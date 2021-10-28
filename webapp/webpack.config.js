@@ -93,6 +93,7 @@ module.exports = {
         redux: 'Redux',
         'react-redux': 'ReactRedux',
         'prop-types': 'PropTypes',
+        'react-dom': 'ReactDOM',
         'react-bootstrap': 'ReactBootstrap',
         'react-router-dom': 'ReactRouterDom',
     },
