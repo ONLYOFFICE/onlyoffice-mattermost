@@ -39,45 +39,45 @@ export default function FilePreviewOverride(props: Props) {
     const icon = getIconByExt(props.fileInfo.extension);
     const permissionsWindow = isExtensionSupported(props.fileInfo.extension, true) && isFileAuthor(props.fileInfo);
     return (
-        <div className='modal-image-backround'>
-            <div className='modal-image__content'>
-                <div className='file-details__container'>
-                    <a
-                        className='file-details__preview'
-                        onClick={(e) => e.preventDefault()}
-                    >
-                        <span className='file-details__preview-helper'/>
-                        <img
-                            alt='file preview'
-                            src={icon}
-                        />
-                    </a>
-                    <div
-                        className='file-details'
-                        style={{position: 'relative'}}
-                    >
-                        <div className='file-details__name'>{props.fileInfo.name}</div>
-                        <div className='file-details__info'>{`File type ${props.fileInfo.extension.toUpperCase()}`}</div>
-                        {
-                            permissionsWindow &&
-                            (
-                                <img
-                                    className='onlyoffice_preview__btn'
-                                    style={{position: 'absolute', right: '6.5rem', bottom: '2rem'}}
-                                    alt={getTranslations()['plugin.access_button']}
-                                    onClick={() => dispatch(openPermissions(props.fileInfo))}
-                                    src={permissions}
-                                />
-                            )
-                        }
-                        <img
-                            className='onlyoffice_preview__btn'
-                            style={{position: 'absolute', right: '2rem', bottom: '2rem'}}
-                            alt={getTranslations()['preview.open_button']}
-                            onClick={() => dispatch(openEditor(props.fileInfo))}
-                            src={editor}
-                        />
-                    </div>
+        <div className='file-details__container'>
+            <a
+                className='file-details__preview'
+                onClick={(e) => e.preventDefault()}
+            >
+                <span className='file-details__preview-helper'/>
+                <img
+                    alt='file preview'
+                    src={icon}
+                />
+            </a>
+            <div
+                className='file-details'
+                style={{position: 'relative', display: 'flex', justifyContent: 'start'}}
+            >
+                <div style={{alignSelf: 'start'}}>
+                    <div className='file-details__name'>{props.fileInfo.name}</div>
+                    <div className='file-details__info'>{`File type ${props.fileInfo.extension.toUpperCase()}`}</div>
+                </div>
+                <div style={{alignSelf: 'end', flexGrow: 2, display: 'flex', justifyContent: 'end'}}>
+                    {
+                        permissionsWindow &&
+                                (
+                                    <img
+                                        className='onlyoffice_preview__btn'
+                                        style={{position: 'relative', marginLeft: '1rem'}}
+                                        alt={getTranslations()['plugin.access_button']}
+                                        onClick={() => dispatch(openPermissions(props.fileInfo))}
+                                        src={permissions}
+                                    />
+                                )
+                    }
+                    <img
+                        className='onlyoffice_preview__btn'
+                        style={{position: 'relative', marginLeft: '1rem'}}
+                        alt={getTranslations()['preview.open_button']}
+                        onClick={() => dispatch(openEditor(props.fileInfo))}
+                        src={editor}
+                    />
                 </div>
             </div>
         </div>
