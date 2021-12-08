@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
@@ -192,33 +193,30 @@ type BodyJwtFilter struct {
 
 func (m *BodyJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
 	if m.plugin.configuration.DESJwt != "" {
-		type TokenBody struct {
-			Token string `json:"token,omitempty"`
-		}
+		var body models.CallbackBody
 
 		if request.Body == nil {
 			m.hasError = true
 			return
 		}
 
-		var tokenBody TokenBody
 		var bodyBytes []byte
 
 		bodyBytes, _ = ioutil.ReadAll(request.Body)
 		request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-		decodingErr := json.Unmarshal(bodyBytes, &tokenBody)
+		decodingErr := json.Unmarshal(bodyBytes, &body)
 		if decodingErr != nil {
 			m.hasError = true
 			return
 		}
 
-		if tokenBody.Token == "" {
+		if body.Token == "" {
 			m.hasError = true
 			return
 		}
 
-		claims, jwtDecodingErr := security.JwtDecode(tokenBody.Token, []byte(m.plugin.configuration.DESJwt))
+		claims, jwtDecodingErr := security.JwtDecode(body.Token, []byte(m.plugin.configuration.DESJwt))
 		if jwtDecodingErr != nil {
 			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter decoding error")
 			m.hasError = true
@@ -227,6 +225,13 @@ func (m *BodyJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Reque
 
 		if _, ok := claims["iss"].(string); ok {
 			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter wrong issuer")
+			m.hasError = true
+		}
+
+		validErr := body.Validate()
+
+		if validErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid JWT payload")
 			m.hasError = true
 		}
 	}
