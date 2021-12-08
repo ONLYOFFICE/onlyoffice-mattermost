@@ -49,10 +49,6 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	bundlePath, _ := p.API.GetBundlePath()
 	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	encryptor := security.EncryptorAES{}
-	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
-	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
-
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
 	var docKey string = GenerateDocKey(*fileInfo, *post)
@@ -74,7 +70,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
 			User: models.User{
-				Id:   userIdEnc,
+				Id:   userId,
 				Name: username,
 			},
 			CallbackUrl: serverURL + ONLYOFFICE_ROUTE_CALLBACK + "?fileId=" + fileId,
@@ -143,8 +139,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
-	body.FileId = fileId
+	body.FileId = request.URL.Query().Get("fileId")
 
 	handlingErr := handler(&body, p)
 
@@ -159,8 +154,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
-	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
-	fileContent, fileErr := p.API.GetFile(fileId)
+	fileContent, fileErr := p.API.GetFile(request.URL.Query().Get("fileId"))
 
 	if fileErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id when trying to download")

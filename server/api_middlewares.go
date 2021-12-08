@@ -41,24 +41,20 @@ func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, requ
 }
 
 func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
-	decryptorMiddlewareBody := DecryptorFilter{plugin: p}
 	bodyJwtMiddleware := BodyJwtFilter{plugin: p}
 
-	decryptorMiddlewareBody.SetNext(&bodyJwtMiddleware)
-
-	decryptorMiddlewareHeader := DecryptorFilter{plugin: p}
 	headerJwtMiddleware := HeaderJwtFilter{plugin: p}
-
-	decryptorMiddlewareHeader.SetNext(&headerJwtMiddleware)
 
 	return func(writer http.ResponseWriter, request *http.Request) {
 
-		decryptorMiddlewareBody.DoFilter(writer, request)
-		decryptorMiddlewareHeader.DoFilter(writer, request)
+		bodyJwtMiddleware.DoFilter(writer, request)
+		headerJwtMiddleware.DoFilter(writer, request)
+		defer bodyJwtMiddleware.Reset()
+		defer headerJwtMiddleware.Reset()
 
-		if decryptorMiddlewareBody.HasError() && decryptorMiddlewareHeader.HasError() {
-			decryptorMiddlewareBody.Reset()
-			decryptorMiddlewareHeader.Reset()
+		if bodyJwtMiddleware.HasError() && headerJwtMiddleware.HasError() {
+			bodyJwtMiddleware.Reset()
+			headerJwtMiddleware.Reset()
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(403)
 			writer.Write([]byte("{\"error\": 1}"))

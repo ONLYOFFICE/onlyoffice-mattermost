@@ -136,30 +136,6 @@ func TestPostAuthorizationFilter(t *testing.T) {
 	assert.Equal(t, "Mock\n", string(header))
 }
 
-func TestDecryptorFilter(t *testing.T) {
-	p, _ := initTestPlugin(t)
-
-	decryptorFilter := DecryptorFilter{plugin: p}
-
-	fileId, _ := security.EncryptorAES{}.Encrypt("mockerino", p.internalKey)
-
-	v := func(w http.ResponseWriter, req *http.Request) {
-		decryptorFilter.DoFilter(w, req)
-
-		fmt.Fprintln(w, decryptorFilter.hasError)
-	}
-
-	ts := httptest.NewServer(http.HandlerFunc(v))
-	client := ts.Client()
-	res, _ := client.Get(ts.URL + "?fileId=" + fileId)
-
-	body, _ := io.ReadAll(res.Body)
-	isError, _ := strconv.ParseBool(string(body))
-	res.Body.Close()
-
-	assert.False(t, isError, isError)
-}
-
 func TestBodyJwtFilter(t *testing.T) {
 
 	p, _ := initTestPlugin(t)
@@ -294,20 +270,6 @@ func TestPermissionsConversions(t *testing.T) {
 	assert.Equal(t, mock.Edit, decoded.Edit)
 }
 
-func TestAesEncryptor(t *testing.T) {
-	var aes security.EncryptorAES = security.EncryptorAES{}
-	var encryptionKey []byte = []byte(utils.GenerateKey())
-	var mockId string = "someid"
-
-	encryptedId, _ := aes.Encrypt(mockId, encryptionKey)
-
-	assert.NotEmpty(t, encryptedId, encryptedId)
-
-	decryptedId, _ := aes.Decrypt(encryptedId, encryptionKey)
-
-	assert.Equal(t, mockId, decryptedId, decryptedId)
-}
-
 func TestMD5Checksum(t *testing.T) {
 	var rc4 security.EncryptorMD5 = security.EncryptorMD5{}
 	var mockId string = "someid"
@@ -328,17 +290,15 @@ func (mock testMockJwt) Valid() error {
 }
 
 func TestJwt(t *testing.T) {
-	p, _ := initTestPlugin(t)
-
 	jwt := testMockJwt{
 		Payload: "mock",
 	}
 
-	jwtEncoded, _ := security.JwtSign(jwt, p.internalKey)
+	jwtEncoded, _ := security.JwtSign(jwt, []byte("secret"))
 
 	assert.NotEmpty(t, jwtEncoded, jwtEncoded)
 
-	jwtDecoded, _ := security.JwtDecode(jwtEncoded, p.internalKey)
+	jwtDecoded, _ := security.JwtDecode(jwtEncoded, []byte("secret"))
 
 	body := testMockJwt{}
 
@@ -471,7 +431,6 @@ func initTestPlugin(t *testing.T) (*Plugin, *plugintest.API) {
 
 	p := Plugin{}
 	p.SetAPI(api)
-	p.internalKey = []byte(utils.GenerateKey())
 	p.configuration = &configuration{}
 	p.configuration.DESJwt = "Mockerito"
 	p.configuration.DESJwtHeader = "Mock"

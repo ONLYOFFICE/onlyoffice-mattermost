@@ -68,6 +68,12 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 	file := response.Body
 	defer file.Close()
 
+	fileID := body.FileId
+
+	if fileID == "" {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id")
+	}
+
 	fileInfo, fileInfoErr := p.API.GetFileInfo(body.FileId)
 	if fileInfoErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not find given file's FileInfo")
@@ -84,8 +90,18 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
 
-		decryptedUser, _ := security.EncryptorAES{}.Decrypt(body.Users[0], p.internalKey)
-		user, _ := p.API.GetUser(decryptedUser)
+		last := body.Users[0]
+
+		if last == "" {
+			return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid callback user")
+		}
+
+		user, err := p.API.GetUser(body.Users[0])
+
+		if err != nil {
+			return err
+		}
+
 		var newReplyMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
 
 		p.onlyoffice_bot.BOT_CREATE_REPLY(newReplyMessage, post.ChannelId, post.Id)
