@@ -27,6 +27,7 @@ import (
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
 )
@@ -291,6 +292,14 @@ func (m *HeaderJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 		}
 
 		if _, ok := claims["iss"].(string); ok {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter wrong issuer")
+			m.hasError = true
+		}
+		var body models.CallbackBody
+
+		err := mapstructure.Decode(claims, &body)
+
+		if err != nil {
 			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter wrong issuer")
 			m.hasError = true
 		}
