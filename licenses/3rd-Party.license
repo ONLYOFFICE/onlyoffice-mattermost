@@ -115,3 +115,7 @@ License File:   webpack.license
 Webpack CLI   - The official CLI of webpack. (https://github.com/webpack/webpack-cli)
 License:        MIT
 License File:   webpack-cli.license
+
+validator     - Package validator implements value validations for structs and individual fields based on tags. (https://github.com/go-playground/validator)
+License:        MIT
+License File:   validator.license
