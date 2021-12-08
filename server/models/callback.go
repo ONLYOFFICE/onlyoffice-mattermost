@@ -18,15 +18,21 @@
 
 package models
 
+import "github.com/go-playground/validator/v10"
+
 type CallbackBody struct {
 	Actions []struct {
 		Type   int    `json:"type"`
 		UserID string `json:"userid"`
 	} `json:"actions"`
-	Key    string   `json:"key"`
-	Status int      `json:"status"`
+	Key    string   `json:"key" validate:"required"`
+	Status int      `json:"status" validate:"required"`
 	Users  []string `json:"users"`
 	Url    string   `json:"url"`
 	FileId string   `json:"-"`
 	Token  string   `json:"token,-"`
+}
+
+func (cb *CallbackBody) Validate() error {
+	return validator.New().Struct(cb)
 }

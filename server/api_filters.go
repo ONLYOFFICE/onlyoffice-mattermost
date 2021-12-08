@@ -45,10 +45,10 @@ type AuthenticationFilter struct {
 }
 
 func (m *AuthenticationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	userId, cookieErr := request.Cookie(MATTERMOST_USER_COOKIE)
-	user, userErr := m.plugin.API.GetUser(userId.Value)
+	userId := request.Header.Get(MATTERMOST_USER_HEADER)
+	user, userErr := m.plugin.API.GetUser(userId)
 
-	if userErr != nil || cookieErr != nil {
+	if userErr != nil {
 		m.hasError = true
 		return
 	}
@@ -89,18 +89,7 @@ type FileValidationFilter struct {
 }
 
 func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	var fileId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
-
-	if request.Method == "POST" {
-		formErr := request.ParseForm()
-		if formErr != nil {
-			m.hasError = true
-			return
-		}
-
-		fileId = request.PostForm.Get("fileid")
-	}
-
+	var fileId string = request.URL.Query().Get("file")
 	fileInfo, fileInfoErr := m.plugin.API.GetFileInfo(fileId)
 
 	if fileInfoErr != nil {
@@ -116,6 +105,7 @@ func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *htt
 	}
 
 	request.Header.Set(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER, fileInfo.PostId)
+	request.Header.Set(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER, fileId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -228,10 +218,16 @@ func (m *BodyJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Reque
 			return
 		}
 
-		_, jwtDecodingErr := security.JwtDecode(tokenBody.Token, []byte(m.plugin.configuration.DESJwt))
+		claims, jwtDecodingErr := security.JwtDecode(tokenBody.Token, []byte(m.plugin.configuration.DESJwt))
 		if jwtDecodingErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter decoding error")
 			m.hasError = true
 			return
+		}
+
+		if _, ok := claims["iss"].(string); ok {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter wrong issuer")
+			m.hasError = true
 		}
 	}
 
@@ -273,6 +269,7 @@ func (m *HeaderJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 		jwtToken := request.Header.Get(m.plugin.configuration.DESJwtHeader)
 
 		if jwtToken == "" {
+			m.plugin.API.LogDebug("Header JWT filter error")
 			m.hasError = true
 			return
 		}
@@ -280,11 +277,17 @@ func (m *HeaderJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 		jwtToken = strings.Split(jwtToken, m.plugin.configuration.DESJwtPrefix)[1]
 		jwtToken = strings.TrimSpace(jwtToken)
 
-		_, jwtErr := security.JwtDecode(jwtToken, []byte(m.plugin.configuration.DESJwt))
+		claims, jwtErr := security.JwtDecode(jwtToken, []byte(m.plugin.configuration.DESJwt))
 
 		if jwtErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter decoding error")
 			m.hasError = true
 			return
+		}
+
+		if _, ok := claims["iss"].(string); ok {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter wrong issuer")
+			m.hasError = true
 		}
 	}
 

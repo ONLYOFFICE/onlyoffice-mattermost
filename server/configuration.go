@@ -23,8 +23,10 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
@@ -146,8 +148,14 @@ func (p *Plugin) OnConfigurationChange() error {
 	// Trying to connect to the Document Service
 	var body = models.CommandBody{
 		Command: models.ONLYOFFICE_COMMAND_VERSION,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(5 * time.Second).Unix(),
+			Issuer:    "command",
+		},
 	}
 	body.Token, _ = security.JwtSign(body, []byte(p.configuration.DESJwt))
+	body.StandardClaims = jwt.StandardClaims{}
 	var headers []Header = []Header{
 		{
 			Key:   configuration.DESJwtHeader,

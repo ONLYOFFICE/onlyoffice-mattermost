@@ -42,11 +42,9 @@ func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, requ
 
 func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
 	bodyJwtMiddleware := BodyJwtFilter{plugin: p}
-
 	headerJwtMiddleware := HeaderJwtFilter{plugin: p}
 
 	return func(writer http.ResponseWriter, request *http.Request) {
-
 		bodyJwtMiddleware.DoFilter(writer, request)
 		headerJwtMiddleware.DoFilter(writer, request)
 		defer bodyJwtMiddleware.Reset()

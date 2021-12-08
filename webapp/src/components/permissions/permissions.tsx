@@ -32,6 +32,7 @@ import {Channel} from 'mattermost-redux/types/channels';
 
 import {apiGET, apiPOST} from 'api';
 import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS,
+    ONLYOFFICE_PLUGIN_API_GENERATE_OTP,
     ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, ONLYOFFICE_WILDCARD_USER} from 'utils';
 import {debounce} from 'utils/lodash';
 import {getTranslations} from 'utils/i18n';
@@ -173,7 +174,7 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
         }));
     };
 
-    const onSubmitPermissions = () => {
+    const onSubmitPermissions = async () => {
         const payload: SubmitPermissionsPayload[] = [];
         const allUsers: SubmitPermissionsPayload = {
             FileId: fileInfo.id,
@@ -191,9 +192,12 @@ const Permissions: React.FC<PermissionsProps> = ({visible, close, fileInfo}: Per
             });
         });
 
-        apiPOST(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS, JSON.stringify(payload)).then(() => {
+        try {
+            const token = await (await fetch(ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_GENERATE_OTP)).text();
+            await apiPOST(`${ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS}?token=${token}`, JSON.stringify(payload));
+        } finally {
             onExit();
-        }).catch();
+        }
     };
 
     return (

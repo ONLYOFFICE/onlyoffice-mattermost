@@ -58,7 +58,11 @@ func ConvertJwtToBody(body *models.CallbackBody, jwtKey []byte, jwtString string
 
 //Status 2 and 6
 func handleSave(body *models.CallbackBody, p *Plugin) error {
-	var url string = body.Url
+	url := body.Url
+
+	if url == "" {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid download URL")
+	}
 
 	response, getErr := p.GetHTTPClient().GetRequest(url)
 	if getErr != nil {
@@ -74,7 +78,7 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id")
 	}
 
-	fileInfo, fileInfoErr := p.API.GetFileInfo(body.FileId)
+	fileInfo, fileInfoErr := p.API.GetFileInfo(fileID)
 	if fileInfoErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not find given file's FileInfo")
 	}
@@ -96,7 +100,7 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 			return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid callback user")
 		}
 
-		user, err := p.API.GetUser(body.Users[0])
+		user, err := p.API.GetUser(last)
 
 		if err != nil {
 			return err

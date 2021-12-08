@@ -21,11 +21,11 @@ package models
 import "github.com/golang-jwt/jwt"
 
 type Config struct {
-	Document           Document     `json:"document"`
-	DocumentType       string       `json:"documentType"`
-	EditorConfig       EditorConfig `json:"editorConfig"`
-	Token              string       `json:"token,omitempty"`
-	jwt.StandardClaims `json:"-"`
+	Document     Document     `json:"document"`
+	DocumentType string       `json:"documentType"`
+	EditorConfig EditorConfig `json:"editorConfig"`
+	Token        string       `json:"token,omitempty"`
+	jwt.StandardClaims
 }
 
 type Document struct {

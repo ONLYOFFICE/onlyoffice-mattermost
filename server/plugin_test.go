@@ -51,12 +51,7 @@ func TestAuthenticationFilter(t *testing.T) {
 	authFilter := AuthenticationFilter{plugin: p}
 
 	v := func(w http.ResponseWriter, req *http.Request) {
-		cookie := http.Cookie{
-			Name:  MATTERMOST_USER_COOKIE,
-			Value: "userid",
-		}
-
-		req.AddCookie(&cookie)
+		req.Header.Add(MATTERMOST_USER_HEADER, "userid")
 
 		authFilter.DoFilter(w, req)
 
@@ -219,12 +214,7 @@ func TestUserAccessMiddleware(t *testing.T) {
 	authentication.SetNext(checkFile).SetNext(postAccess)
 
 	v := func(w http.ResponseWriter, req *http.Request) {
-		cookie := http.Cookie{
-			Name:  MATTERMOST_USER_COOKIE,
-			Value: "userid",
-		}
-
-		req.AddCookie(&cookie)
+		req.Header.Add(MATTERMOST_USER_HEADER, "userid")
 
 		authentication.DoFilter(w, req)
 
@@ -294,11 +284,13 @@ func TestJwt(t *testing.T) {
 		Payload: "mock",
 	}
 
-	jwtEncoded, _ := security.JwtSign(jwt, []byte("secret"))
+	key := []byte(utils.GenerateKey())
+
+	jwtEncoded, _ := security.JwtSign(jwt, key)
 
 	assert.NotEmpty(t, jwtEncoded, jwtEncoded)
 
-	jwtDecoded, _ := security.JwtDecode(jwtEncoded, []byte("secret"))
+	jwtDecoded, _ := security.JwtDecode(jwtEncoded, key)
 
 	body := testMockJwt{}
 

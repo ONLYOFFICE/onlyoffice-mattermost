@@ -23,5 +23,4 @@ type Encryptor interface {
 	Decrypt(text string, key []byte) (string, error)
 }
 
-type EncryptorAES struct{}
 type EncryptorMD5 struct{}
