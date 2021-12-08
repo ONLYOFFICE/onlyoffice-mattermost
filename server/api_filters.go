@@ -53,8 +53,8 @@ func (m *AuthenticationFilter) DoFilter(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	request.Header.Add(ONLYOFFICE_AUTHORIZATION_USERID_HEADER, user.Id)
-	request.Header.Add(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER, user.Username)
+	request.Header.Set(ONLYOFFICE_AUTHORIZATION_USERID_HEADER, user.Id)
+	request.Header.Set(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER, user.Username)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -115,7 +115,7 @@ func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	request.Header.Add(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER, fileInfo.PostId)
+	request.Header.Set(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER, fileInfo.PostId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -166,7 +166,7 @@ func (m *PostAuthorizationFilter) DoFilter(writer http.ResponseWriter, request *
 		return
 	}
 
-	request.Header.Add(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER, post.ChannelId)
+	request.Header.Set(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER, post.ChannelId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)

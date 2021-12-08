@@ -215,7 +215,7 @@ func TestHeaderJwtFilter(t *testing.T) {
 
 		token, _ := security.JwtSign(mockJwt, []byte(p.configuration.DESJwt))
 
-		req.Header.Add(p.configuration.DESJwtHeader, p.configuration.DESJwtPrefix+token)
+		req.Header.Set(p.configuration.DESJwtHeader, p.configuration.DESJwtPrefix+token)
 
 		headerJwtFilter.DoFilter(w, req)
 
