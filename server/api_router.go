@@ -28,7 +28,7 @@ import (
 
 func (p *Plugin) GetHTTPClient() *HTTPClient {
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: !p.configuration.TLS},
 	}
 	client := HTTPClient{client: http.Client{Transport: tr}}
 

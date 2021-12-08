@@ -67,6 +67,14 @@ const manifestStr = `
         "help_text": "",
         "placeholder": "",
         "default": "Bearer "
+      },
+      {
+        "key": "TLS",
+        "display_name": "Enable TLS verification: ",
+        "type": "bool",
+        "help_text": "",
+        "placeholder": "",
+        "default": true
       }
     ]
   }

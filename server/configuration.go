@@ -49,6 +49,7 @@ type configuration struct {
 	DESJwt       string
 	DESJwtHeader string
 	DESJwtPrefix string
+	TLS          bool
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -59,6 +60,7 @@ func (c *configuration) Clone() *configuration {
 		DESJwt:       c.DESJwt,
 		DESJwtHeader: c.DESJwtHeader,
 		DESJwtPrefix: c.DESJwtPrefix,
+		TLS:          c.TLS,
 	}
 }
 
