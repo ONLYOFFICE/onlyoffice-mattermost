@@ -53,8 +53,6 @@ func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, reques
 		defer headerJwtMiddleware.Reset()
 
 		if bodyJwtMiddleware.HasError() && headerJwtMiddleware.HasError() {
-			bodyJwtMiddleware.Reset()
-			headerJwtMiddleware.Reset()
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(403)
 			writer.Write([]byte("{\"error\": 1}"))
