@@ -19,7 +19,7 @@ const manifestStr = `
   "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
   "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
   "icon_path": "assets/logo.svg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "min_server_version": "5.37.2",
   "server": {
     "executables": {
