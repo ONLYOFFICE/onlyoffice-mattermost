@@ -17,6 +17,7 @@
  */
 
 import React, {useCallback} from 'react';
+import ReactDOM from 'react-dom';
 
 import {FileInfo} from 'mattermost-redux/types/files';
 
@@ -70,7 +71,7 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
         };
     }, [fileInfo, visible, handleClose, onEscape]);
 
-    return (
+    return ReactDOM.createPortal(
         <>
             {visible && (
                 <div
@@ -85,7 +86,8 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
                     />
                 </div>
             )}
-        </>
+        </>,
+        document.body,
     );
 };
 
