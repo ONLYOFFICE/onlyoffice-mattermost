@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,24 +41,16 @@ func (p *Plugin) userAccessMiddleware(next func(writer http.ResponseWriter, requ
 }
 
 func (p *Plugin) callbackMiddleware(next func(writer http.ResponseWriter, request *http.Request)) func(writer http.ResponseWriter, request *http.Request) {
-	decryptorMiddlewareBody := DecryptorFilter{plugin: p}
 	bodyJwtMiddleware := BodyJwtFilter{plugin: p}
-
-	decryptorMiddlewareBody.SetNext(&bodyJwtMiddleware)
-
-	decryptorMiddlewareHeader := DecryptorFilter{plugin: p}
 	headerJwtMiddleware := HeaderJwtFilter{plugin: p}
 
-	decryptorMiddlewareHeader.SetNext(&headerJwtMiddleware)
-
 	return func(writer http.ResponseWriter, request *http.Request) {
+		bodyJwtMiddleware.DoFilter(writer, request)
+		headerJwtMiddleware.DoFilter(writer, request)
+		defer bodyJwtMiddleware.Reset()
+		defer headerJwtMiddleware.Reset()
 
-		decryptorMiddlewareBody.DoFilter(writer, request)
-		decryptorMiddlewareHeader.DoFilter(writer, request)
-
-		if decryptorMiddlewareBody.HasError() && decryptorMiddlewareHeader.HasError() {
-			decryptorMiddlewareBody.Reset()
-			decryptorMiddlewareHeader.Reset()
+		if bodyJwtMiddleware.HasError() && headerJwtMiddleware.HasError() {
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(403)
 			writer.Write([]byte("{\"error\": 1}"))

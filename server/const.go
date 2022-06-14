@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package main
 
 const MATTERMOST_USER_COOKIE = "MMUSERID"
+const MATTERMOST_USER_HEADER = "Mattermost-User-Id"
 const MATTERMOST_COPY_POST_LINK_SEPARATOR = "/pl/"
 
 const ONLYOFFICE_AUTHORIZATION_USERID_HEADER = "ONLYOFFICE_USER_ID"
@@ -42,3 +43,4 @@ const ONLYOFFICE_ROUTE_CALLBACK = "/callback"
 const ONLYOFFICE_ROUTE_SET_PERMISSIONS = "/set_file_permissions"
 const ONLYOFFICE_ROUTE_GET_PERMISSIONS = "/get_file_permissions"
 const ONLYOFFICE_ROUTE_GET_CHANNEL_USERS = "/channel_users"
+const ONLYOFFICE_ROUTE_GET_OTP = "/otp"

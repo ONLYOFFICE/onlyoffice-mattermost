@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,38 +27,39 @@ import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_EDITOR} from 'utils';
 import {EditorLoader} from './editor_loader';
 
 interface EditorProps {
-    visible: boolean,
-    close: () => (dispatch: Dispatch) => void,
-    fileInfo?: FileInfo,
+    visible: boolean;
+    close: () => (dispatch: Dispatch) => void;
+    fileInfo?: FileInfo;
 }
 
 const Editor = ({visible, close, fileInfo}: EditorProps) => {
+    const lang = localStorage.getItem('onlyoffice_locale') || 'en';
     const handleClose = useCallback(() => {
         if (!visible) {
             return;
         }
         const editorBackdrop = document.getElementById('editor-backdrop');
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        editorBackdrop!.classList.add('onlyoffice-modal__backdrop_hide');
+        if (editorBackdrop) {
+            editorBackdrop.classList.add('onlyoffice-modal__backdrop_hide');
+        }
 
         setTimeout(() => close(), 300);
     }, [close, visible]);
 
-    const onEscape = useCallback((event) => {
-        if (event.keyCode === 27) {
-            handleClose();
-        }
-    }, [handleClose]);
+    const onEscape = useCallback(
+        (event) => {
+            if (event.keyCode === 27) {
+                handleClose();
+            }
+        },
+        [handleClose],
+    );
 
     React.useEffect(() => {
         if (!visible || !fileInfo) {
             return;
         }
-        (document.getElementById('editorForm') as HTMLFormElement).action = ONLYOFFICE_PLUGIN_API + ONLYOFFICE_PLUGIN_API_EDITOR;
-        (document.getElementById('file-id') as HTMLInputElement).value = fileInfo.id;
-        (document.getElementById('lang') as HTMLInputElement).value = localStorage.getItem('onlyoffice_locale') || 'en';
-        (document.getElementById('editorForm') as HTMLFormElement).submit();
         window.addEventListener('ONLYOFFICE_CLOSED', handleClose);
         document.addEventListener('keydown', onEscape, false);
 
@@ -77,26 +78,8 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
                     className='onlyoffice-modal__backdrop'
                 >
                     <EditorLoader/>
-                    <form
-                        action=''
-                        method='POST'
-                        target='iframeEditor'
-                        id='editorForm'
-                    >
-                        <input
-                            id='file-id'
-                            name='fileid'
-                            value=''
-                            type='hidden'
-                        />
-                        <input
-                            id='lang'
-                            name='lang'
-                            value=''
-                            type='hidden'
-                        />
-                    </form>
                     <iframe
+                        src={`${ONLYOFFICE_PLUGIN_API}${ONLYOFFICE_PLUGIN_API_EDITOR}?file=${fileInfo?.id}&lang=${lang}`}
                         className='onlyoffice-modal__frame'
                         name='iframeEditor'
                     />

@@ -95,6 +95,7 @@ module.exports = {
         'prop-types': 'PropTypes',
         'react-bootstrap': 'ReactBootstrap',
         'react-router-dom': 'ReactRouterDom',
+        'react-dom': 'ReactDOM',
     },
     output: {
         devtoolNamespace: PLUGIN_ID,

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ package models
 import "github.com/golang-jwt/jwt"
 
 type Config struct {
-	Document           Document     `json:"document"`
-	DocumentType       string       `json:"documentType"`
-	EditorConfig       EditorConfig `json:"editorConfig"`
-	Token              string       `json:"token,omitempty"`
-	jwt.StandardClaims `json:"-"`
+	Document     Document     `json:"document"`
+	DocumentType string       `json:"documentType"`
+	EditorConfig EditorConfig `json:"editorConfig"`
+	Token        string       `json:"token,omitempty"`
+	jwt.StandardClaims
 }
 
 type Document struct {

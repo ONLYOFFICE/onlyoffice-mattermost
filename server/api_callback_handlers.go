@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,11 @@ func ConvertJwtToBody(body *models.CallbackBody, jwtKey []byte, jwtString string
 
 //Status 2 and 6
 func handleSave(body *models.CallbackBody, p *Plugin) error {
-	var url string = body.Url
+	url := body.Url
+
+	if url == "" {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid download URL")
+	}
 
 	response, getErr := p.GetHTTPClient().GetRequest(url)
 	if getErr != nil {
@@ -68,7 +72,13 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 	file := response.Body
 	defer file.Close()
 
-	fileInfo, fileInfoErr := p.API.GetFileInfo(body.FileId)
+	fileID := body.FileId
+
+	if fileID == "" {
+		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id")
+	}
+
+	fileInfo, fileInfoErr := p.API.GetFileInfo(fileID)
 	if fileInfoErr != nil {
 		return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Could not find given file's FileInfo")
 	}
@@ -84,8 +94,18 @@ func handleSave(body *models.CallbackBody, p *Plugin) error {
 		post.UpdateAt = utils.GetTimestamp()
 		p.API.UpdatePost(post)
 
-		decryptedUser, _ := security.EncryptorAES{}.Decrypt(body.Users[0], p.internalKey)
-		user, _ := p.API.GetUser(decryptedUser)
+		last := body.Users[0]
+
+		if last == "" {
+			return errors.New(ONLYOFFICE_LOGGER_PREFIX + "Invalid callback user")
+		}
+
+		user, err := p.API.GetUser(last)
+
+		if err != nil {
+			return err
+		}
+
 		var newReplyMessage string = "File " + fileInfo.Name + " was updated" + " by @" + user.Username
 
 		p.onlyoffice_bot.BOT_CREATE_REPLY(newReplyMessage, post.ChannelId, post.Id)

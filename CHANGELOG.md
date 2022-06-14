@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.1
+## Added
+- disable certificate verification
+- warning in the settings about downloading and executing the code of the editors
+
+## Changed
+- improved JWT validation
+
 ## 1.0.0
 ## Added
 - config page for urls and JWT settings

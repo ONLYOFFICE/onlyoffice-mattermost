@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
 )
@@ -45,16 +47,16 @@ type AuthenticationFilter struct {
 }
 
 func (m *AuthenticationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	userId, cookieErr := request.Cookie(MATTERMOST_USER_COOKIE)
-	user, userErr := m.plugin.API.GetUser(userId.Value)
+	userId := request.Header.Get(MATTERMOST_USER_HEADER)
+	user, userErr := m.plugin.API.GetUser(userId)
 
-	if userErr != nil || cookieErr != nil {
+	if userErr != nil {
 		m.hasError = true
 		return
 	}
 
-	request.Header.Add(ONLYOFFICE_AUTHORIZATION_USERID_HEADER, user.Id)
-	request.Header.Add(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER, user.Username)
+	request.Header.Set(ONLYOFFICE_AUTHORIZATION_USERID_HEADER, user.Id)
+	request.Header.Set(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER, user.Username)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -89,18 +91,7 @@ type FileValidationFilter struct {
 }
 
 func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	var fileId string = request.Header.Get(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER)
-
-	if request.Method == "POST" {
-		formErr := request.ParseForm()
-		if formErr != nil {
-			m.hasError = true
-			return
-		}
-
-		fileId = request.PostForm.Get("fileid")
-	}
-
+	var fileId string = request.URL.Query().Get("file")
 	fileInfo, fileInfoErr := m.plugin.API.GetFileInfo(fileId)
 
 	if fileInfoErr != nil {
@@ -115,7 +106,8 @@ func (m *FileValidationFilter) DoFilter(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	request.Header.Add(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER, fileInfo.PostId)
+	request.Header.Set(ONLYOFFICE_FILEVALIDATION_POSTID_HEADER, fileInfo.PostId)
+	request.Header.Set(ONLYOFFICE_FILEVALIDATION_FILEID_HEADER, fileId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -166,7 +158,7 @@ func (m *PostAuthorizationFilter) DoFilter(writer http.ResponseWriter, request *
 		return
 	}
 
-	request.Header.Add(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER, post.ChannelId)
+	request.Header.Set(ONYLOFFICE_CHANNELVALIDATION_CHANNELID_HEADER, post.ChannelId)
 
 	if m.next != nil {
 		m.next.DoFilter(writer, request)
@@ -202,36 +194,46 @@ type BodyJwtFilter struct {
 
 func (m *BodyJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
 	if m.plugin.configuration.DESJwt != "" {
-		type TokenBody struct {
-			Token string `json:"token,omitempty"`
-		}
+		var body models.CallbackBody
 
 		if request.Body == nil {
 			m.hasError = true
 			return
 		}
 
-		var tokenBody TokenBody
 		var bodyBytes []byte
 
 		bodyBytes, _ = ioutil.ReadAll(request.Body)
 		request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-		decodingErr := json.Unmarshal(bodyBytes, &tokenBody)
+		decodingErr := json.Unmarshal(bodyBytes, &body)
 		if decodingErr != nil {
 			m.hasError = true
 			return
 		}
 
-		if tokenBody.Token == "" {
+		if body.Token == "" {
 			m.hasError = true
 			return
 		}
 
-		_, jwtDecodingErr := security.JwtDecode(tokenBody.Token, []byte(m.plugin.configuration.DESJwt))
+		claims, jwtDecodingErr := security.JwtDecode(body.Token, []byte(m.plugin.configuration.DESJwt))
 		if jwtDecodingErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter decoding error")
 			m.hasError = true
 			return
+		}
+
+		if _, ok := claims["iss"].(string); ok {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Body JWT filter wrong issuer")
+			m.hasError = true
+		}
+
+		validErr := body.Validate()
+
+		if validErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid JWT payload")
+			m.hasError = true
 		}
 	}
 
@@ -273,6 +275,7 @@ func (m *HeaderJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 		jwtToken := request.Header.Get(m.plugin.configuration.DESJwtHeader)
 
 		if jwtToken == "" {
+			m.plugin.API.LogDebug("Header JWT filter error")
 			m.hasError = true
 			return
 		}
@@ -280,11 +283,25 @@ func (m *HeaderJwtFilter) DoFilter(writer http.ResponseWriter, request *http.Req
 		jwtToken = strings.Split(jwtToken, m.plugin.configuration.DESJwtPrefix)[1]
 		jwtToken = strings.TrimSpace(jwtToken)
 
-		_, jwtErr := security.JwtDecode(jwtToken, []byte(m.plugin.configuration.DESJwt))
+		claims, jwtErr := security.JwtDecode(jwtToken, []byte(m.plugin.configuration.DESJwt))
 
 		if jwtErr != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter decoding error")
 			m.hasError = true
 			return
+		}
+
+		if _, ok := claims["iss"].(string); ok {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter wrong issuer")
+			m.hasError = true
+		}
+		var body models.CallbackBody
+
+		err := mapstructure.Decode(claims, &body)
+
+		if err != nil {
+			m.plugin.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Header JWT filter wrong issuer")
+			m.hasError = true
 		}
 	}
 
@@ -306,50 +323,6 @@ func (m *HeaderJwtFilter) HasError() bool {
 }
 
 func (m *HeaderJwtFilter) Reset() {
-	m.hasError = false
-
-	if m.next != nil {
-		m.next.Reset()
-	}
-}
-
-//
-type DecryptorFilter struct {
-	plugin   *Plugin
-	next     Filter
-	hasError bool
-}
-
-func (m *DecryptorFilter) DoFilter(writer http.ResponseWriter, request *http.Request) {
-	query := request.URL.Query()
-	fileId := query.Get("fileId")
-
-	decipheredFileid, decipherErr := security.EncryptorAES{}.Decrypt(fileId, m.plugin.internalKey)
-	_, err := m.plugin.API.GetFileInfo(decipheredFileid)
-
-	if err != nil || decipherErr != nil {
-		m.hasError = true
-		return
-	}
-
-	if m.next != nil {
-		m.next.DoFilter(writer, request)
-	}
-}
-
-func (m *DecryptorFilter) SetNext(Next Filter) Filter {
-	m.next = Next
-	return m.next
-}
-
-func (m *DecryptorFilter) HasError() bool {
-	if m.next != nil {
-		return m.hasError || m.next.HasError()
-	}
-	return m.hasError
-}
-
-func (m *DecryptorFilter) Reset() {
 	m.hasError = false
 
 	if m.next != nil {
