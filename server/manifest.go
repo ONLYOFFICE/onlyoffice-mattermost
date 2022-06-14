@@ -19,7 +19,7 @@ const manifestStr = `
   "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
   "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
   "icon_path": "assets/logo.svg",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "min_server_version": "5.37.2",
   "server": {
     "executables": {
@@ -33,7 +33,7 @@ const manifestStr = `
     "bundle_path": "webapp/dist/main.js"
   },
   "settings_schema": {
-    "header": "ONLYOFFICE Docs is an open-source office suite which comprises powerful collaborative editors for text documents, spreadsheets, and presentations highly compatible with OOXML formats.",
+    "header": "ONLYOFFICE Docs is an open-source office suite which comprises powerful collaborative editors for text documents, spreadsheets, and presentations highly compatible with OOXML formats. \n \n \n [Please note! ONLYOFFICE script code will be downloaded and executed from the server at the given address.]",
     "footer": "Check https://www.onlyoffice.com/office-suite.aspx for more information.",
     "settings": [
       {
@@ -67,6 +67,14 @@ const manifestStr = `
         "help_text": "",
         "placeholder": "",
         "default": "Bearer "
+      },
+      {
+        "key": "TLS",
+        "display_name": "Enable TLS verification: ",
+        "type": "bool",
+        "help_text": "",
+        "placeholder": "",
+        "default": true
       }
     ]
   }

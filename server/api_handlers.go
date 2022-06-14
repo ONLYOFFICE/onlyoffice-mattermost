@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"text/template"
+	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
 
@@ -35,27 +37,24 @@ import (
 )
 
 func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
-	var serverURL string = *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
-	var fileId string = request.PostForm.Get("fileid")
-	var lang string = request.PostForm.Get("lang")
+	serverURL := *p.API.GetConfig().ServiceSettings.SiteURL + "/" + ONLYOFFICE_API_PATH
+	query := request.URL.Query()
+	fileId := query.Get("file")
+	lang := query.Get("lang")
 	p.API.LogDebug(ONLYOFFICE_LOGGER_PREFIX + "Got an editor request")
 	fileInfo, _ := p.API.GetFileInfo(fileId)
 	docType, _ := utils.GetFileType(fileInfo.Extension)
 
-	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
-	var username string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER)
+	userId := request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
+	username := request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERNAME_HEADER)
 
 	htmlTemplate := template.New("onlyoffice")
 	bundlePath, _ := p.API.GetBundlePath()
 	htmlTemplate, _ = htmlTemplate.ParseFiles(filepath.Join(bundlePath, "public/editor.html"))
 
-	encryptor := security.EncryptorAES{}
-	fileId, _ = encryptor.Encrypt(fileId, p.internalKey)
-	userIdEnc, _ := encryptor.Encrypt(userId, p.internalKey)
-
 	post, _ := p.API.GetPost(fileInfo.PostId)
 
-	var docKey string = GenerateDocKey(*fileInfo, *post)
+	docKey := GenerateDocKey(*fileInfo, *post)
 
 	var userPermissions models.Permissions = models.ONLYOFFICE_DEFAULT_PERMISSIONS
 
@@ -74,7 +73,7 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 		DocumentType: docType,
 		EditorConfig: models.EditorConfig{
 			User: models.User{
-				Id:   userIdEnc,
+				Id:   userId,
 				Name: username,
 			},
 			CallbackUrl: serverURL + ONLYOFFICE_ROUTE_CALLBACK + "?fileId=" + fileId,
@@ -88,7 +87,11 @@ func (p *Plugin) editor(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	if p.configuration.DESJwt != "" {
+		config.IssuedAt = time.Now().Unix()
+		config.ExpiresAt = time.Now().Add(5 * time.Second).Unix()
+		config.Issuer = "editor"
 		jwtString, _ := security.JwtSign(config, []byte(p.configuration.DESJwt))
+		config.StandardClaims = jwt.StandardClaims{}
 		config.Token = jwtString
 	}
 
@@ -116,8 +119,9 @@ func sendDocumentServerResponse(writer http.ResponseWriter, isError bool) {
 func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 	body := models.CallbackBody{}
 	decodingErr := json.NewDecoder(request.Body).Decode(&body)
+	validErr := body.Validate()
 
-	if decodingErr != nil {
+	if decodingErr != nil || validErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Callback body decoding error")
 		sendDocumentServerResponse(writer, true)
 		return
@@ -143,13 +147,12 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
-	body.FileId = fileId
+	body.FileId = request.URL.Query().Get("fileId")
 
 	handlingErr := handler(&body, p)
 
 	if handlingErr != nil {
-		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX+"A callback handling error has occured: ", handlingErr.Error())
+		p.API.LogError(handlingErr.Error())
 		sendDocumentServerResponse(writer, true)
 		return
 	}
@@ -159,8 +162,7 @@ func (p *Plugin) callback(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
-	fileId, _ := security.EncryptorAES{}.Decrypt(request.URL.Query().Get("fileId"), p.internalKey)
-	fileContent, fileErr := p.API.GetFile(fileId)
+	fileContent, fileErr := p.API.GetFile(request.URL.Query().Get("fileId"))
 
 	if fileErr != nil {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid file id when trying to download")
@@ -174,6 +176,22 @@ func (p *Plugin) download(writer http.ResponseWriter, request *http.Request) {
 
 //TODO: Refactoring
 func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Request) {
+	uid, err := request.Cookie(MATTERMOST_USER_COOKIE)
+
+	if err != nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Invalid cookie")
+		writer.WriteHeader(400)
+		return
+	}
+
+	otp, _ := p.API.KVGet(uid.Value)
+
+	if otp == nil {
+		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Could not find an otp")
+		writer.WriteHeader(403)
+		return
+	}
+
 	var postPermissionsBody []models.PostPermission = []models.PostPermission{}
 
 	decodingErr := json.NewDecoder(request.Body).Decode(&postPermissionsBody)
@@ -205,9 +223,7 @@ func (p *Plugin) setFilePermissions(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	var userId string = request.Header.Get(ONLYOFFICE_AUTHORIZATION_USERID_HEADER)
-
-	if post.UserId != userId {
+	if post.UserId != uid.Value {
 		p.API.LogError(ONLYOFFICE_LOGGER_PREFIX + "Only post's author can change file permissions")
 		writer.WriteHeader(403)
 		return
@@ -346,4 +362,26 @@ func GenerateDocKey(fileInfo model.FileInfo, post model.Post) string {
 	docKey, _ := security.EncryptorMD5{}.Encrypt(fileInfo.Id+postUpdatedAt, nil)
 
 	return docKey
+}
+
+func (p *Plugin) generateOtp(w http.ResponseWriter, r *http.Request) {
+	mmCookie, err := r.Cookie(MATTERMOST_USER_COOKIE)
+	if err != nil {
+		w.WriteHeader(403)
+		return
+	}
+	mmHeader := r.Header.Get(MATTERMOST_USER_HEADER)
+
+	if mmHeader != mmCookie.Value {
+		w.WriteHeader(403)
+		return
+	}
+
+	otp := []byte(utils.GenerateKey())
+
+	p.API.KVSetWithExpiry(mmHeader, otp, 5)
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(200)
+	w.Write(otp)
 }

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/security"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/models"
 
@@ -49,6 +51,7 @@ type configuration struct {
 	DESJwt       string
 	DESJwtHeader string
 	DESJwtPrefix string
+	TLS          bool
 }
 
 // Clone shallow coies the configuration. Your implementation may require a deep copy if
@@ -59,6 +62,7 @@ func (c *configuration) Clone() *configuration {
 		DESJwt:       c.DESJwt,
 		DESJwtHeader: c.DESJwtHeader,
 		DESJwtPrefix: c.DESJwtPrefix,
+		TLS:          c.TLS,
 	}
 }
 
@@ -144,8 +148,14 @@ func (p *Plugin) OnConfigurationChange() error {
 	// Trying to connect to the Document Service
 	var body = models.CommandBody{
 		Command: models.ONLYOFFICE_COMMAND_VERSION,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(5 * time.Second).Unix(),
+			Issuer:    "command",
+		},
 	}
 	body.Token, _ = security.JwtSign(body, []byte(p.configuration.DESJwt))
+	body.StandardClaims = jwt.StandardClaims{}
 	var headers []Header = []Header{
 		{
 			Key:   configuration.DESJwtHeader,

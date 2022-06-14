@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,7 @@ func TestAuthenticationFilter(t *testing.T) {
 	authFilter := AuthenticationFilter{plugin: p}
 
 	v := func(w http.ResponseWriter, req *http.Request) {
-		cookie := http.Cookie{
-			Name:  MATTERMOST_USER_COOKIE,
-			Value: "userid",
-		}
-
-		req.AddCookie(&cookie)
+		req.Header.Add(MATTERMOST_USER_HEADER, "userid")
 
 		authFilter.DoFilter(w, req)
 
@@ -136,30 +131,6 @@ func TestPostAuthorizationFilter(t *testing.T) {
 	assert.Equal(t, "Mock\n", string(header))
 }
 
-func TestDecryptorFilter(t *testing.T) {
-	p, _ := initTestPlugin(t)
-
-	decryptorFilter := DecryptorFilter{plugin: p}
-
-	fileId, _ := security.EncryptorAES{}.Encrypt("mockerino", p.internalKey)
-
-	v := func(w http.ResponseWriter, req *http.Request) {
-		decryptorFilter.DoFilter(w, req)
-
-		fmt.Fprintln(w, decryptorFilter.hasError)
-	}
-
-	ts := httptest.NewServer(http.HandlerFunc(v))
-	client := ts.Client()
-	res, _ := client.Get(ts.URL + "?fileId=" + fileId)
-
-	body, _ := io.ReadAll(res.Body)
-	isError, _ := strconv.ParseBool(string(body))
-	res.Body.Close()
-
-	assert.False(t, isError, isError)
-}
-
 func TestBodyJwtFilter(t *testing.T) {
 
 	p, _ := initTestPlugin(t)
@@ -215,7 +186,7 @@ func TestHeaderJwtFilter(t *testing.T) {
 
 		token, _ := security.JwtSign(mockJwt, []byte(p.configuration.DESJwt))
 
-		req.Header.Add(p.configuration.DESJwtHeader, p.configuration.DESJwtPrefix+token)
+		req.Header.Set(p.configuration.DESJwtHeader, p.configuration.DESJwtPrefix+token)
 
 		headerJwtFilter.DoFilter(w, req)
 
@@ -243,12 +214,7 @@ func TestUserAccessMiddleware(t *testing.T) {
 	authentication.SetNext(checkFile).SetNext(postAccess)
 
 	v := func(w http.ResponseWriter, req *http.Request) {
-		cookie := http.Cookie{
-			Name:  MATTERMOST_USER_COOKIE,
-			Value: "userid",
-		}
-
-		req.AddCookie(&cookie)
+		req.Header.Add(MATTERMOST_USER_HEADER, "userid")
 
 		authentication.DoFilter(w, req)
 
@@ -294,20 +260,6 @@ func TestPermissionsConversions(t *testing.T) {
 	assert.Equal(t, mock.Edit, decoded.Edit)
 }
 
-func TestAesEncryptor(t *testing.T) {
-	var aes security.EncryptorAES = security.EncryptorAES{}
-	var encryptionKey []byte = []byte(utils.GenerateKey())
-	var mockId string = "someid"
-
-	encryptedId, _ := aes.Encrypt(mockId, encryptionKey)
-
-	assert.NotEmpty(t, encryptedId, encryptedId)
-
-	decryptedId, _ := aes.Decrypt(encryptedId, encryptionKey)
-
-	assert.Equal(t, mockId, decryptedId, decryptedId)
-}
-
 func TestMD5Checksum(t *testing.T) {
 	var rc4 security.EncryptorMD5 = security.EncryptorMD5{}
 	var mockId string = "someid"
@@ -328,17 +280,17 @@ func (mock testMockJwt) Valid() error {
 }
 
 func TestJwt(t *testing.T) {
-	p, _ := initTestPlugin(t)
-
 	jwt := testMockJwt{
 		Payload: "mock",
 	}
 
-	jwtEncoded, _ := security.JwtSign(jwt, p.internalKey)
+	key := []byte(utils.GenerateKey())
+
+	jwtEncoded, _ := security.JwtSign(jwt, key)
 
 	assert.NotEmpty(t, jwtEncoded, jwtEncoded)
 
-	jwtDecoded, _ := security.JwtDecode(jwtEncoded, p.internalKey)
+	jwtDecoded, _ := security.JwtDecode(jwtEncoded, key)
 
 	body := testMockJwt{}
 
@@ -471,7 +423,6 @@ func initTestPlugin(t *testing.T) (*Plugin, *plugintest.API) {
 
 	p := Plugin{}
 	p.SetAPI(api)
-	p.internalKey = []byte(utils.GenerateKey())
 	p.configuration = &configuration{}
 	p.configuration.DESJwt = "Mockerito"
 	p.configuration.DESJwtHeader = "Mock"

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import {id as pluginName} from 'manifest';
 export const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/onlyofficeapi`;
 export const ONLYOFFICE_PLUGIN_API_FILE_PERMISSIONS = '/get_file_permissions?fileId=';
 export const ONLYOFFICE_PLUGIN_API_SET_FILE_PERMISSIONS = '/set_file_permissions';
+export const ONLYOFFICE_PLUGIN_API_GENERATE_OTP = '/otp';
 export const ONLYOFFICE_PLUGIN_API_EDITOR = '/editor';
 
 export const ONLYOFFICE_WILDCARD_USER = '*';

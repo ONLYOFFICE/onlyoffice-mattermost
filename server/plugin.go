@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2022
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/utils"
-
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-server/v5/plugin"
 )
@@ -31,7 +29,6 @@ import (
 type Plugin struct {
 	plugin.MattermostPlugin
 	router            *mux.Router
-	internalKey       []byte
 	onlyoffice_bot    ONLYOFFICE_BOT
 	configurationLock sync.RWMutex
 	configuration     *configuration
@@ -39,7 +36,6 @@ type Plugin struct {
 
 func (p *Plugin) OnActivate() error {
 	p.router = p.forkRouter()
-	p.internalKey = []byte(utils.GenerateKey())
 	return nil
 }
 
