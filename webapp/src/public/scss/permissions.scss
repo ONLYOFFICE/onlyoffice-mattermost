@@ -17,3 +17,13 @@
 .react-select__value-container{
     max-width: 40rem;
 }
+
+#onlyoffice-permissions-modal > div > div {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        height: 0;
+        width: 0;
+      }
+}
