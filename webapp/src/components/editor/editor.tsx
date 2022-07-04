@@ -15,24 +15,21 @@
  * limitations under the License.
  *
  */
-
-import React, {useCallback} from 'react';
-
+import React, {useCallback, useEffect} from 'react';
+import {Dispatch} from 'redux';
 import {FileInfo} from 'mattermost-redux/types/files';
 
-import {Dispatch} from 'redux';
+import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API} from 'util/const';
 
-import {ONLYOFFICE_PLUGIN_API, ONLYOFFICE_PLUGIN_API_EDITOR} from 'utils';
+import EditorLoader from './EditorLoader';
 
-import {EditorLoader} from './editor_loader';
+type Props = {
+    visible: boolean,
+    fileInfo?: FileInfo,
+    close: () => (dispatch: Dispatch) => void,
+};
 
-interface EditorProps {
-    visible: boolean;
-    close: () => (dispatch: Dispatch) => void;
-    fileInfo?: FileInfo;
-}
-
-const Editor = ({visible, close, fileInfo}: EditorProps) => {
+export default function Editor({visible, close, fileInfo}: Props) {
     const lang = localStorage.getItem('onlyoffice_locale') || 'en';
     const handleClose = useCallback(() => {
         if (!visible) {
@@ -44,31 +41,13 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
             editorBackdrop.classList.add('onlyoffice-modal__backdrop_hide');
         }
 
-        setTimeout(() => close(), 300);
+        setTimeout(() => close(), 280);
     }, [close, visible]);
 
-    const onEscape = useCallback(
-        (event) => {
-            if (event.keyCode === 27) {
-                handleClose();
-            }
-        },
-        [handleClose],
-    );
-
-    React.useEffect(() => {
-        if (!visible || !fileInfo) {
-            return;
-        }
-        window.addEventListener('ONLYOFFICE_CLOSED', handleClose);
-        document.addEventListener('keydown', onEscape, false);
-
-        // eslint-disable-next-line consistent-return
-        return () => {
-            window.removeEventListener('ONLYOFFICE_CLOSED', handleClose);
-            document.removeEventListener('keydown', onEscape, false);
-        };
-    }, [fileInfo, visible, handleClose, onEscape]);
+    useEffect(() => {
+        window.addEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
+        return () => window.removeEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
+    }, [handleClose]);
 
     return (
         <>
@@ -79,7 +58,7 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
                 >
                     <EditorLoader/>
                     <iframe
-                        src={`${ONLYOFFICE_PLUGIN_API}${ONLYOFFICE_PLUGIN_API_EDITOR}?file=${fileInfo?.id}&lang=${lang}`}
+                        src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}`}
                         className='onlyoffice-modal__frame'
                         name='iframeEditor'
                     />
@@ -87,6 +66,4 @@ const Editor = ({visible, close, fileInfo}: EditorProps) => {
             )}
         </>
     );
-};
-
-export default Editor;
+}

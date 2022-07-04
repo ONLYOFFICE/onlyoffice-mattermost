@@ -1,0 +1,21 @@
+{
+    "types.permissions.edit": "Редактирование",
+    "types.permissions.read": "Чтение",
+    "plugin.open_button": "Открыть файл в ONLYOFFICE",
+    "plugin.access_button": "Изменить права доступа",
+    "preview.open_button": "Открыть в ONLYOFFICE",
+    "preview.file_type": "Тип файла",
+    "permissions.loading": "Загрузка...",
+    "permissions.access_header": "Права доступа для",
+    "permissions.access_header_default": "Права доступа для участников чата по умолчанию",
+    "permissions.modal_header": "Настройки предоставления прав к",
+    "permissions.modal_button_add": "Добавить",
+    "permissions.modal_button_cancel": "Отменить",
+    "permissions.modal_button_save": "Сохранить",
+    "permissions.modal_search_placeholder": "Выбрать...",
+    "permissions.modal_search_loading_placeholder": "Загрузка...",
+    "permissions.modal_search_no_options_placeholder": "Нет опций",
+    "permissions.modal_fetch_error": "Не удалось получить пользователей",
+    "editor.close_button": "Закрыть",
+    "editor.events.error": "Что-то пошло не так. Пожалуйста откройте консоль для получения деталей"
+}

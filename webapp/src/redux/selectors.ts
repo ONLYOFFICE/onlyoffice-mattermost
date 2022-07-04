@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 import {GlobalState} from 'mattermost-redux/types/store';
 
 import {id as pluginId} from '../manifest';
@@ -23,8 +22,8 @@ import {id as pluginId} from '../manifest';
 //@ts-ignore
 const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
 
-export const isEditorModalVisible = (state: GlobalState) => getPluginState(state).editorModalVisible.isVisible;
-export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModalVisible.fileInfo;
+export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
+export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModal.fileInfo;
 
-export const isPermissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModalVisible.isVisible;
-export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModalVisible.fileInfo;
+export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
+export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;

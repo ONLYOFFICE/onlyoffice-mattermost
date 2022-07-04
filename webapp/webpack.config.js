@@ -35,10 +35,9 @@ if (NPM_TARGET === 'build:watch' || NPM_TARGET === 'debug:watch') {
 }
 
 module.exports = {
-    entry: {
-        main: ['./src/index.tsx', './src/utils/file/index.ts',
-            './src/utils/lodash/index.ts', './src/utils/user/index.ts'],
-    },
+    entry: [
+        './src/index.tsx',
+    ],
     resolve: {
         modules: [
             'src',

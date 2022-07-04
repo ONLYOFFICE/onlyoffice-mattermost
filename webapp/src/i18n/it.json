@@ -1,0 +1,21 @@
+{
+    "types.permissions.edit": "Modificare",
+    "types.permissions.read": "Leggere",
+    "plugin.open_button": "Aprire file in ONLYOFFICE",
+    "plugin.access_button": "Cambiare diritti d'accesso",
+    "preview.open_button": "Aprire in ONLYOFFICE",
+    "preview.file_type": "File type",
+    "permissions.loading": "Caricamento...",
+    "permissions.access_header": "Diritti d'accesso per",
+    "permissions.access_header_default": "Diritti d'accesso di default per i membri della chat",
+    "permissions.modal_header": "Impostazioni di condivisione",
+    "permissions.modal_button_add": "Aggiungere",
+    "permissions.modal_button_cancel": "Cancellare",
+    "permissions.modal_button_save": "Salvare",
+    "permissions.modal_search_placeholder": "Selezionare...",
+    "permissions.modal_search_loading_placeholder": "Caricamento...",
+    "permissions.modal_search_no_options_placeholder": "Nessuna opzione",
+    "permissions.modal_fetch_error": "Could not fetch users",
+    "editor.close_button": "Close",
+    "editor.events.error": "Something went wrong. Please check your console to find the details"
+}

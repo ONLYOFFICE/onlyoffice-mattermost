@@ -15,14 +15,12 @@
  * limitations under the License.
  *
  */
-
 import {combineReducers} from 'redux';
 
-import {editorModalVisible} from './editor_reducer';
-import {permissionsModalVisible} from './permissions_reducer';
+import {editorModal} from './editor';
+import {permissionsModal} from './permissions';
 
 export default combineReducers({
-    editorModalVisible,
-    permissionsModalVisible,
+    permissionsModal,
+    editorModal,
 });
-
