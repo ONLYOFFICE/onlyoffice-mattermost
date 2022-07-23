@@ -19,6 +19,8 @@ package bot
 
 import "github.com/mattermost/mattermost-server/v6/plugin"
 
+var _ Bot = (*onlyofficeBot)(nil)
+
 type Bot interface {
 	BotCreateDM(message string, userID string)
 	BotCreatePost(message string, channelID string)

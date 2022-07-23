@@ -23,7 +23,6 @@ import (
 	"strconv"
 	"time"
 
-	integration "github.com/ONLYOFFICE/onlyoffice-mattermost"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	oovalidator "github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
@@ -43,14 +42,13 @@ func (c *editorParameters) Validate() error {
 
 func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeApiRootSuffix
-
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "got an editor request")
+		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeApiRootSuffix
 
 		user, err := plugin.API.GetUser(r.Header.Get(plugin.Configuration.MMAuthHeader))
 		if err != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not get user info")
-			rw.WriteHeader(http.StatusBadRequest)
+			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 
@@ -69,9 +67,17 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			return
 		}
 
-		post, fileInfo := GetPostInfo(plugin, payload.FileID, r)
-		if post == nil {
-			rw.WriteHeader(http.StatusBadRequest)
+		fileInfo, fileInfoErr := plugin.API.GetFileInfo(payload.FileID)
+		if fileInfoErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access file info " + payload.FileID + " Reason: " + fileInfoErr.Message)
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		post, postErr := plugin.API.GetPost(fileInfo.PostId)
+		if postErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
+			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -94,22 +100,15 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			permissions = plugin.OnlyofficeHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
 		}
 
-		downloadURL := fmt.Sprintf("%s/download?file=%s", serverURL, fileInfo.Id)
-		if len(plugin.Manager.GetKey()) > 0 {
-			var token oomodel.PlainToken
-			token.Id = payload.FileID
-			token.IssuedAt = time.Now().Unix()
-			token.ExpiresAt = time.Now().Add(5 * time.Minute).Unix()
-			token.Issuer = integration.Manifest.Id
-
-			dToken, dTokenErr := plugin.Manager.Sign(token)
-			if dTokenErr != nil {
-				plugin.API.LogError(dTokenErr.Error())
-				rw.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			downloadURL = fmt.Sprintf("%s/download?file=%s&token=%s", serverURL, fileInfo.Id, dToken)
+		dToken := &oomodel.DownloadToken{
+			FileID: payload.FileID,
+		}
+		dToken.IssuedAt, dToken.ExpiresAt = time.Now().Unix(), time.Now().Add(3*time.Minute).Unix()
+		dsignature, dTokenErr := plugin.Manager.Sign(dToken)
+		if dTokenErr != nil {
+			plugin.API.LogError(dTokenErr.Error())
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		config := oomodel.Config{
@@ -117,7 +116,7 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 				FileType:    fileInfo.Extension,
 				Key:         docKey,
 				Title:       fileInfo.Name,
-				URL:         downloadURL,
+				URL:         fmt.Sprintf("%s/download?token=%s", serverURL, dsignature),
 				Permissions: permissions,
 			},
 			DocumentType: docType,
@@ -137,19 +136,15 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			Type: oovalidator.IsMobile(r.Header.Get("User-Agent")),
 		}
 
-		if len(plugin.Manager.GetKey()) > 0 {
-			config.IssuedAt = time.Now().Unix()
-			config.ExpiresAt = time.Now().Add(5 * time.Minute).Unix()
-			config.Issuer = integration.Manifest.Id
-			token, err := plugin.Manager.Sign(config)
-			if err != nil {
-				plugin.API.LogError(err.Error())
-				rw.WriteHeader(http.StatusBadRequest)
-				return
-			}
-			config.Token = token
+		config.IssuedAt, config.ExpiresAt = time.Now().Unix(), time.Now().Add(3*time.Minute).Unix()
+		cToken, cTokenErr := plugin.Manager.Sign(config)
+		if cTokenErr != nil {
+			plugin.API.LogError(cTokenErr.Error())
+			rw.WriteHeader(http.StatusBadRequest)
+			return
 		}
 
+		config.Token = cToken
 		data := map[string]interface{}{
 			"apijs":  plugin.Configuration.Address + "/web-apps/apps/api/documents/api.js",
 			"config": config,

@@ -20,6 +20,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/handler"
@@ -47,31 +48,28 @@ func BuildCallbackHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *
 
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "valid callback payload")
 
-		if plugin.Configuration.Secret != "" {
-			headerToken := r.Header.Get(plugin.Configuration.Header)
+		headerToken := strings.TrimSpace(strings.ReplaceAll(r.Header.Get(plugin.Configuration.Header), plugin.Configuration.Prefix, ""))
+		if body.Token == "" && headerToken == "" {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "expected to get a callback jwt. Got null")
+			api.WriteJSON(rw, _CallbackErr, http.StatusForbidden)
+			return
+		}
 
-			if body.Token == "" && headerToken == "" {
-				plugin.API.LogError(_OnlyofficeLoggerPrefix + "expected to get a callback jwt. Got null")
-				api.WriteJSON(rw, _CallbackErr)
+		if body.Token != "" {
+			err := plugin.Manager.Verify(body.Token, &body)
+			if err != nil {
+				plugin.API.LogError(err.Error())
+				api.WriteJSON(rw, _CallbackErr, http.StatusForbidden)
 				return
 			}
+		}
 
-			if body.Token != "" {
-				err := plugin.Manager.Verify(body.Token, &body)
-				if err != nil {
-					plugin.API.LogError(err.Error())
-					api.WriteJSON(rw, _CallbackErr)
-					return
-				}
-			}
-
-			if body.Token == "" && headerToken != "" {
-				err := plugin.Manager.Verify(headerToken, &body)
-				if err != nil {
-					plugin.API.LogError(err.Error())
-					api.WriteJSON(rw, _CallbackErr)
-					return
-				}
+		if body.Token == "" && headerToken != "" {
+			err := plugin.Manager.Verify(headerToken, &body)
+			if err != nil {
+				plugin.API.LogError(err.Error())
+				api.WriteJSON(rw, _CallbackErr, http.StatusForbidden)
+				return
 			}
 		}
 

@@ -63,6 +63,7 @@ type UserInfoResponse struct {
 	Email       string      `json:"email"`
 }
 
-type PlainToken struct {
+type DownloadToken struct {
+	FileID string
 	jwt.StandardClaims
 }

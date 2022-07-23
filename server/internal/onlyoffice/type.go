@@ -22,6 +22,8 @@ import (
 	mmModel "github.com/mattermost/mattermost-server/v6/model"
 )
 
+var _ OnlyofficeHelper = (*helper)(nil)
+
 type OnlyofficeHelper interface {
 	IsExtensionSupported(fileExt string) bool
 	IsExtensionEditable(fileExt string) bool

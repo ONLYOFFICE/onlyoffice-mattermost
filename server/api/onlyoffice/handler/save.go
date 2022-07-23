@@ -55,6 +55,23 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 		return errors.Wrap(err, _OnlyofficeLoggerPrefix)
 	}
 
+	post, postErr := a.API.GetPost(fileInfo.PostId)
+	if postErr != nil {
+		return &FilePersistenceError{
+			FileID: c.FileID,
+			Reason: postErr.Error(),
+		}
+	}
+
+	post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
+	_, uErr := a.API.UpdatePost(post)
+	if uErr != nil {
+		return &FilePersistenceError{
+			FileID: c.FileID,
+			Reason: uErr.Error(),
+		}
+	}
+
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
 		return &FilePersistenceError{
@@ -69,14 +86,6 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			return ErrInvalidUserID
 		}
 
-		post, postErr := a.API.GetPost(fileInfo.PostId)
-		if postErr != nil {
-			return &FilePersistenceError{
-				FileID: c.FileID,
-				Reason: postErr.Error(),
-			}
-		}
-
 		user, userErr := a.API.GetUser(last)
 		if userErr != nil {
 			return &FilePersistenceError{
@@ -84,9 +93,6 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 				Reason: userErr.Error(),
 			}
 		}
-
-		post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
-		a.API.UpdatePost(post)
 
 		replyMsg := fmt.Sprintf("File %s was updated by @%s", fileInfo.Name, user.Username)
 		a.Bot.BotCreateReply(replyMsg, post.ChannelId, post.Id)

@@ -32,7 +32,7 @@ func recoverRoutes(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				fmt.Printf("Recovering from %v with url: %s", err, r.URL.String())
+				fmt.Printf("recovering from %v with url: %s", err, r.URL.String())
 			}
 		}()
 
@@ -51,7 +51,7 @@ func NewRouter(API api.PluginAPI) *mux.Router {
 	router.Use(recoverRoutes)
 
 	subrouter := router.PathPrefix("/api").Subrouter()
-	subrouter.Handle("/callback", timeoutRoutes(7*time.Second)(web.BuildCallbackHandler(API))).Methods(http.MethodPost)
+	subrouter.Handle("/callback", timeoutRoutes(5*time.Second)(web.BuildCallbackHandler(API))).Methods(http.MethodPost)
 	subrouter.Handle("/download", timeoutRoutes(5*time.Second)(web.BuildDownloadHandler(API))).Methods(http.MethodGet)
 
 	authMiddleware := middleware.MattermostAuthorizationMiddleware(API)

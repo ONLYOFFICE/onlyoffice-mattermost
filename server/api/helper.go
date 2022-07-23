@@ -22,7 +22,6 @@ import (
 	"net/http"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
-	mmModel "github.com/mattermost/mattermost-server/v6/model"
 )
 
 func WriteJSON(w http.ResponseWriter, v interface{}, code ...int) {
@@ -33,24 +32,6 @@ func WriteJSON(w http.ResponseWriter, v interface{}, code ...int) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(v)
-}
-
-func GetPostInfoExtractor(prefix string) func(plugin PluginAPI, fileID string, r *http.Request) (*mmModel.Post, *mmModel.FileInfo) {
-	return func(plugin PluginAPI, fileID string, r *http.Request) (*mmModel.Post, *mmModel.FileInfo) {
-		fileInfo, fileInfoErr := plugin.API.GetFileInfo(fileID)
-		if fileInfoErr != nil {
-			plugin.API.LogError(prefix + "could not access file info " + fileID + " Reason: " + fileInfoErr.Message)
-			return nil, nil
-		}
-
-		post, postErr := plugin.API.GetPost(fileInfo.PostId)
-		if postErr != nil {
-			plugin.API.LogError(prefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
-			return nil, nil
-		}
-
-		return post, fileInfo
-	}
 }
 
 func GetPermissionsName(permissions model.Permissions) string {

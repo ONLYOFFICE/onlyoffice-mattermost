@@ -48,7 +48,7 @@ type Plugin struct {
 	plugin.MattermostPlugin
 	configurationLock   sync.RWMutex
 	configuration       *configuration
-	bot                 bot.Bot
+	Bot                 bot.Bot
 	OnlyofficeHelper    onlyoffice.OnlyofficeHelper
 	OnlyofficeConverter converter.Converter
 	Encoder             crypto.Encoder
@@ -67,7 +67,7 @@ func (p *Plugin) OnActivate() error {
 		return err
 	}
 
-	p.bot = bot
+	p.Bot = bot
 
 	return nil
 }
@@ -93,7 +93,6 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
 	p.OnlyofficeHelper = onlyoffice.NewOnlyofficeHelper()
 	p.OnlyofficeConverter = converter.NewConverter()
-
 	bpath, _ := p.API.GetBundlePath()
 	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
 	if configuration.Error != nil {
@@ -125,7 +124,6 @@ func (p *Plugin) EnsureBot() (bot.Bot, error) {
 		DisplayName: "ONLYOFFICE",
 		Description: "ONLYOFFICE Helper",
 	})
-
 	if err != nil {
 		return nil, ErrCreateBotProfile
 	}
@@ -167,7 +165,7 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 		OnlyofficeConverter: p.OnlyofficeConverter,
 		Encoder:             p.Encoder,
 		Manager:             p.Manager,
-		Bot:                 p.bot,
+		Bot:                 p.Bot,
 		EditorTemplate:      p.EditorTemplate,
 		Filestore:           p.Filestore,
 	}).ServeHTTP(w, r)

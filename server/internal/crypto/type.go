@@ -17,6 +17,9 @@
  */
 package crypto
 
+var _ JwtManager = (*onlyofficeJwtManager)(nil)
+var _ Encoder = (*messageDigest)(nil)
+
 type Encoder interface {
 	Encode(text string) (string, error)
 }

@@ -50,8 +50,16 @@ func BuildSetFilePermissionsHandler(plugin api.PluginAPI) func(rw http.ResponseW
 			}
 		}
 
-		post, fileInfo := GetPostInfo(plugin, postPermissions[0].FileID, r)
-		if post == nil {
+		fileInfo, fileInfoErr := plugin.API.GetFileInfo(postPermissions[0].FileID)
+		if fileInfoErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access file info " + postPermissions[0].FileID + " Reason: " + fileInfoErr.Message)
+			api.WriteJSON(rw, _CallbackErr, http.StatusInternalServerError)
+			return
+		}
+
+		post, postErr := plugin.API.GetPost(fileInfo.PostId)
+		if postErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
 			api.WriteJSON(rw, _CallbackErr, http.StatusInternalServerError)
 			return
 		}
@@ -101,8 +109,16 @@ func BuildGetFilePermissionsHandler(plugin api.PluginAPI) func(rw http.ResponseW
 	return func(rw http.ResponseWriter, r *http.Request) {
 		fileID := r.URL.Query().Get("file")
 
-		post, _ := GetPostInfo(plugin, fileID, r)
-		if post == nil {
+		fileInfo, fileInfoErr := plugin.API.GetFileInfo(fileID)
+		if fileInfoErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access file info " + fileID + " Reason: " + fileInfoErr.Message)
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		post, postErr := plugin.API.GetPost(fileInfo.PostId)
+		if postErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
 			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}

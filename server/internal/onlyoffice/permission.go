@@ -81,20 +81,21 @@ func (h helper) GetFilePermissionsByUserID(userID string, fileID string, post *m
 		return model.OnlyofficeDefaultPermissions
 	}
 
+	var permissions model.Permissions
+	var uerr, werr error
+
 	if permissionsProp != nil {
-		permissions, err := toPermissions(permissionsProp)
-		if err != nil {
-			return model.OnlyofficeDefaultPermissions
+		permissions, uerr = toPermissions(permissionsProp)
+		if uerr == nil {
+			return permissions
 		}
-		return permissions
 	}
 
 	if wildcardProp != nil {
-		permissions, err := toPermissions(wildcardProp)
-		if err != nil {
-			return model.OnlyofficeDefaultPermissions
+		permissions, werr = toPermissions(wildcardProp)
+		if werr == nil {
+			return permissions
 		}
-		return permissions
 	}
 
 	return model.OnlyofficeDefaultPermissions
@@ -115,7 +116,9 @@ func (h helper) SetPostFilePermissions(post *mmModel.Post, permissions []model.P
 		}
 
 		hadPermissions := h.UserHasFilePermissions(permission.UserID, permission.FileID, post)
-		if !hadPermissions || !reflect.DeepEqual(permission.Permissions, h.GetFilePermissionsByUserID(permission.UserID, permission.FileID, post)) {
+		equalsUserPrevious := reflect.DeepEqual(permission.Permissions, h.GetFilePermissionsByUserID(permission.UserID, permission.FileID, post))
+		equalsPreviousRead := reflect.DeepEqual(permission.Permissions, model.OnlyofficeDefaultPermissions)
+		if (!hadPermissions && !equalsPreviousRead) || !equalsUserPrevious {
 			notifyPermissions = append(notifyPermissions, permission)
 		}
 

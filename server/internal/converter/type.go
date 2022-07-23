@@ -19,6 +19,8 @@ package converter
 
 import "time"
 
+var _ Converter = (*converter)(nil)
+
 type Converter interface {
 	GetTimestamp() int64
 	GetTime(timestamp int64) time.Time

@@ -134,24 +134,24 @@ func (c *configuration) IsValid() error {
 		}
 	}
 
-	if c.DESJwt != "" && c.DESJwtHeader == "" {
+	if c.DESJwt == "" {
 		return &BadConfigurationError{
-			Property: "Document Server Header",
-			Reason:   "Please specify document server header or remove document server jwt",
+			Property: "Document Server Secret",
+			Reason:   "Please specify document server secret",
 		}
 	}
 
-	if c.DESJwt != "" && c.DESJwtPrefix == "" {
+	if c.DESJwtPrefix == "" {
 		return &BadConfigurationError{
 			Property: "Document Serve Prefix",
-			Reason:   "Please specify document server prefix of remove document server jwt",
+			Reason:   "Please specify document server prefix",
 		}
 	}
 
-	if c.DESJwtHeader != "" && strings.TrimSpace(c.DESJwtHeader) == "Authorization" {
+	if c.DESJwtHeader == "" || strings.TrimSpace(c.DESJwtHeader) == "Authorization" {
 		return &BadConfigurationError{
 			Property: "Document Server Header",
-			Reason:   "Do not use 'Authorization' header",
+			Reason:   "Please specify document server header (Note: do not use 'Authorization' header)",
 		}
 	}
 

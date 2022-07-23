@@ -18,7 +18,6 @@
 package web
 
 import (
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
@@ -36,5 +35,3 @@ var (
 		Error: 0,
 	}
 )
-
-var GetPostInfo = api.GetPostInfoExtractor(_OnlyofficeLoggerPrefix)

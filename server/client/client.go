@@ -30,6 +30,8 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 )
 
+var _ OnlyofficeCommandClient = (*onlyofficeCommandClient)(nil)
+
 const (
 	OnlyofficeCommandServicePath    string = "/coauthoring/CommandService.ashx"
 	OnlyofficeCommandServiceVersion string = "version"

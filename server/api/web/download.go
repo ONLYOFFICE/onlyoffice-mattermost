@@ -27,25 +27,23 @@ import (
 func BuildDownloadHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
-		var jwt model.PlainToken
+		var jwt model.DownloadToken
 
-		if plugin.Configuration.Secret != "" {
-			err := plugin.Manager.Verify(query.Get("token"), &jwt)
-			if err != nil {
-				plugin.API.LogError(err.Error())
-				rw.WriteHeader(http.StatusForbidden)
-				return
-			}
-		}
-
-		fileID := query.Get("file")
-		file, fileErr := plugin.API.GetFile(fileID)
-		if fileErr != nil {
-			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not download file. Reason: " + fileErr.Message)
+		err := plugin.Manager.Verify(query.Get("token"), &jwt)
+		if err != nil {
+			plugin.API.LogError(err.Error())
+			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 
-		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "downloading file " + fileID)
+		file, fileErr := plugin.API.GetFile(jwt.FileID)
+		if fileErr != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not download file. Reason: " + fileErr.Message)
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "downloading file " + jwt.FileID)
 		rw.Write(file)
 	}
 }
