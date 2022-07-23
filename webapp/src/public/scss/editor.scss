@@ -46,50 +46,137 @@
 }
 
 .onlyoffice-editor__loader-icon {
+  display: inline-block;
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 92px;
+  width: 80px;
+  height: 80px;
 }
 
 .onlyoffice-editor__loader-icon div {
-  position: static;
-  margin-left: 0.9rem;
-  left: 8px;
-  width: 16px;
-  border-radius: 0.3rem;
-  animation: editorLoad 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  position: absolute;
+  border-radius: 50%;
 }
 
 .onlyoffice-editor__loader-icon div:nth-child(1) {
-  left: 8px;
-  animation-delay: -0.24s;
-  background: #5dc0e8;
+  left: 5px;
+  top: 43px;
+  width: 12px;
+  height: 12px;
+  opacity: .5;
+  animation: loaderOne 4s ease-in-out infinite;
+  background: #5DC0E8;
 }
 
 .onlyoffice-editor__loader-icon div:nth-child(2) {
-  left: 32px;
-  animation-delay: -0.12s;
-  background: #95c038;
+  left: 25px;
+  top: 33px;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+  animation: loaderTwo 4s ease-in-out infinite;
+  background: #FF6F3D;
 }
 
 .onlyoffice-editor__loader-icon div:nth-child(3) {
-  left: 56px;
-  animation-delay: 0;
-  background: #ff6f3d;
+  left: 65px;
+  top: 43px;
+  width: 12px;
+  height: 12px;
+  opacity: .5;
+  animation: loaderThree 4s ease-in-out infinite;
+  background: #95C038;
 }
 
-@keyframes editorLoad {
+@keyframes loaderOne {
   0% {
-    top: 8px;
-    height: 76px;
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
   }
-  50%,
+  33% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  66% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
   100% {
-    top: 24px;
-    height: 44px;
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+}
+
+@keyframes loaderTwo {
+  0% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  33% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  66% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  100% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+}
+
+@keyframes loaderThree {
+  0% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  33% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  66% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  100% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
   }
 }
 
