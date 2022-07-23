@@ -59,7 +59,7 @@
   margin-left: 0.9rem;
   left: 8px;
   width: 16px;
-  border-radius: .3rem;
+  border-radius: 0.3rem;
   animation: editorLoad 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
 
@@ -97,6 +97,15 @@
   margin-bottom: 4rem;
   font-weight: 700;
   text-align: center;
+  font-family: sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #000000;
 }
 
 .onlyoffice-editor__loader-btn {
@@ -108,16 +117,15 @@
   order: 0;
   flex-grow: 0;
   font-family: sans-serif;
-  background: #ff6f3d;
-  color: #FFFFFF;
+  background: #166de0;
+  color: #ffffff;
   border: none;
-  margin-left: 0.75rem;
-  padding: 15px 24px;
-  gap: 8px;
+  padding: 7px 12px;
+  gap: 12px;
   min-width: 153px;
   height: 48px;
-  border-radius: 3px;
-  transition: all .5s ease-in-out;
+  border-radius: 2px;
+  transition: all 0.5s ease-in-out;
 }
 
 .onlyoffice-editor__loader-btn:hover {

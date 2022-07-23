@@ -20,6 +20,8 @@ import React, {useEffect, useState} from 'react';
 import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_ERROR_EVENT, ONLYOFFICE_READY_EVENT} from 'util/const';
 import {getTranslations} from 'util/lang';
 
+import errorIcon from 'public/images/error.svg';
+
 export default function EditorLoader() {
     const [error, setError] = useState(false);
     const i18n = getTranslations();
@@ -49,7 +51,15 @@ export default function EditorLoader() {
     return (
         <div className='onlyoffice-editor__loader-container'>
             {!error && <div className='onlyoffice-editor__loader-icon'><div/><div/><div/></div>}
-            {error && <span className='onlyoffice-editor__loader_error'>{i18n['editor.events.error']}</span>}
+            {error && (
+                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                    <img
+                        style={{width: '41px', height: '41px', marginBottom: '2rem'}}
+                        src={errorIcon}
+                    />
+                    <span className='onlyoffice-editor__loader_error'>{i18n['editor.events.error']}</span>
+                </div>
+            )}
             <button
                 className='onlyoffice-editor__loader-btn'
                 onClick={requestClose}

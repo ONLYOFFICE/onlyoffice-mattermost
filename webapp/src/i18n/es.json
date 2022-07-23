@@ -17,5 +17,5 @@
     "permissions.modal_search_no_options_placeholder": "No hay opciones",
     "permissions.modal_fetch_error": "Could not fetch users",
     "editor.close_button": "Close",
-    "editor.events.error": "Something went wrong. Please check your console to find the details"
+    "editor.events.error": "Oops! Something went wrong..."
 }
