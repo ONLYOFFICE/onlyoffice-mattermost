@@ -38,7 +38,6 @@ import 'public/scss/editor.scss';
 export default class Plugin {
     public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
         registry.registerTranslations(getTranslations);
-        const i18n = getTranslations();
         registry.registerReducer(Reducer);
         registry.registerRootComponent(OnlyofficeEditor);
         registry.registerRootComponent(OnlyofficeFilePermissions);
@@ -47,12 +46,12 @@ export default class Plugin {
         if (registry.registerFileDropdownMenuAction) {
             registry.registerFileDropdownMenuAction(
                 (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
-                i18n['plugin.open_button'],
+                () => getTranslations()['plugin.open_button'],
                 (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
             );
             registry.registerFileDropdownMenuAction(
                 (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
-                i18n['plugin.access_button'],
+                () => getTranslations()['plugin.access_button'],
                 (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
             );
         }
