@@ -107,12 +107,11 @@ export const PermissionsHeader = (props: Props) => {
                 style={{marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
             >
                 <span
-                    className='member-count pull-left'
-                    style={{maxWidth: '60%'}}
+                    className='member-count pull-left onlyoffice-permissions__access-header'
                 >
                     <span>{accessHeader}</span>
                 </span>
-                <div style={{marginRight: '2.5rem', marginLeft: '10px', minWidth: '15rem'}}>
+                <div style={{marginRight: '2.5rem', marginLeft: '10px', width: '15rem'}}>
                     <Select
                         isSearchable={false}
                         value={{
