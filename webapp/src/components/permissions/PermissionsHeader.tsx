@@ -107,12 +107,12 @@ export const PermissionsHeader = (props: Props) => {
                 style={{marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
             >
                 <span
-                    style={{flexGrow: 2}}
                     className='member-count pull-left'
+                    style={{maxWidth: '60%'}}
                 >
                     <span>{accessHeader}</span>
                 </span>
-                <div style={{marginRight: '2.5rem', marginLeft: '10px', width: '15rem'}}>
+                <div style={{marginRight: '2.5rem', marginLeft: '10px', minWidth: '15rem'}}>
                     <Select
                         isSearchable={false}
                         value={{
