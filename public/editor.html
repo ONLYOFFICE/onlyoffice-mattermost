@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2022
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -42,6 +42,11 @@
 
         .form {
             height: 100%;
+            visibility: hidden;
+        }
+
+        .form_visible {
+            visibility: visible;
         }
 
         div {
@@ -58,8 +63,10 @@
     </div>
     <script type="text/javascript" src="{{.apijs}}"></script>
     <script type="text/javascript" language="javascript">
-        const ONLYOFFICE_CLOSED_EVENT = new Event('ONLYOFFICE_CLOSED');
-        const ONLYOFFICE_EDITOR_READY = new Event('ONLYOFFICE_READY');
+        const ONLYOFFICE_CLOSE_EVENT = new Event('onlyofficecloseeditor');
+        const ONLYOFFICE_READY_EVENT = new Event('onlyofficeready');
+        const ONLYOFFICE_ERROR_EVENT = new Event('onlyofficeerror');
+
         var docEditor;
 
         var innerAlert = function (message) {
@@ -67,8 +74,13 @@
                 console.log(message);
         };
 
-        var onAppReady = function () {  // the application is loaded into the browser
+        var onAppReady = function () {
             innerAlert("Document editor ready");
+            const form = document.getElementsByClassName('form').item(0);
+            if (form) {
+                window.parent.dispatchEvent(ONLYOFFICE_READY_EVENT);
+                form.classList.add('form_visible');
+            }
         };
 
         var onRequestClose = function () {
@@ -76,11 +88,10 @@
                 window.close();
                 return;
             }
-            window.parent.dispatchEvent(ONLYOFFICE_CLOSED_EVENT);
+            window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
             docEditor.destroyEditor();
         };
 
-        // replace the link to the document which contains a bookmark
         var replaceActionLink = function (href, linkParam) {
             var link;
             var actionIndex = href.indexOf("&action=");
@@ -97,18 +108,32 @@
             return link;
         }
 
+        var onError = function (event) {
+            if (event) innerAlert(event.data);
+        };
+
+        var onOutdatedVersion = function (event) {
+            window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
+        };
+
         var events = {
             "onAppReady": onAppReady,
             "onRequestClose": onRequestClose,
+            "onError": onError,
+            "onOutdatedVersion": onOutdatedVersion,
         };
 
         var config = {{ .config }};
         config["events"] = events;
 
         var connectEditor = function () {
-            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
-            window.parent.dispatchEvent(ONLYOFFICE_EDITOR_READY);
-            fixSize();
+            try {
+                docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+                fixSize();
+            } catch {
+                innerAlert('[ONLYOFFICE Error]: could not initialize DocsAPI instance');
+                window.parent.dispatchEvent(ONLYOFFICE_ERROR_EVENT);
+            }
         };
 
         var fixSize = function () {

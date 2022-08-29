@@ -9,6 +9,10 @@
     transition: visibility 0.1s linear, opacity 0.1s linear;
 }
 
+.onlyoffice-permissions__access-header {
+    max-width: 60%;
+}
+
 .filtered-user-list{
     scrollbar-width: none;
     min-height: 400px;
@@ -18,12 +22,8 @@
     max-width: 40rem;
 }
 
-#onlyoffice-permissions-modal > div > div {
-    overflow-y: scroll;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-        height: 0;
-        width: 0;
-      }
+@media all and (max-width: 497px) {
+    .onlyoffice-permissions__access-header {
+        max-width: 40%;
+    }
 }

@@ -15,6 +15,5 @@
  * limitations under the License.
  *
  */
-
-export {closeEditor, openEditor} from './editor_actions';
-export {closePermissions, openPermissions} from './permissions_actions';
+export {closePermissions, openPermissions} from './permissions';
+export {closeEditor, openEditor} from './editor';

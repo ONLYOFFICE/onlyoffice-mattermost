@@ -15,13 +15,13 @@
  * limitations under the License.
  *
  */
-
 package main
 
 import (
-	"github.com/mattermost/mattermost-server/v5/plugin"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/cmd"
+	"github.com/mattermost/mattermost-server/v6/plugin"
 )
 
 func main() {
-	plugin.ClientMain(&Plugin{})
+	plugin.ClientMain(&cmd.Plugin{})
 }

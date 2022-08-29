@@ -15,20 +15,17 @@
  * limitations under the License.
  *
  */
-
 import {connect} from 'react-redux';
 import {bindActionCreators, Dispatch} from 'redux';
-
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {isPermissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
-
+import {permissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
 import {closePermissions} from 'redux/actions';
 
-import Permissions from './permissions';
+import OnlyofficeFilePermissions from './Permissions';
 
 const mapStateToProps = (state: GlobalState) => ({
-    visible: isPermissionsModalVisible(state),
+    visible: permissionsModalVisible(state),
     fileInfo: permissionsModalFileInfo(state),
 });
 
@@ -36,4 +33,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closePermissions,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Permissions);
+export default connect(mapStateToProps, mapDispatchToProps)(OnlyofficeFilePermissions);
