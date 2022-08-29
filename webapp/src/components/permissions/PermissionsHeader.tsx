@@ -107,8 +107,7 @@ export const PermissionsHeader = (props: Props) => {
                 style={{marginTop: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
             >
                 <span
-                    style={{flexGrow: 2}}
-                    className='member-count pull-left'
+                    className='member-count pull-left onlyoffice-permissions__access-header'
                 >
                     <span>{accessHeader}</span>
                 </span>

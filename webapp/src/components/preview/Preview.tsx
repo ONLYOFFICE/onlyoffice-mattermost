@@ -50,7 +50,10 @@ export default function OnlyofficeFilePreview(props: Props) {
                     src={icon}
                 />
             </a>
-            <div className='file-details'>
+            <div
+                className='file-details'
+                style={{display: 'flex', flexDirection: 'column'}}
+            >
                 <div className='file-details__name'>{props.fileInfo.name}</div>
                 <div className='file-details__info'>
                     {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}

@@ -9,18 +9,13 @@
 }
 
 .file-details__onlyoffice {
-    position: relative;
-    top: 15rem;
     display: flex;
     justify-content: flex-end;
+    align-items: flex-end;
+    flex-grow: 2;
 }
 
 @media all and (max-width: 768px) {
-    .file-details__onlyoffice {
-        position: static;
-        justify-content: space-evenly;
-    }
-
     .onlyoffice_preview__btn {
         margin-top: .5rem;
     }

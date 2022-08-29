@@ -84,13 +84,11 @@ const UserIcon = ({user}: {user: MattermostUser}) => {
 const UserDetails = ({user}: {user: MattermostUser}) => {
     return (
         <div className='more-modal__details'>
-            <div className='more-modal__name'>
-                <button
-                    className='user-popover style--none'
-                    aria-label={`@${user.label}`}
-                >
-                    {`@${user.label}`}
-                </button>
+            <div
+                className='more-modal__name'
+                style={{display: 'block'}}
+            >
+                {`@${user.label}`}
             </div>
             <div className='more-modal__description'>
                 {user.email}

@@ -9,6 +9,10 @@
     transition: visibility 0.1s linear, opacity 0.1s linear;
 }
 
+.onlyoffice-permissions__access-header {
+    max-width: 60%;
+}
+
 .filtered-user-list{
     scrollbar-width: none;
     min-height: 400px;
@@ -16,4 +20,10 @@
 
 .react-select__value-container{
     max-width: 40rem;
+}
+
+@media all and (max-width: 497px) {
+    .onlyoffice-permissions__access-header {
+        max-width: 40%;
+    }
 }
