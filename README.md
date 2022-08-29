@@ -32,13 +32,18 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 1. Clone the [master branch](https://github.com/ONLYOFFICE/onlyoffice-mattermost).
 2. Go to the project root.
-3. Run: 
+3. Install the dependencies: 
+
+    ```sh
+    npm install --legacy-peer-deps
+    ```
+4. Run: 
 
     ```sh
     make dist
     ```
-4. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
-5. Choose the compiled plugin from your dist folder and press Upload.
+5. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
+6. Choose the compiled plugin from your dist folder and press Upload.
 
 ## Plugin settings
 
