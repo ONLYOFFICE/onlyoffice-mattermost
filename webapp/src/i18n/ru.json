@@ -17,5 +17,5 @@
     "permissions.modal_search_no_options_placeholder": "Нет опций",
     "permissions.modal_fetch_error": "Не удалось получить пользователей",
     "editor.close_button": "Закрыть",
-    "editor.events.error": "Oops! Something went wrong..."
+    "editor.events.error": "Ошибка! Что-то пошло не так..."
 }
