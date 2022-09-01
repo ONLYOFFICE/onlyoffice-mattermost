@@ -4,7 +4,7 @@
     "plugin.open_button": "Abrir el archivo en ONLYOFFICE",
     "plugin.access_button": "Cambiar derechos de acceso",
     "preview.open_button": "Abrir en ONLYOFFICE",
-    "preview.file_type": "File type",
+    "preview.file_type": "Tipo de archivo",
     "permissions.loading": "Cargando...",
     "permissions.access_header": "Derechos de acceso para",
     "permissions.access_header_default": "Derechos de acceso por defecto para los miembros del chat",
@@ -15,7 +15,7 @@
     "permissions.modal_search_placeholder": "Seleccionar...",
     "permissions.modal_search_loading_placeholder": "Cargando...",
     "permissions.modal_search_no_options_placeholder": "No hay opciones",
-    "permissions.modal_fetch_error": "Could not fetch users",
-    "editor.close_button": "Close",
-    "editor.events.error": "Oops! Something went wrong..."
+    "permissions.modal_fetch_error": "No se pudo recuperar los usuarios",
+    "editor.close_button": "Cerrar",
+    "editor.events.error": "¡Vaya! Se ha producido un error..."
 }

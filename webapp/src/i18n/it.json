@@ -1,10 +1,10 @@
-{
+﻿{
     "types.permissions.edit": "Modificare",
     "types.permissions.read": "Leggere",
     "plugin.open_button": "Aprire file in ONLYOFFICE",
     "plugin.access_button": "Cambiare diritti d'accesso",
     "preview.open_button": "Aprire in ONLYOFFICE",
-    "preview.file_type": "File type",
+    "preview.file_type": "Tipo di file",
     "permissions.loading": "Caricamento...",
     "permissions.access_header": "Diritti d'accesso per",
     "permissions.access_header_default": "Diritti d'accesso di default per i membri della chat",
@@ -15,7 +15,7 @@
     "permissions.modal_search_placeholder": "Selezionare...",
     "permissions.modal_search_loading_placeholder": "Caricamento...",
     "permissions.modal_search_no_options_placeholder": "Nessuna opzione",
-    "permissions.modal_fetch_error": "Could not fetch users",
-    "editor.close_button": "Close",
-    "editor.events.error": "Oops! Something went wrong..."
+    "permissions.modal_fetch_error": "Impossibile recuperare gli utenti",
+    "editor.close_button": "Chiudi",
+    "editor.events.error": "Ops! Qualcosa è andato storto..."
 }

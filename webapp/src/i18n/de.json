@@ -4,7 +4,7 @@
     "plugin.open_button": "In ONLYOFFICE öffnen",
     "plugin.access_button": "Zugriffsrechte ändern",
     "preview.open_button": "In ONLYOFFICE öffnen",
-    "preview.file_type": "File type",
+    "preview.file_type": "Dateityp",
     "permissions.loading": "Ladevorgang...",
     "permissions.access_header": "Zugriffsrechte für",
     "permissions.access_header_default": "Standardmäßige Zugriffsrechte für Mitglieder des Chats",
@@ -15,7 +15,7 @@
     "permissions.modal_search_placeholder": "Auswählen...",
     "permissions.modal_search_loading_placeholder": "Ladevorgang...",
     "permissions.modal_search_no_options_placeholder": "Keine Optionen",
-    "permissions.modal_fetch_error": "Could not fetch users",
-    "editor.close_button": "Close",
-    "editor.events.error": "Oops! Something went wrong..."
+    "permissions.modal_fetch_error": "Abrufen von Benutzern ist unmöglich",
+    "editor.close_button": "Schließen",
+    "editor.events.error": "Hoppla! in Fehler ist aufgetreten..."
 }
