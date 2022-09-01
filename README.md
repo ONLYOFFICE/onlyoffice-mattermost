@@ -37,6 +37,7 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
     ```sh
     npm install --legacy-peer-deps
     ```
+    Please note: to build the plugin, you need to have Node.js v.15.14.0 installed on your machine.
 4. Run: 
 
     ```sh
