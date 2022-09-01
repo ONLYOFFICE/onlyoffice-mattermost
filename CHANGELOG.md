@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.0
+## Added
+- support mattermost v6 and v7
+
 ## 1.0.1
 ## Added
 - disable certificate verification

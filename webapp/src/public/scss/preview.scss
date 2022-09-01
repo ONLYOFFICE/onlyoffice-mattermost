@@ -1,8 +1,22 @@
 .onlyoffice_preview__btn{
     transition: box-shadow .3s;
+    margin-right: .5rem;
     cursor: pointer;
 }
 
 .onlyoffice_preview__btn:hover{
     box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+.file-details__onlyoffice {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    flex-grow: 2;
+}
+
+@media all and (max-width: 768px) {
+    .onlyoffice_preview__btn {
+        margin-top: .5rem;
+    }
 }

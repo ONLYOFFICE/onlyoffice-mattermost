@@ -1,0 +1,220 @@
+@import "./colors.scss";
+@import "./mixins.scss";
+@import "./animations.scss";
+
+.onlyoffice-modal__backdrop {
+  @include parent_size();
+  position: fixed;
+  display: flex;
+  align-items: center;
+  left: 0;
+  top: 0;
+  z-index: 2000;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  animation-name: fadeIn;
+  animation-duration: 0.3s;
+}
+
+.onlyoffice-modal__backdrop_hide {
+  animation-name: fadeOut;
+  animation-duration: 0.3s;
+}
+
+.onlyoffice-modal__frame {
+  @include parent_size();
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  color: $modal_color;
+  background-color: $modal_background_color;
+  animation-name: fadeIn;
+  animation-duration: 0.3s;
+}
+
+.onlyoffice-editor__loader-container {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.onlyoffice-editor__loader-container_hidden {
+  display: none;
+}
+
+.onlyoffice-editor__loader-icon {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.onlyoffice-editor__loader-icon div {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.onlyoffice-editor__loader-icon div:nth-child(1) {
+  left: 5px;
+  top: 43px;
+  width: 12px;
+  height: 12px;
+  opacity: .5;
+  animation: loaderOne 4s ease-in-out infinite;
+  background: #5DC0E8;
+}
+
+.onlyoffice-editor__loader-icon div:nth-child(2) {
+  left: 25px;
+  top: 33px;
+  width: 32px;
+  height: 32px;
+  opacity: 1;
+  animation: loaderTwo 4s ease-in-out infinite;
+  background: #FF6F3D;
+}
+
+.onlyoffice-editor__loader-icon div:nth-child(3) {
+  left: 65px;
+  top: 43px;
+  width: 12px;
+  height: 12px;
+  opacity: .5;
+  animation: loaderThree 4s ease-in-out infinite;
+  background: #95C038;
+}
+
+@keyframes loaderOne {
+  0% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  33% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  66% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  100% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+}
+
+@keyframes loaderTwo {
+  0% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  33% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  66% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  100% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+}
+
+@keyframes loaderThree {
+  0% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  33% {
+    left: 5px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+  66% {
+    left: 25px;
+    top: 33px;
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  100% {
+    left: 65px;
+    top: 43px;
+    width: 12px;
+    height: 12px;
+    opacity: .5;
+  }
+}
+
+.onlyoffice-editor__loader_error {
+  margin-bottom: 4rem;
+  font-weight: 700;
+  text-align: center;
+  font-family: sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #000000;
+}
+
+.onlyoffice-editor__loader-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  font-family: sans-serif;
+  background: #166de0;
+  color: #ffffff;
+  border: none;
+  padding: 7px 12px;
+  gap: 12px;
+  min-width: 153px;
+  height: 48px;
+  border-radius: 2px;
+  transition: all 0.5s ease-in-out;
+}
+
+.onlyoffice-editor__loader-btn:hover {
+  box-shadow: 3px 7px #cfcfcf;
+}

@@ -4,10 +4,6 @@ Babel         - The compiler for writing next generation JavaScript. (https://gi
 License:        MIT
 License File:   babel.license
 
-Bootstrap     - Sleek, intuitive, and powerful front-end framework for faster and easier web development. (https://github.com/twbs/bootstrap)
-License:        MIT
-License File:   bootstrap.license
-
 Core-js       - Modular standard library for JavaScript. Includes polyfills for ECMAScript up to 2021: promises, symbols, collections, iterators, typed arrays, many other features, ECMAScript proposals, some cross-platform WHATWG / W3C features and proposals like URL. (https://github.com/zloirock/core-js)
 License:        MIT
 License File:   core-js.license
@@ -43,10 +39,6 @@ License File:   jest.license
 Jwt-go        - A go (or 'golang' for search engine friendliness) implementation of JSON Web Tokens. (https://github.com/golang-jwt/jwt)
 License:        MIT
 License File:   jwt-go.license
-
-Lodash        - A modern JavaScript utility library delivering modularity, performance & extras. (https://github.com/lodash/lodash)
-License:        MIT
-License File:   lodash.license
 
 Mapstructure  - mapstructure is a Go library for decoding generic map values to structures and vice versa, while providing helpful error handling. (https://github.com/mitchellh/mapstructure)
 License:        MIT

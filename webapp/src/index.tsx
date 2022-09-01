@@ -15,46 +15,43 @@
  * limitations under the License.
  *
  */
-import {AnyAction, Store} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
-import {FileInfo} from 'mattermost-redux/types/files';
+import {Action, AnyAction, Store} from 'redux';
 import {ThunkDispatch} from 'redux-thunk';
 
-import {isExtensionSupported, isFileAuthor} from 'utils/file';
+import {GlobalState} from 'mattermost-redux/types/store';
+import {FileInfo} from 'mattermost-redux/types/files';
 
-import FilePreviewOverride from 'components/file_preview/file_preview';
+import OnlyofficeFilePreview from 'components/preview';
+import OnlyofficeFilePermissions from 'components/permissions';
+import OnlyofficeEditor from 'components/editor';
 
 import {openEditor, openPermissions} from 'redux/actions';
-
 import Reducer from 'redux/reducers';
 
-import manifest from 'manifest';
+import {getTranslations} from 'util/lang';
+import {isExtensionSupported, isFileAuthor} from 'util/file';
 
-import Editor from 'components/editor';
-import Permissions from 'components/permissions';
+import manifest from 'manifest';
 import 'public/scss/icons.scss';
-import 'public/scss/modal_editor.scss';
-import {getTranslations} from 'utils/i18n';
+import 'public/scss/editor.scss';
 
 export default class Plugin {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async initialize(registry: any, store: Store<GlobalState>) {
+    public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
         registry.registerTranslations(getTranslations);
-        const i18n = getTranslations();
         registry.registerReducer(Reducer);
-        registry.registerRootComponent(Editor);
-        registry.registerRootComponent(Permissions);
+        registry.registerRootComponent(OnlyofficeEditor);
+        registry.registerRootComponent(OnlyofficeFilePermissions);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerFileDropdownMenuAction) {
             registry.registerFileDropdownMenuAction(
                 (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
-                i18n['plugin.open_button'],
+                () => getTranslations()['plugin.open_button'],
                 (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
             );
             registry.registerFileDropdownMenuAction(
                 (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
-                i18n['plugin.access_button'],
+                () => getTranslations()['plugin.access_button'],
                 (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
             );
         }
@@ -63,7 +60,7 @@ export default class Plugin {
             (fileInfo: FileInfo) => {
                 return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
             },
-            FilePreviewOverride,
+            OnlyofficeFilePreview,
         );
     }
 }

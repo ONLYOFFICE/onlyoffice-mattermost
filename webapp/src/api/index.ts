@@ -15,29 +15,20 @@
  * limitations under the License.
  *
  */
+import {id as pluginName} from 'manifest';
 
-export const apiGET = async (url: string, headers?: HeadersInit) => {
-    let json;
-    const response = await fetch(url, {
-        method: 'GET',
-        headers,
-    });
+import {http} from './http';
 
-    if (response.body) {
-        json = await response.json();
-    }
+const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/api`;
+export const ONLYOFFICE_PLUGIN_PERMISSIONS = `${ONLYOFFICE_PLUGIN_API}/permissions`;
+export const ONLYOFFICE_PLUGIN_GET_CODE = `${ONLYOFFICE_PLUGIN_API}/code`;
 
-    return [json, response.headers];
-};
+export async function get<T>(path: string, config?: RequestInit): Promise<T> {
+    const init = {method: 'GET', ...config};
+    return http<T>(path, init);
+}
 
-export const apiPOST = async (url: string, body: string, headers?: HeadersInit) => {
-    try {
-        await fetch(url, {
-            method: 'POST',
-            headers,
-            body,
-        });
-    } catch {
-        throw new Error('API POST call error');
-    }
-};
+export async function post<T, U>(path: string, body: T, config?: RequestInit): Promise<U> {
+    const init = {method: 'POST', body: JSON.stringify(body), ...config};
+    return http<U>(path, init);
+}
