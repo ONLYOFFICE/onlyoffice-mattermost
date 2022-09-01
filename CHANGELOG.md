@@ -2,7 +2,7 @@
 
 ## 1.1.0
 ## Added
-- support mattermost v6
+- support mattermost v6 and v7
 
 ## 1.0.1
 ## Added
