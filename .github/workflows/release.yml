@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '15.14.0'
+      - name: Get Info
+        run: |
+          echo "::set-output name=id::$(jq -r '.id' plugin.json)"
+          echo "::set-output name=version::$(jq -r '.version' plugin.json)"
+        id: info
+      - name: Generate Changelog
+        run: |
+          awk '/## [0-9]/{p++} p; /## [0-9]/{if (p > 1) exit}' CHANGELOG.md | awk 'NR>2 {print last} {last=$0}' > RELEASE.md
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}/webapp
+          npm install --legacy-peer-deps
+          cd .. && make dist
+      - name: Release Artifact
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: v${{ steps.info.outputs.version }}
+          tag_name: v${{ steps.info.outputs.version }}
+          body_path: ./RELEASE.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
+          asset_name: ${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
+          asset_content_type: application/tar+gzip
