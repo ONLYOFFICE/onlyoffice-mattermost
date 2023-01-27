@@ -80,6 +80,10 @@ Redux         - Redux is a predictable state container for JavaScript apps. (htt
 License:        MIT
 License File:   redux.license
 
+Resty         - Simple HTTP and REST client library for Go. (https://github.com/go-resty/resty)
+License:        MIT
+License File:   resty.license
+
 Sass-loader   - Loads a Sass/SCSS file and compiles it to CSS. (https://github.com/webpack-contrib/sass-loader)
 License:        MIT
 License File:   sass-loader.license

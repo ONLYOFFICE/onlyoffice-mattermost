@@ -53,13 +53,6 @@
                 "type": "text",
                 "placeholder": "Enter your JWT header prefix",
                 "default": "Bearer "
-            },
-            {
-                "key": "InsecureClient",
-                "display_name": "Enable insecure client: ",
-                "type": "bool",
-                "placeholder": "",
-                "default": false
             }
         ]
     }
