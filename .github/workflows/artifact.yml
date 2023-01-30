@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '15.14.0'
       - name: Get Info
         run: |
-          echo "::set-output name=id::$(jq -r '.id' plugin.json)"
-          echo "::set-output name=version::$(jq -r '.version' plugin.json)"
+          echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r '.version' plugin.json)" >> $GITHUB_OUTPUT
         id: info
       - name: Build Artifact
         run: |
@@ -27,7 +27,7 @@ jobs:
           npm install --legacy-peer-deps
           cd .. && make dist
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}
           path: dist/${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
