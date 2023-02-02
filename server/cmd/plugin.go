@@ -103,7 +103,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	}
 
 	license := p.API.GetLicense()
-	serverConfig := p.API.GetConfig()
+	serverConfig := p.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
 	p.Filestore, configuration.Error = filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance))
 	if configuration.Error != nil {
