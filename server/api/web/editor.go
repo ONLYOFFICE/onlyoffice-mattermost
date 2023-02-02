@@ -48,7 +48,6 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		user, err := plugin.API.GetUser(r.Header.Get(plugin.Configuration.MMAuthHeader))
 		if err != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not get user info")
-			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 
@@ -63,35 +62,30 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		validationErr := payload.Validate()
 		if validationErr != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "editor payload validation error: " + validationErr.Error())
-			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		fileInfo, fileInfoErr := plugin.API.GetFileInfo(payload.FileID)
 		if fileInfoErr != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access file info " + payload.FileID + " Reason: " + fileInfoErr.Message)
-			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		post, postErr := plugin.API.GetPost(fileInfo.PostId)
 		if postErr != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
-			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		docType, typeErr := plugin.OnlyofficeHelper.GetFileType(fileInfo.Extension)
 		if typeErr != nil {
 			plugin.API.LogError(typeErr.Error())
-			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		docKey, keyErr := plugin.Encoder.Encode(fileInfo.Id + strconv.FormatInt(post.UpdateAt, 10))
 		if keyErr != nil {
 			plugin.API.LogError(keyErr.Error())
-			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -107,7 +101,6 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		dsignature, dTokenErr := plugin.Manager.Sign(dToken)
 		if dTokenErr != nil {
 			plugin.API.LogError(dTokenErr.Error())
-			rw.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
@@ -140,7 +133,6 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		cToken, cTokenErr := plugin.Manager.Sign(config)
 		if cTokenErr != nil {
 			plugin.API.LogError(cTokenErr.Error())
-			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
 

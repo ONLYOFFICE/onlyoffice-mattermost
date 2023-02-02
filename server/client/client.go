@@ -18,16 +18,12 @@
 package client
 
 import (
-	"bytes"
 	"context"
-	"crypto/tls"
-	"encoding/json"
-	"net"
-	"net/http"
 	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
+	"github.com/go-resty/resty/v2"
 )
 
 var _ OnlyofficeCommandClient = (*onlyofficeCommandClient)(nil)
@@ -37,29 +33,19 @@ const (
 	OnlyofficeCommandServiceVersion string = "version"
 )
 
-var failedVersionResponse = model.CommandVersionResponse{Error: 1, Version: "0.0.0"}
-
 type OnlyofficeCommandClient interface {
 	SendVersion(commandURL string, request model.CommandVersionRequest, timeout time.Duration) (model.CommandVersionResponse, error)
 }
 
 type onlyofficeCommandClient struct {
 	jwtManager crypto.JwtManager
-	client     http.Client
+	client     *resty.Client
 }
 
-func NewOnlyofficeCommandClient(insecure bool, jwtManager crypto.JwtManager) OnlyofficeCommandClient {
+func NewOnlyofficeCommandClient(jwtManager crypto.JwtManager) OnlyofficeCommandClient {
 	return onlyofficeCommandClient{
 		jwtManager: jwtManager,
-		client: http.Client{
-			Transport: &http.Transport{
-				Dial: (&net.Dialer{
-					Timeout: 5 * time.Second,
-				}).Dial,
-				TLSHandshakeTimeout: 5 * time.Second,
-				TLSClientConfig:     &tls.Config{InsecureSkipVerify: insecure},
-			},
-		},
+		client:     resty.New(),
 	}
 }
 
@@ -71,38 +57,19 @@ func (c onlyofficeCommandClient) SendVersion(commandURL string, request model.Co
 	}
 
 	if err != nil {
-		return failedVersionResponse, err
+		return model.CommandVersionResponse{Error: 1, Version: "0.0.0"}, err
 	}
 
-	buf, err := json.Marshal(request)
-
-	if err != nil {
-		return failedVersionResponse, err
-	}
-
+	var response model.CommandVersionResponse
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, commandURL, bytes.NewBuffer(buf))
-
-	if err != nil {
-		return failedVersionResponse, err
-	}
-
-	resp, err := c.client.Do(req)
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-
-	if err != nil {
-		return failedVersionResponse, err
-	}
-
-	response := model.CommandVersionResponse{}
-	err = json.NewDecoder(resp.Body).Decode(&response)
-
-	if err != nil {
-		return failedVersionResponse, err
+	if _, err := c.client.R().
+		SetBody(request).
+		SetResult(&response).
+		SetContext(ctx).
+		Post(commandURL); err != nil {
+		return response, err
 	}
 
 	return response, nil
