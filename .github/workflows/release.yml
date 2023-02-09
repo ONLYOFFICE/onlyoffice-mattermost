@@ -16,7 +16,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v3
         with:
-          node-version: '15.14.0'
+          node-version: '16.15.1'
       - name: Get Info
         run: |
           echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
@@ -25,11 +25,14 @@ jobs:
       - name: Generate Changelog
         run: |
           awk '/## [0-9]/{p++} p; /## [0-9]/{if (p > 1) exit}' CHANGELOG.md | awk 'NR>2 {print last} {last=$0}' > RELEASE.md
+      - name: Install Webapp Dependencies
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          dir: '${{ github.workspace }}/webapp'
       - name: Build Artifact
         run: |
-          cd ${{ github.workspace }}/webapp
-          npm install --legacy-peer-deps
-          cd .. && make dist
+          cd ${{ github.workspace }} && make dist
       - name: Create Release
         uses: ncipollo/release-action@v1
         id: create_release

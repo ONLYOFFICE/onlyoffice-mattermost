@@ -15,17 +15,20 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v3
         with:
-          node-version: '15.14.0'
+          node-version: '16.15.1'
       - name: Get Info
         run: |
           echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
           echo "version=$(jq -r '.version' plugin.json)" >> $GITHUB_OUTPUT
         id: info
+      - name: Install Webapp Dependencies
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+          dir: '${{ github.workspace }}/webapp'
       - name: Build Artifact
         run: |
-          cd ${{ github.workspace }}/webapp
-          npm install --legacy-peer-deps
-          cd .. && make dist
+          cd ${{ github.workspace }} && make dist
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
