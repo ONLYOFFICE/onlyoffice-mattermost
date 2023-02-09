@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ func NewRouter(API api.PluginAPI) *mux.Router {
 	authMiddleware := middleware.MattermostAuthorizationMiddleware(API)
 
 	subrouter.Handle("/permissions", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildSetFilePermissionsHandler))).Methods(http.MethodPost)
-	subrouter.Handle("/editor", timeoutRoutes(5*time.Second)(authMiddleware(web.BuildEditorHandler))).Methods(http.MethodGet)
+	subrouter.HandleFunc("/editor", authMiddleware(web.BuildEditorHandler)).Methods(http.MethodGet)
 	subrouter.Handle("/permissions", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildGetFilePermissionsHandler))).Methods(http.MethodGet)
 	subrouter.Handle("/code", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildCodeHandler))).Methods(http.MethodGet)
 
