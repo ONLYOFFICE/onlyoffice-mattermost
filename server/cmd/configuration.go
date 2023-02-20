@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2022
+ * (c) Copyright Ascensio System SIA 2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,23 +42,21 @@ import (
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
 type configuration struct {
-	DESAddress     string
-	DESJwt         string
-	DESJwtHeader   string
-	DESJwtPrefix   string
-	InsecureClient bool
-	Error          error
+	DESAddress   string
+	DESJwt       string
+	DESJwtHeader string
+	DESJwtPrefix string
+	Error        error
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
 // your configuration has reference types.
 func (c *configuration) Clone() *configuration {
 	return &configuration{
-		DESAddress:     c.DESAddress,
-		DESJwt:         c.DESJwt,
-		DESJwtHeader:   c.DESJwtHeader,
-		DESJwtPrefix:   c.DESJwtPrefix,
-		InsecureClient: c.InsecureClient,
+		DESAddress:   c.DESAddress,
+		DESJwt:       c.DESJwt,
+		DESJwtHeader: c.DESJwtHeader,
+		DESJwtPrefix: c.DESJwtPrefix,
 	}
 }
 
@@ -155,7 +153,7 @@ func (c *configuration) IsValid() error {
 		}
 	}
 
-	command := client.NewOnlyofficeCommandClient(c.InsecureClient, crypto.NewJwtManager([]byte(c.DESJwt)))
+	command := client.NewOnlyofficeCommandClient(crypto.NewJwtManager([]byte(c.DESJwt)))
 	resp, err := command.SendVersion(c.DESAddress+client.OnlyofficeCommandServicePath, model.CommandVersionRequest{
 		Command: client.OnlyofficeCommandServiceVersion,
 		StandardClaims: jwt.StandardClaims{

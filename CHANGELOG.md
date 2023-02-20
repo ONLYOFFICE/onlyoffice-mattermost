@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.1
+## Changed
+- fix work with s3 bucket
+- editor loader fix
+- dependency update
+
 ## 1.1.0
 ## Added
 - support mattermost v6 and v7
