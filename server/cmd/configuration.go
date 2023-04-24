@@ -27,7 +27,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // configuration captures the plugin's external configuration as exposed in the Mattermost server
@@ -156,9 +156,9 @@ func (c *configuration) IsValid() error {
 	command := client.NewOnlyofficeCommandClient(crypto.NewJwtManager([]byte(c.DESJwt)))
 	resp, err := command.SendVersion(c.DESAddress+client.OnlyofficeCommandServicePath, model.CommandVersionRequest{
 		Command: client.OnlyofficeCommandServiceVersion,
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Minute)),
 		},
 	}, 4*time.Second)
 
