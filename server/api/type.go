@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
+	"github.com/golang-jwt/jwt/v5"
 	mmModel "github.com/mattermost/mattermost-server/v6/model"
 	"github.com/mattermost/mattermost-server/v6/plugin"
 	"github.com/mattermost/mattermost-server/v6/shared/filestore"
@@ -32,9 +33,7 @@ type Encoder interface {
 }
 
 type JwtManager interface {
-	Sign(payload interface {
-		Valid() error
-	}) (string, error)
+	Sign(payload jwt.Claims) (string, error)
 	Verify(jwt string, body interface{}) error
 	GetKey() []byte
 }

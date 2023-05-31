@@ -17,10 +17,10 @@
  */
 package model
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v5"
 
 type CommandVersionRequest struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	Command string `json:"c" mapstructure:"c"`
 	Token   string `json:"token,omitempty" mapstructure:"token"`
 	Header  string `json:"-"`
