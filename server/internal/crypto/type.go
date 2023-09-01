@@ -17,6 +17,8 @@
  */
 package crypto
 
+import "github.com/golang-jwt/jwt/v5"
+
 var _ JwtManager = (*onlyofficeJwtManager)(nil)
 var _ Encoder = (*messageDigest)(nil)
 
@@ -29,9 +31,7 @@ func NewMD5Encoder() Encoder {
 }
 
 type JwtManager interface {
-	Sign(payload interface {
-		Valid() error
-	}) (string, error)
+	Sign(payload jwt.Claims) (string, error)
 	Verify(jwt string, body interface{}) error
 	GetKey() []byte
 }

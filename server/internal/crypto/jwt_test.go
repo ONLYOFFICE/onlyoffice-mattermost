@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,8 +41,8 @@ func TestJwtManager(t *testing.T) {
 			name: "Valid command body",
 			command: model.CommandVersionRequest{
 				Command: "test",
-				StandardClaims: jwt.StandardClaims{
-					ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+				RegisteredClaims: jwt.RegisteredClaims{
+					ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Minute)),
 				},
 			},
 			withErr: false,
@@ -50,8 +50,8 @@ func TestJwtManager(t *testing.T) {
 			name: "Expired command body",
 			command: model.CommandVersionRequest{
 				Command: "bruh",
-				StandardClaims: jwt.StandardClaims{
-					ExpiresAt: time.Now().Add(-time.Second * 100).Unix(),
+				RegisteredClaims: jwt.RegisteredClaims{
+					ExpiresAt: jwt.NewNumericDate(time.Now().Add(-time.Second * 100)),
 				},
 			},
 			withErr: true,

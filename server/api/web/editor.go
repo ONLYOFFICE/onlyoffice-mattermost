@@ -27,6 +27,7 @@ import (
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	oovalidator "github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type editorParameters struct {
@@ -97,7 +98,8 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		dToken := &oomodel.DownloadToken{
 			FileID: payload.FileID,
 		}
-		dToken.IssuedAt, dToken.ExpiresAt = time.Now().Unix(), time.Now().Add(3*time.Minute).Unix()
+		dToken.IssuedAt, dToken.ExpiresAt = jwt.NewNumericDate(time.Now()),
+			jwt.NewNumericDate(time.Now().Add(3*time.Minute))
 		dsignature, dTokenErr := plugin.Manager.Sign(dToken)
 		if dTokenErr != nil {
 			plugin.API.LogError(dTokenErr.Error())
@@ -129,7 +131,8 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			Type: oovalidator.IsMobile(r.Header.Get("User-Agent")),
 		}
 
-		config.IssuedAt, config.ExpiresAt = time.Now().Unix(), time.Now().Add(3*time.Minute).Unix()
+		config.IssuedAt, config.ExpiresAt = jwt.NewNumericDate(time.Now()),
+			jwt.NewNumericDate(time.Now().Add(3*time.Minute))
 		cToken, cTokenErr := plugin.Manager.Sign(config)
 		if cTokenErr != nil {
 			plugin.API.LogError(cTokenErr.Error())

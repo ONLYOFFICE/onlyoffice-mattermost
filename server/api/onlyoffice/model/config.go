@@ -17,10 +17,10 @@
  */
 package model
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v5"
 
 type Config struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	Document     Document     `json:"document"`
 	DocumentType string       `json:"documentType"`
 	EditorConfig EditorConfig `json:"editorConfig"`
@@ -65,5 +65,5 @@ type UserInfoResponse struct {
 
 type DownloadToken struct {
 	FileID string
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }

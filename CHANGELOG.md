@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.2
+## Changed
+- update JWT lib
+
 ## 1.1.1
 ## Changed
 - fix work with s3 bucket
