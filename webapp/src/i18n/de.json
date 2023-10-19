@@ -17,5 +17,5 @@
     "permissions.modal_search_no_options_placeholder": "Keine Optionen",
     "permissions.modal_fetch_error": "Abrufen von Benutzern ist unmöglich",
     "editor.close_button": "Schließen",
-    "editor.events.error": "Hoppla! in Fehler ist aufgetreten..."
+    "editor.events.error": "Hoppla! Ein Fehler ist aufgetreten..."
 }
