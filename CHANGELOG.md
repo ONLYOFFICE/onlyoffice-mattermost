@@ -1,5 +1,9 @@
 # Change Log
 
+##
+## Changed
+- update of vulnerable dependencies
+
 ## 1.1.2
 ## Changed
 - update JWT lib
