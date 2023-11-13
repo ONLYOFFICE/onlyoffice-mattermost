@@ -1,6 +1,6 @@
 # Change Log
 
-##
+## 1.1.3
 ## Changed
 - update of vulnerable dependencies
 
