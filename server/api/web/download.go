@@ -19,6 +19,8 @@ package web
 
 import (
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
@@ -26,24 +28,30 @@ import (
 
 func BuildDownloadHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
 		var jwt model.DownloadToken
-
-		err := plugin.Manager.Verify(query.Get("token"), &jwt)
+		err := plugin.Manager.Verify(strings.ReplaceAll(r.Header.
+			Get(plugin.Configuration.Header), "Bearer ", ""), &jwt)
 		if err != nil {
 			plugin.API.LogError(err.Error())
 			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 
-		file, fileErr := plugin.API.GetFile(jwt.FileID)
+		u, err := url.Parse(jwt.Payload.URL)
+		if err != nil {
+			plugin.API.LogError(err.Error())
+			rw.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		file, fileErr := plugin.API.GetFile(u.Query().Get("id"))
 		if fileErr != nil {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not download file. Reason: " + fileErr.Message)
 			rw.WriteHeader(http.StatusForbidden)
 			return
 		}
 
-		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "downloading file " + jwt.FileID)
+		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "downloading file " + u.Query().Get("id"))
 		rw.Write(file)
 	}
 }
