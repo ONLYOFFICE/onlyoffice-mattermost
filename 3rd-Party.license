@@ -104,6 +104,10 @@ Typescript    - TypeScript is a language for application-scale JavaScript. (http
 License:        Apache License 2.0
 License File:   typescript.license
 
+Useragent     - Go/Golang parser for user agent strings. (https://github.com/mileusna/useragent)
+License:        MIT
+License File:   useragent.license
+
 validator     - Package validator implements value validations for structs and individual fields based on tags. (https://github.com/go-playground/validator)
 License:        MIT
 License File:   validator.license
