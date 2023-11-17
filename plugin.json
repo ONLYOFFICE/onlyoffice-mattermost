@@ -22,7 +22,7 @@
     },
     "settings_schema": {
         "header": "ONLYOFFICE Docs is an open-source office suite which comprises powerful collaborative editors for text documents, spreadsheets, and presentations highly compatible with OOXML formats. \n \n \n Please note! ONLYOFFICE script code will be downloaded and executed from the server at the given address.",
-        "footer": "Check https://www.onlyoffice.com/office-suite.aspx for more information.",
+        "footer": "**ONLYOFFICE Docs Cloud**\nEasily launch the editors in the cloud without downloading and installation\n \n[**Get now**](https://www.onlyoffice.com/docs-registration.aspx)",
         "settings": [
             {
                 "key": "DESAddress",
