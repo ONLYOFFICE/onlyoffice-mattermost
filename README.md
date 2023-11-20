@@ -30,21 +30,29 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 
 ## Installing Mattermost ONLYOFFICE integration plugin
 
-1. Clone the [master branch](https://github.com/ONLYOFFICE/onlyoffice-mattermost).
-2. Go to the project root.
-3. Install the dependencies: 
+1. Install Node.js. [Check instructions](https://github.com/nodesource/distributions#installation-instructions)
+2. Install Go. [Check instructions](https://go.dev/doc/install)
+3. Install make: 
 
     ```sh
+    sudo apt install make
+    ```
+4. Clone the plugin branch: 
+
+    ```sh
+    git clone https://github.com/ONLYOFFICE/onlyoffice-mattermost.git
+    ```
+5. Install the dependencies:
+    ```sh
+    cd onlyoffice-mattermost/webapp/
     npm install --legacy-peer-deps
     ```
-    Please note: to build the plugin, you need to have Node.js v.15.14.0 installed on your machine.
-4. Run: 
-
+6. Go to the project root and start the build:
     ```sh
+    cd onlyoffice-mattermost/
     make dist
     ```
-5. Go to `<your_mattermost_host>/admin_console/plugins/plugin_management`.
-6. Choose the compiled plugin from your dist folder and press Upload.
+    Please note: if `Error: error:0308010C:digital envelope routines::unsupported` occurs, add the `export NODE_OPTIONS=--openssl-legacy-provider` variable.
 
 ## Plugin settings
 
