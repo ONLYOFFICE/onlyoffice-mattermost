@@ -95,23 +95,12 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			permissions = plugin.OnlyofficeHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
 		}
 
-		dToken := &oomodel.DownloadToken{
-			FileID: payload.FileID,
-		}
-		dToken.IssuedAt, dToken.ExpiresAt = jwt.NewNumericDate(time.Now()),
-			jwt.NewNumericDate(time.Now().Add(3*time.Minute))
-		dsignature, dTokenErr := plugin.Manager.Sign(dToken)
-		if dTokenErr != nil {
-			plugin.API.LogError(dTokenErr.Error())
-			return
-		}
-
 		config := oomodel.Config{
 			Document: oomodel.Document{
 				FileType:    fileInfo.Extension,
 				Key:         docKey,
 				Title:       fileInfo.Name,
-				URL:         fmt.Sprintf("%s/download?token=%s", serverURL, dsignature),
+				URL:         fmt.Sprintf("%s/download?id=%s", serverURL, fileInfo.Id),
 				Permissions: permissions,
 			},
 			DocumentType: docType,

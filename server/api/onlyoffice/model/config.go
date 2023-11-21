@@ -64,6 +64,10 @@ type UserInfoResponse struct {
 }
 
 type DownloadToken struct {
-	FileID string
+	Payload DownloadTokenPayload `json:"payload"`
 	jwt.RegisteredClaims
+}
+
+type DownloadTokenPayload struct {
+	URL string `json:"url"`
 }

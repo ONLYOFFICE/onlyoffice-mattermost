@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.3
+## Added
+- link to docs cloud
+
+## Changed
+- update of vulnerable dependencies
+
 ## 1.1.2
 ## Changed
 - update JWT lib
