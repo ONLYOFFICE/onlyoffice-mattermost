@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.1
+
+      - name: Get Info
+        run: |
+          echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r '.version' plugin.json)" >> $GITHUB_OUTPUT
+        id: info
+
+      - name: Build Plugin
+        run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
+          make dist
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.info.outputs.version }}" --notes "$(make docs)"
+          gh release upload "v${{ steps.info.outputs.version }}" dist/${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
