@@ -151,9 +151,9 @@ The table below will help you make the right choice.
 | Functions, formulas, equations  | + | + |
 | Table templates                 | + | + |
 | Pivot tables                    | + | + |
-| Data validation           | + | + |
+| Data validation                 | + | + |
 | Conditional formatting          | + | + |
-| Sparklines                   | + | + |
+| Sparklines                      | + | + |
 | Sheet Views                     | + | + |
 | **Presentation Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
@@ -163,7 +163,7 @@ The table below will help you make the right choice.
 | Presenter mode                  | + | + |
 | Notes                           | + | + |
 | **Form creator features** | **Community Edition** | **Enterprise Edition** |
-| Adding form fields           | + | + |
+| Adding form fields              | + | + |
 | Form preview                    | + | + |
 | Saving as PDF                   | + | + |
 | **Working with PDF**      | **Community Edition** | **Enterprise Edition** |
