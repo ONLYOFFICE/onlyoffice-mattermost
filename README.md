@@ -1,4 +1,4 @@
-﻿# Mattermost ONLYOFFICE integration plugin
+﻿# ONLYOFFICE app for Mattermost
 This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
 
 ## Features
@@ -28,7 +28,7 @@ To install Enterprise Edition, follow the instructions [here](https://helpcente
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
-## Installing Mattermost ONLYOFFICE integration plugin
+## Installing ONLYOFFICE app for Mattermost
 
 1. Install Node.js. [Check instructions](https://github.com/nodesource/distributions#installation-instructions)
 2. Install Go. [Check instructions](https://go.dev/doc/install)
@@ -70,7 +70,7 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 - **JWT Prefix**:
   Used to specify the ONLYOFFICE Docs prefix.
 
-## Using Mattermost ONLYOFFICE integration plugin
+## Using ONLYOFFICE app for Mattermost
 
 Users are able to open files sent in personal and group Mattermost chats for viewing and co-editing.
 

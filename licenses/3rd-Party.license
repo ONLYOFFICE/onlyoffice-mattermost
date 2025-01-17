@@ -1,4 +1,4 @@
-Mattermost ONLYOFFICE ingeration plugin uses code from the following 3rd party projects:
+ONLYOFFICE app for Mattermost uses code from the following 3rd party projects:
 
 Babel         - The compiler for writing next generation JavaScript. (https://github.com/babel/babel)
 License:        MIT
