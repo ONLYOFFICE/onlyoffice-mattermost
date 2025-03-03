@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +18,25 @@
  * limitations under the License.
  *
  */
+
+import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
+import {getTranslations} from 'util/lang';
+import type {SubmitPermissionsRequest} from 'util/permission';
+import {getFilePermissions} from 'util/permission';
+import type {MattermostUser} from 'util/user';
+
+import {get, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS, post} from 'api';
 import React from 'react';
 import {Button} from 'react-bootstrap';
 
-import {FileInfo} from 'mattermost-redux/types/files';
-
-import {get, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS, post} from 'api';
-
-import {MattermostUser} from 'util/user';
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
-import {getTranslations} from 'util/lang';
-import {getFilePermissions, SubmitPermissionsRequest} from 'util/permission';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 type Props = {
-    fileInfo: FileInfo,
-    loading: boolean,
-    users: MattermostUser[],
-    wildcardAccess: string,
-    onClose: () => void,
+    fileInfo: FileInfo;
+    loading: boolean;
+    users: MattermostUser[];
+    wildcardAccess: string;
+    onClose: () => void;
 };
 
 const onSubmit = async (props: Props) => {

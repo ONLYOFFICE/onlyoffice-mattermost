@@ -145,8 +145,8 @@ func (f FileUnalteredChecker) Check(path string, setup Setup) error {
 			return nil
 		}
 		// Check if the file was ever in git history.
-		_, err := git.FileHistory(path, setup.GetRepo(repo).Git)
-		if errors.Is(err, git.ErrNotFound) {
+		_, ferr := git.FileHistory(path, setup.GetRepo(repo).Git)
+		if errors.Is(ferr, git.ErrNotFound) {
 			// This is a new file being introduced to the target repo.
 			// Consider it unaltered.
 			return nil

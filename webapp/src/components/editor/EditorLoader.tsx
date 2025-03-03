@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +18,12 @@
  * limitations under the License.
  *
  */
-import React, {useEffect, useState} from 'react';
 
 import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_ERROR_EVENT, ONLYOFFICE_READY_EVENT} from 'util/const';
 import {getTranslations} from 'util/lang';
 
 import errorIcon from 'public/images/error.svg';
+import React, {useEffect, useState} from 'react';
 
 export default function EditorLoader() {
     const [error, setError] = useState(false);

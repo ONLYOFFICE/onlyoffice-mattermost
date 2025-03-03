@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,12 @@ func (j onlyofficeJwtManager) Verify(jwtToken string, body interface{}) error {
 		return err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
 		return ErrJwtManagerCastOrInvalidToken
-	} else {
-		return mapstructure.Decode(claims, body)
 	}
+
+	return mapstructure.Decode(claims, body)
 }
 
 func (j onlyofficeJwtManager) GetKey() []byte {

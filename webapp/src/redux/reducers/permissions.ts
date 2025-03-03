@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +18,11 @@
  * limitations under the License.
  *
  */
-import {AnyAction} from 'redux';
 
-import {OPEN_PERMISSIONS_MODAL, CLOSE_PERMISSIONS_MODAL, MATTERMOST_ME_ACTION} from 'redux/actions/types';
 import {getTranslations} from 'util/lang';
+
+import type {AnyAction} from 'redux';
+import {OPEN_PERMISSIONS_MODAL, CLOSE_PERMISSIONS_MODAL, MATTERMOST_ME_ACTION} from 'redux/actions/types';
 
 export const permissionsModal = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
     switch (action.type) {

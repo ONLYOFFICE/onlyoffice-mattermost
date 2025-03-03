@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -15,7 +14,7 @@ import (
 func main() {
 	verbose := flag.Bool("verbose", false, "enable verbose output")
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Update a pluging directory with /mattermost-plugin-starter-template/.\n")
+		fmt.Fprintf(flag.CommandLine.Output(), "Update a plugin directory with /mattermost-plugin-starter-template/.\n")
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		fmt.Fprintf(flag.CommandLine.Output(), "%s <plan.yml> <plugin_directory>\n", os.Args[0])
 		flag.PrintDefaults()
@@ -30,7 +29,7 @@ func main() {
 
 	syncPlan, err := readPlan(os.Args[1])
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "coud not load plan: %s\n", err)
+		fmt.Fprintf(os.Stderr, "could not load plan: %s\n", err)
 		os.Exit(1)
 	}
 
@@ -70,7 +69,7 @@ func main() {
 }
 
 func readPlan(path string) (*plan.Plan, error) {
-	raw, err := ioutil.ReadFile(path)
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read plan file %q: %v", path, err)
 	}

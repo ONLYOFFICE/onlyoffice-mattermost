@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	"github.com/golang-jwt/jwt/v5"
-	mmModel "github.com/mattermost/mattermost-server/v6/model"
-	"github.com/mattermost/mattermost-server/v6/plugin"
-	"github.com/mattermost/mattermost-server/v6/shared/filestore"
+	mmModel "github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
 type Encoder interface {

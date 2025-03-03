@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 // configuration captures the plugin's external configuration as exposed in the Mattermost server
@@ -79,6 +80,8 @@ func (c *configuration) sanitizeConfiguration() {
 // getConfiguration retrieves the active configuration under lock, making it safe to use
 // concurrently. The active configuration may change underneath the client of this method, but
 // the struct returned by this API call is considered immutable.
+//
+//nolint:unused
 func (p *Plugin) getConfiguration() *configuration {
 	p.configurationLock.RLock()
 	defer p.configurationLock.RUnlock()
@@ -126,7 +129,7 @@ func (c *configuration) IsValid() error {
 		}
 	}
 
-	if !validator.IsValidUrl(c.DESAddress) {
+	if !validator.IsValidURL(c.DESAddress) {
 		return &InvalidDocumentServerAddressError{
 			Reason: "Document server address must match the following pattern: http(s)://<domain>.<domain_zone> or http(s)://<domain>.<domain_zone>/",
 		}

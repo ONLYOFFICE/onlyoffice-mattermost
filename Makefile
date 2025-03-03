@@ -89,7 +89,7 @@ endif
 ## Ensures NPM dependencies are installed without having to run this all the time.
 webapp/node_modules: $(wildcard webapp/package.json)
 ifneq ($(HAS_WEBAPP),)
-	cd webapp && yarn install
+	cd webapp && npm install
 	touch $@
 endif
 
@@ -124,7 +124,7 @@ ifneq ($(HAS_WEBAPP),)
 	mkdir -p dist/$(PLUGIN_ID)/webapp
 	cp -r webapp/dist dist/$(PLUGIN_ID)/webapp/
 endif
-	cd dist && tar -cvzf $(BUNDLE_NAME) $(PLUGIN_ID)
+	cd dist && COPYFILE_DISABLE=1 tar -cvzf $(BUNDLE_NAME) $(PLUGIN_ID)
 
 	@echo plugin built at: dist/$(BUNDLE_NAME)
 

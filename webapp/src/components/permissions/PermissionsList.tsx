@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +18,21 @@
  * limitations under the License.
  *
  */
+
+import {getTranslations} from 'util/lang';
+import type {FileAccess} from 'util/permission';
+import {getFileAccess} from 'util/permission';
+import type {MattermostUser} from 'util/user';
+
 import React from 'react';
 import Select from 'react-select';
 
-import {getTranslations} from 'util/lang';
-import {getFileAccess, FileAccess} from 'util/permission';
-import {MattermostUser} from 'util/user';
-
 type Props = {
-    onRemoveUser: (username: string) => void,
-    onChangeUserPermissions: (username: string, newPermission: string) => void
+    onRemoveUser: (username: string) => void;
+    onChangeUserPermissions: (username: string, newPermission: string) => void;
 };
 
-export const PermissionsList = (props: Props & { error: boolean, users: MattermostUser[] }) => {
+export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
     return (
         <div className='more-modal__list'>

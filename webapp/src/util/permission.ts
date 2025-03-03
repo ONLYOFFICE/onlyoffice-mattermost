@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +18,30 @@
  * limitations under the License.
  *
  */
+
 interface IObjectKeys {
     [key: string]: boolean | undefined;
 }
 
 export interface SubmitPermissionsRequest {
-    fileID: string,
-    userID: string,
-    username: string,
-    permissions: FilePermissions,
+    fileID: string;
+    userID: string;
+    username: string;
+    permissions: FilePermissions;
 }
 
 export interface FilePermissions extends IObjectKeys {
-    copy?: boolean,
-    deleteCommentAuthorOnly?: boolean,
-    download?: boolean,
-    edit: boolean,
-    editCommentAuthorOnly?: boolean,
-    fillForms?: boolean,
-    modifyContentControl?: boolean,
-    modifyFilter?: boolean,
-    print?: boolean,
-    review?: boolean,
-    comment?: boolean,
+    copy?: boolean;
+    deleteCommentAuthorOnly?: boolean;
+    download?: boolean;
+    edit: boolean;
+    editCommentAuthorOnly?: boolean;
+    fillForms?: boolean;
+    modifyContentControl?: boolean;
+    modifyFilter?: boolean;
+    print?: boolean;
+    review?: boolean;
+    comment?: boolean;
 }
 
 const EDIT: FilePermissions = {

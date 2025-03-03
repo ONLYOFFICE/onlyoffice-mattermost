@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import (
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
-var Registry registry = registry{
+var Registry = registry{
 	handlers: make(map[int]func(oomodel.Callback, api.PluginAPI) error),
 }
 
@@ -39,6 +39,7 @@ func (r *registry) RegisterHandler(code int, processor func(oomodel.Callback, ap
 	if _, exists := r.handlers[code]; exists {
 		return ErrHandlerAlreadyRegistered
 	}
+
 	r.handlers[code] = processor
 	return nil
 }
@@ -46,9 +47,9 @@ func (r *registry) RegisterHandler(code int, processor func(oomodel.Callback, ap
 func (r *registry) RunHandler(code int, callback oomodel.Callback, api api.PluginAPI) error {
 	if handler, exists := r.handlers[code]; exists {
 		return handler(callback, api)
-	} else {
-		return &CallbackHandlerDoesNotExistError{
-			Code: code,
-		}
+	}
+
+	return &CallbackHandlerDoesNotExistError{
+		Code: code,
 	}
 }
