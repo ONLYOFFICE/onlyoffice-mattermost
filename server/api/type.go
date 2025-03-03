@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *https://developers.mattermost.com/integrate/plugins/components/server/hello-world/
+ *
  */
 package api
 
@@ -21,11 +21,12 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	"github.com/golang-jwt/jwt/v5"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
 type Encoder interface {

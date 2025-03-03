@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ func BuildSetFilePermissionsHandler(plugin api.PluginAPI) func(rw http.ResponseW
 			return
 		}
 
-		if post.UserId != string(r.Header.Get(plugin.Configuration.MMAuthHeader)) {
+		if post.UserId != r.Header.Get(plugin.Configuration.MMAuthHeader) {
 			plugin.API.LogWarn(_OnlyofficeLoggerPrefix + "only author can set file permissions")
 			api.WriteJSON(rw, _CallbackErr, http.StatusForbidden)
 			return

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
 func (h helper) GetPostPermissionsByFileID(fileID string, post *mmModel.Post, getUser func(string) (*mmModel.User, *mmModel.AppError)) []model.UserInfoResponse {
@@ -179,13 +180,13 @@ func toPermissions(prop interface{}) (model.Permissions, error) {
 		if pbytes, ok := prop.([]uint8); ok {
 			var permissions model.Permissions
 
-			err := json.Unmarshal(pbytes, &permissions)
-			if err != nil {
-				return model.Permissions{}, err
+			if uerr := json.Unmarshal(pbytes, &permissions); uerr != nil {
+				return permissions, uerr
 			}
 
 			return permissions, nil
 		}
+
 		return model.Permissions{}, err
 	}
 

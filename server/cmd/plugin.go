@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,16 @@ package cmd
 
 import (
 	"html/template"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+	"github.com/pkg/errors"
 
 	integration "github.com/ONLYOFFICE/onlyoffice-mattermost"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
@@ -32,10 +37,6 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/converter"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/onlyoffice"
-	"github.com/mattermost/mattermost/server/public/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -48,7 +49,7 @@ type Plugin struct {
 	configurationLock   sync.RWMutex
 	configuration       *configuration
 	Bot                 bot.Bot
-	OnlyofficeHelper    onlyoffice.OnlyofficeHelper
+	OnlyofficeHelper    onlyoffice.Helper
 	OnlyofficeConverter converter.Converter
 	Encoder             crypto.Encoder
 	Manager             crypto.JwtManager
@@ -83,20 +84,25 @@ func (p *Plugin) OnConfigurationChange() error {
 	configuration.Error = configuration.IsValid()
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			p.API.DisablePlugin(PluginID)
+			if err := p.API.DisablePlugin(PluginID); err != nil {
+				p.API.LogInfo(_OnlyofficeLoggerPrefix+"Could not disable the plugin via Mattermost API: ", err.Message)
+			}
 		})
+
 		return nil
 	}
 
 	p.Encoder = crypto.NewMD5Encoder()
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
-	p.OnlyofficeHelper = onlyoffice.NewOnlyofficeHelper()
+	p.OnlyofficeHelper = onlyoffice.NewHelper()
 	p.OnlyofficeConverter = converter.NewConverter()
 	bpath, _ := p.API.GetBundlePath()
 	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			p.API.DisablePlugin(PluginID)
+			if err := p.API.DisablePlugin(PluginID); err != nil {
+				p.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			}
 		})
 		return nil
 	}
@@ -107,7 +113,9 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.Filestore, configuration.Error = filestore.NewFileBackend(filestore.NewFileBackendSettingsFromConfig(&serverConfig.FileSettings, (license != nil && *license.Features.Compliance), true))
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			p.API.DisablePlugin(PluginID)
+			if err := p.API.DisablePlugin(PluginID); err != nil {
+				p.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			}
 		})
 		return nil
 	}
@@ -131,7 +139,7 @@ func (p *Plugin) EnsureBot() (bot.Bot, error) {
 		return nil, err
 	}
 
-	profileImage, err := ioutil.ReadFile(filepath.Join(bundlePath, "assets", "logo.png"))
+	profileImage, err := os.ReadFile(filepath.Join(bundlePath, "assets", "logo.png"))
 	if err != nil {
 		return nil, ErrLoadBotProfileImage
 	}

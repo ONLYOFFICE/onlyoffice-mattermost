@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 )
 
 func TestJwtManager(t *testing.T) {
 	t.Parallel()
 
-	var manager JwtManager = NewJwtManager([]byte("secret"))
+	manager := NewJwtManager([]byte("secret"))
 
 	tests := []struct {
 		name          string

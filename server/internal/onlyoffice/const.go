@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ const (
 	OnlyofficePermissionsWildcardKey   string = "*"
 )
 
-var OnlyofficeEditableExtensions map[string]string = map[string]string{
+var OnlyofficeEditableExtensions = map[string]string{
 	"xlsx": OnlyofficeCellType,
 	"pptx": OnlyofficeSlideType,
 	"docx": OnlyofficeWordType,
 }
 
-var OnlyofficeFileExtensions map[string]string = map[string]string{
+var OnlyofficeFileExtensions = map[string]string{
 	"xls":  OnlyofficeCellType,
 	"xlsx": OnlyofficeCellType,
 	"xlsm": OnlyofficeCellType,

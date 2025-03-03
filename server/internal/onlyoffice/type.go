@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@
 package onlyoffice
 
 import (
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
-var _ OnlyofficeHelper = (*helper)(nil)
+var _ Helper = (*helper)(nil)
 
-type OnlyofficeHelper interface {
+type Helper interface {
 	IsExtensionSupported(fileExt string) bool
 	IsExtensionEditable(fileExt string) bool
 	GetFileType(fileExt string) (string, error)
@@ -38,6 +39,6 @@ type OnlyofficeHelper interface {
 
 type helper struct{}
 
-func NewOnlyofficeHelper() OnlyofficeHelper {
+func NewHelper() Helper {
 	return helper{}
 }
