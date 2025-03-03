@@ -42,17 +42,11 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
     ```sh
     git clone https://github.com/ONLYOFFICE/onlyoffice-mattermost.git
     ```
-5. Install the dependencies:
-    ```sh
-    cd onlyoffice-mattermost/webapp/
-    npm install --legacy-peer-deps
-    ```
-6. Go to the project root and start the build:
+5. Go to the project root and start the build:
     ```sh
     cd onlyoffice-mattermost/
-    make dist
+    make
     ```
-    Please note: if `Error: error:0308010C:digital envelope routines::unsupported` occurs, add the `export NODE_OPTIONS=--openssl-legacy-provider` variable.
 
 ## Plugin settings
 
