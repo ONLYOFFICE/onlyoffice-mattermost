@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
-	mmModel "github.com/mattermost/mattermost-server/v6/model"
+	mmModel "github.com/mattermost/mattermost/server/public/model"
 )
 
 func (h helper) GetPostPermissionsByFileID(fileID string, post *mmModel.Post, getUser func(string) (*mmModel.User, *mmModel.AppError)) []model.UserInfoResponse {

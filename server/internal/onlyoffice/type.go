@@ -19,7 +19,7 @@ package onlyoffice
 
 import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
-	mmModel "github.com/mattermost/mattermost-server/v6/model"
+	mmModel "github.com/mattermost/mattermost/server/public/model"
 )
 
 var _ OnlyofficeHelper = (*helper)(nil)

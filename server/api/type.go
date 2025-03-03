@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ *https://developers.mattermost.com/integrate/plugins/components/server/hello-world/
  */
 package api
 
@@ -23,9 +23,9 @@ import (
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	"github.com/golang-jwt/jwt/v5"
-	mmModel "github.com/mattermost/mattermost-server/v6/model"
-	"github.com/mattermost/mattermost-server/v6/plugin"
-	"github.com/mattermost/mattermost-server/v6/shared/filestore"
+	mmModel "github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 )
 
 type Encoder interface {

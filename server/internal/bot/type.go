@@ -17,7 +17,7 @@
  */
 package bot
 
-import "github.com/mattermost/mattermost-server/v6/plugin"
+import "github.com/mattermost/mattermost/server/public/plugin"
 
 var _ Bot = (*onlyofficeBot)(nil)
 

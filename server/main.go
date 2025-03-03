@@ -19,7 +19,7 @@ package main
 
 import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/cmd"
-	"github.com/mattermost/mattermost-server/v6/plugin"
+	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 func main() {

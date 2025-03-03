@@ -32,10 +32,9 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/converter"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/onlyoffice"
-	pluginapi "github.com/mattermost/mattermost-plugin-api"
-	"github.com/mattermost/mattermost-server/v6/model"
-	"github.com/mattermost/mattermost-server/v6/plugin"
-	"github.com/mattermost/mattermost-server/v6/shared/filestore"
+	"github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
 )
 
@@ -105,7 +104,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
-	p.Filestore, configuration.Error = filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance))
+	p.Filestore, configuration.Error = filestore.NewFileBackend(filestore.NewFileBackendSettingsFromConfig(&serverConfig.FileSettings, (license != nil && *license.Features.Compliance), true))
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
 			p.API.DisablePlugin(PluginID)
@@ -118,9 +117,7 @@ func (p *Plugin) OnConfigurationChange() error {
 }
 
 func (p *Plugin) EnsureBot() (bot.Bot, error) {
-	client := pluginapi.NewClient(p.API, p.Driver)
-
-	botID, err := client.Bot.EnsureBot(&model.Bot{
+	botID, err := p.API.EnsureBotUser(&model.Bot{
 		Username:    "onlyoffice",
 		DisplayName: "ONLYOFFICE",
 		Description: "ONLYOFFICE Helper",
