@@ -29,7 +29,7 @@ import (
 var _ OnlyofficeCommandClient = (*onlyofficeCommandClient)(nil)
 
 const (
-	OnlyofficeCommandServicePath    string = "/coauthoring/CommandService.ashx"
+	OnlyofficeCommandServicePath    string = "/command"
 	OnlyofficeCommandServiceVersion string = "version"
 )
 
