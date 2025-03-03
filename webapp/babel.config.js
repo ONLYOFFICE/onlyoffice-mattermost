@@ -1,6 +1,9 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 const config = {
     presets: [
         ['@babel/preset-env', {
@@ -26,10 +29,6 @@ const config = {
         ['@emotion/babel-preset-css-prop'],
     ],
     plugins: [
-        '@babel/plugin-proposal-class-properties',
-        '@babel/plugin-syntax-dynamic-import',
-        '@babel/proposal-object-rest-spread',
-        '@babel/plugin-proposal-optional-chaining',
         'babel-plugin-typescript-to-proptypes',
     ],
 };
