@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +18,22 @@
  * limitations under the License.
  *
  */
-import React, {useState, useEffect} from 'react';
-import {Dispatch} from 'redux';
-import {Modal} from 'react-bootstrap';
 
-import {FileInfo} from 'mattermost-redux/types/files';
-import {Channel} from 'mattermost-redux/types/channels';
-import {Client4} from 'mattermost-redux/client';
+import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
+import {pipe} from 'util/func';
+import {getTranslations} from 'util/lang';
+import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
+import type {MattermostUser, OnlyofficeUser} from 'util/user';
+import {mapUsersToMattermostUsers, sortMattermostUsers} from 'util/user';
 
 import {get, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
+import React, {useState, useEffect} from 'react';
+import {Modal} from 'react-bootstrap';
+import type {Dispatch} from 'redux';
 
-import {mapUsersToMattermostUsers, MattermostUser, OnlyofficeUser, sortMattermostUsers} from 'util/user';
-import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
-import {getTranslations} from 'util/lang';
-import {pipe} from 'util/func';
+import {Client4} from 'mattermost-redux/client';
+import type {Channel} from 'mattermost-redux/types/channels';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {PermissionsFooter} from './PermissionsFooter';
 import {PermissionsHeader} from './PermissionsHeader';
@@ -38,9 +42,9 @@ import {PermissionsList} from './PermissionsList';
 import 'public/scss/permissions.scss';
 
 type Props = {
-    visible: boolean,
-    close: () => (dispatch: Dispatch) => void,
-    fileInfo: FileInfo
+    visible: boolean;
+    close: () => (dispatch: Dispatch) => void;
+    fileInfo: FileInfo;
 }
 
 const removeInAnimation = () => {

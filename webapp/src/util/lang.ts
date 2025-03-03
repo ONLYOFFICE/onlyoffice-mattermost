@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +18,13 @@
  * limitations under the License.
  *
  */
-import en from 'i18n/en.json';
-import ru from 'i18n/ru.json';
+
 import de from 'i18n/de.json';
+import en from 'i18n/en.json';
 import es from 'i18n/es.json';
-import it from 'i18n/it.json';
 import fr from 'i18n/fr.json';
+import it from 'i18n/it.json';
+import ru from 'i18n/ru.json';
 
 export function getTranslations(locale?: string) {
     if (locale) {

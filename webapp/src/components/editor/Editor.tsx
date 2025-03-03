@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +18,20 @@
  * limitations under the License.
  *
  */
-import React, {useCallback, useEffect} from 'react';
-import {Dispatch} from 'redux';
-import {FileInfo} from 'mattermost-redux/types/files';
 
 import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API} from 'util/const';
+
+import React, {useCallback, useEffect} from 'react';
+import type {Dispatch} from 'redux';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import EditorLoader from './EditorLoader';
 
 type Props = {
-    visible: boolean,
-    fileInfo?: FileInfo,
-    close: () => (dispatch: Dispatch) => void,
+    visible: boolean;
+    fileInfo?: FileInfo;
+    close: () => (dispatch: Dispatch) => void;
 };
 
 export default function Editor({visible, close, fileInfo}: Props) {

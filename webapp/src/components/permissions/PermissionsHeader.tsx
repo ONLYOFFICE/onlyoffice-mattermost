@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +18,29 @@
  * limitations under the License.
  *
  */
+
+import {debounceUsersLoad} from 'util/func';
+import {getTranslations} from 'util/lang';
+import type {FileAccess} from 'util/permission';
+import {getFileAccess} from 'util/permission';
+import type {MattermostUser} from 'util/user';
+
 import React, {useState, useEffect} from 'react';
 import {Button} from 'react-bootstrap';
-import AsyncSelect from 'react-select/async';
 import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
 
-import {Channel} from 'mattermost-redux/types/channels';
-import {FileInfo} from 'mattermost-redux/types/files';
-
-import {getTranslations} from 'util/lang';
-import {MattermostUser} from 'util/user';
-import {FileAccess, getFileAccess} from 'util/permission';
-import {debounceUsersLoad} from 'util/func';
+import type {Channel} from 'mattermost-redux/types/channels';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 type Props = {
-    loading: boolean,
-    channel: Channel | undefined | null,
-    fileInfo: FileInfo,
-    wildcardAccess: string,
-    users: MattermostUser[],
-    onSetWildcardAccess: (value: any) => void,
-    onAppendUsers: (newUsers: MattermostUser[]) => void,
+    loading: boolean;
+    channel: Channel | undefined | null;
+    fileInfo: FileInfo;
+    wildcardAccess: string;
+    users: MattermostUser[];
+    onSetWildcardAccess: (value: any) => void;
+    onAppendUsers: (newUsers: MattermostUser[]) => void;
 };
 
 export const PermissionsHeader = (props: Props) => {

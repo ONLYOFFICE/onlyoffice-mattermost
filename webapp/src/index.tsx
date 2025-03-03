@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +18,23 @@
  * limitations under the License.
  *
  */
-import {Action, AnyAction, Store} from 'redux';
-import {ThunkDispatch} from 'redux-thunk';
 
-import {GlobalState} from 'mattermost-redux/types/store';
-import {FileInfo} from 'mattermost-redux/types/files';
-
-import OnlyofficeFilePreview from 'components/preview';
-import OnlyofficeFilePermissions from 'components/permissions';
-import OnlyofficeEditor from 'components/editor';
-
-import {openEditor, openPermissions} from 'redux/actions';
-import Reducer from 'redux/reducers';
-
-import {getTranslations} from 'util/lang';
 import {isExtensionSupported, isFileAuthor} from 'util/file';
+import {getTranslations} from 'util/lang';
 
 import manifest from 'manifest';
+import type {Action, AnyAction, Store} from 'redux';
+import {openEditor, openPermissions} from 'redux/actions';
+import Reducer from 'redux/reducers';
+import type {ThunkDispatch} from 'redux-thunk';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
+import type {GlobalState} from 'mattermost-redux/types/store';
+
+import OnlyofficeEditor from 'components/editor';
+import OnlyofficeFilePermissions from 'components/permissions';
+import OnlyofficeFilePreview from 'components/preview';
+
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
 
@@ -67,7 +70,7 @@ export default class Plugin {
 
 declare global {
     interface Window {
-        registerPlugin(id: string, plugin: Plugin): void
+        registerPlugin(id: string, plugin: Plugin): void;
     }
 }
 

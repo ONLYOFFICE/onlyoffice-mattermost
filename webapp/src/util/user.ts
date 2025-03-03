@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +18,26 @@
  * limitations under the License.
  *
  */
-import {UserProfile} from 'mattermost-redux/types/users';
+
+import type {UserProfile} from 'mattermost-redux/types/users';
 
 import {ONLYOFFICE_WILDCARD_USER} from './const';
-import {FileAccess, FilePermissions, getPermissionsTypeByPermissions} from './permission';
+import type {FilePermissions} from './permission';
+import {FileAccess, getPermissionsTypeByPermissions} from './permission';
 
 export type OnlyofficeUser = {
-    id: string,
-    username: string,
-    permissions: FilePermissions,
-    email: string,
+    id: string;
+    username: string;
+    permissions: FilePermissions;
+    email: string;
 };
 
 export type MattermostUser = {
-    value: string,
-    label: string,
-    avatarUrl: string,
-    fileAccess: string,
-    email: string,
+    value: string;
+    label: string;
+    avatarUrl: string;
+    fileAccess: string;
+    email: string;
 };
 
 export const getUserAvatarUrl = (id: string): string => {
