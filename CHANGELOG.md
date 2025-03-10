@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.4
+## Changed
+- dependency bump for enhanced security
+
 ## 1.1.3
 ## Added
 - link to docs cloud
