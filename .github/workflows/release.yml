@@ -1,5 +1,8 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [master, main]
@@ -9,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.16.1
+          node-version: 20.15.1
 
       - name: Get Info
         run: |
@@ -24,7 +27,6 @@ jobs:
 
       - name: Build Plugin
         run: |
-          export NODE_OPTIONS=--openssl-legacy-provider
           make dist
 
       - name: Create Release

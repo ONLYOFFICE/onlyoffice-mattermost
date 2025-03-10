@@ -10,27 +10,26 @@ jobs:
   artifact:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Get Info
-      run: |
-        echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
-        echo "version=$(jq -r '.version' plugin.json)" >> $GITHUB_OUTPUT
-      id: info
+      - name: Get Info
+        run: |
+          echo "id=$(jq -r '.id' plugin.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r '.version' plugin.json)" >> $GITHUB_OUTPUT
+        id: info
 
-    - name: Install Node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.16.1
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.15.1
 
-    - name: Build Plugin
-      run: |
-        export NODE_OPTIONS=--openssl-legacy-provider
-        make dist
+      - name: Build Plugin
+        run: |
+          make dist
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}
-        path: dist/${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}
+          path: dist/${{ steps.info.outputs.id }}-${{ steps.info.outputs.version }}.tar.gz
