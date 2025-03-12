@@ -91,6 +91,48 @@ export const PermissionsHeader = (props: Props) => {
                 styles={{
                   container: (provided: any) => ({ ...provided, height: '100%' }),
                   control: (provided: any) => ({ ...provided, minHeight: '100%' }),
+                  multiValue: (provided: any) => ({
+                    ...provided,
+                    backgroundColor: '#f0f0f0',
+                    borderRadius: '49px',
+                    margin: '2px 4px',
+                    padding: '2px 4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                  }),
+                  multiValueLabel: (provided: any) => ({
+                    ...provided,
+                    textAlign: 'center',
+                    color: '#3d3c40',
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    lineHeight: '16px',
+                    padding: 0,
+                  }),
+                  multiValueRemove: (provided: any) => ({
+                    ...provided,
+                    width: '10px',
+                    height: '10px',
+                    minWidth: '10px',
+                    minHeight: '10px',
+                    borderRadius: '50%',
+                    margin: 0,
+                    padding: 0,
+                    fontSize: '0.8rem',
+                    lineHeight: 1,
+                    border: '1px solid #ababad',
+                    backgroundColor: '#ababad',
+                    color: '#f0f0f0',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    ':hover': {
+                      backgroundColor: '#9c9c9e',
+                    },
+                  }),
                 }}
               />
             </div>
