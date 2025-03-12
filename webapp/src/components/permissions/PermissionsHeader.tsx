@@ -88,6 +88,10 @@ export const PermissionsHeader = (props: Props) => {
                 onChange={(users) => setCurrent((users as MattermostUser[]))}
                 value={current}
                 isDisabled={props.loading || !props.channel}
+                components={{
+                  DropdownIndicator: () => null,
+                  IndicatorSeparator: () => null,
+                }}
                 styles={{
                   container: (provided: any) => ({ ...provided, height: '100%' }),
                   control: (provided: any) => ({ ...provided, minHeight: '100%' }),
