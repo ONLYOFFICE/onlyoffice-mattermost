@@ -19,158 +19,158 @@
  *
  */
 
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
-import {pipe} from 'util/func';
-import {getTranslations} from 'util/lang';
-import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
-import type {MattermostUser, OnlyofficeUser} from 'util/user';
-import {mapUsersToMattermostUsers, sortMattermostUsers} from 'util/user';
+import { ONLYOFFICE_WILDCARD_USER } from 'util/const';
+import { pipe } from 'util/func';
+import { getTranslations } from 'util/lang';
+import { FileAccess, getPermissionsTypeByPermissions } from 'util/permission';
+import type { MattermostUser, OnlyofficeUser } from 'util/user';
+import { mapUsersToMattermostUsers, sortMattermostUsers } from 'util/user';
 
-import {get, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
-import React, {useState, useEffect} from 'react';
-import {Modal} from 'react-bootstrap';
-import type {Dispatch} from 'redux';
+import { get, ONLYOFFICE_PLUGIN_PERMISSIONS } from 'api';
+import React, { useState, useEffect } from 'react';
+import { Modal } from 'react-bootstrap';
+import type { Dispatch } from 'redux';
 
-import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
+import { Client4 } from 'mattermost-redux/client';
+import type { Channel } from 'mattermost-redux/types/channels';
+import type { FileInfo } from 'mattermost-redux/types/files';
 
-import {PermissionsFooter} from './PermissionsFooter';
-import {PermissionsHeader} from './PermissionsHeader';
-import {PermissionsList} from './PermissionsList';
+import { PermissionsFooter } from './PermissionsFooter';
+import { PermissionsHeader } from './PermissionsHeader';
+import { PermissionsList } from './PermissionsList';
 
 import 'public/scss/permissions.scss';
 
 type Props = {
-    visible: boolean;
-    close: () => (dispatch: Dispatch) => void;
-    fileInfo: FileInfo;
+  visible: boolean;
+  close: () => (dispatch: Dispatch) => void;
+  fileInfo: FileInfo;
 }
 
 const removeInAnimation = () => {
-    const modal = document.getElementById('onlyoffice-permissions-modal');
-    const backdrop = modal?.previousElementSibling;
-    // eslint-disable-next-line no-unused-expressions
-    modal?.classList.remove('in');
-    // eslint-disable-next-line no-unused-expressions
-    backdrop?.classList.remove('in');
+  const modal = document.getElementById('onlyoffice-permissions-modal');
+  const backdrop = modal?.previousElementSibling;
+  // eslint-disable-next-line no-unused-expressions
+  modal?.classList.remove('in');
+  // eslint-disable-next-line no-unused-expressions
+  backdrop?.classList.remove('in');
 };
 
-export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Props) {
-    const i18n = getTranslations();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [channel, setChannel] = useState<Channel | null>();
-    const [users, setUsers] = useState<MattermostUser[]>([]);
-    const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
+export default function OnlyofficeFilePermissions({ visible, close, fileInfo }: Props) {
+  const i18n = getTranslations();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [channel, setChannel] = useState<Channel | null>();
+  const [users, setUsers] = useState<MattermostUser[]>([]);
+  const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
 
-    const onLoading = async () => {
-        setChannel(null);
-        const arr = window.location.href.split('/');
-        try {
-            if (arr.includes('channels')) {
-                const team = await Client4.getTeamByName(arr[arr.length - 3]);
-                const chnl = await Client4.getChannelByName(team.id, arr[arr.length - 1]);
-                setChannel(chnl);
-            }
-            const response = await get<OnlyofficeUser[]>(`${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`) || [];
-            pipe<any>(getPermissionsTypeByPermissions, setWildcardAccess)(response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions);
-            pipe<any>(mapUsersToMattermostUsers, sortMattermostUsers, setUsers)(response);
-        } catch (err) {
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const onExit = () => {
-        removeInAnimation();
-        setTimeout(() => {
-            close();
-        }, 300);
-    };
-
-    const onAppendUsers = (newUsers: MattermostUser[]) => {
-        setUsers([...new Set([...users, ...newUsers])]);
-    };
-
-    const onRemoveUser = (username: string) => {
-        const newUsers = users.filter((user) => user.label !== username);
-        setUsers([...newUsers]);
-    };
-
-    const onChangeUserPermissions = (username: string, newPermissions: string) => {
-        setUsers((prevUsers: MattermostUser[]) => prevUsers.map((user: MattermostUser) => {
-            if (user.label === username) {
-                user.fileAccess = newPermissions;
-            }
-            return user;
-        }));
-    };
-
-    useEffect(() => {
-        if (!visible) {
-            return;
-        }
-        onLoading();
-    }, [visible]);
-
-    if (!visible) {
-        return null;
+  const onLoading = async () => {
+    setChannel(null);
+    const arr = window.location.href.split('/');
+    try {
+      if (arr.includes('channels')) {
+        const team = await Client4.getTeamByName(arr[arr.length - 3]);
+        const chnl = await Client4.getChannelByName(team.id, arr[arr.length - 1]);
+        setChannel(chnl);
+      }
+      const response = await get<OnlyofficeUser[]>(`${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`) || [];
+      pipe<any>(getPermissionsTypeByPermissions, setWildcardAccess)(response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions);
+      pipe<any>(mapUsersToMattermostUsers, sortMattermostUsers, setUsers)(response);
+    } catch (err) {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <Modal
-            show={visible}
-            onHide={onExit}
-            onExited={onExit}
-            role='dialog'
-            id='onlyoffice-permissions-modal'
+  const onExit = () => {
+    removeInAnimation();
+    setTimeout(() => {
+      close();
+    }, 300);
+  };
+
+  const onAppendUsers = (newUsers: MattermostUser[]) => {
+    setUsers([...new Set([...users, ...newUsers])]);
+  };
+
+  const onRemoveUser = (username: string) => {
+    const newUsers = users.filter((user) => user.label !== username);
+    setUsers([...newUsers]);
+  };
+
+  const onChangeUserPermissions = (username: string, newPermissions: string) => {
+    setUsers((prevUsers: MattermostUser[]) => prevUsers.map((user: MattermostUser) => {
+      if (user.label === username) {
+        user.fileAccess = newPermissions;
+      }
+      return user;
+    }));
+  };
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    onLoading();
+  }, [visible]);
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <Modal
+      show={visible}
+      onHide={onExit}
+      onExited={onExit}
+      role='dialog'
+      id='onlyoffice-permissions-modal'
+    >
+      <Modal.Header className='onlyoffice-permissions-modal__header' closeButton={true}>
+        {`${i18n['permissions.modal_header']} ${fileInfo.name}`}
+        <button
+          type='button'
+          className='close'
+          aria-label='Close'
+          onClick={onExit}
+          disabled={loading}
         >
-            <Modal.Header closeButton={true}>
-                {`${i18n['permissions.modal_header']} ${fileInfo.name}`}
-                <button
-                    type='button'
-                    className='close'
-                    aria-label='Close'
-                    onClick={onExit}
-                    disabled={loading}
-                >
-                    <span aria-hidden='true'>{'×'}</span>
-                    <span className='sr-only'>{'Close'}</span>
-                </button>
-            </Modal.Header>
-            <div
-                className='onlyoffice-permissions-modal__body'
-                style={channel ? {} : {maxHeight: '20rem'}}
-            >
-                <div className='filtered-user-list'>
-                    <PermissionsHeader
-                        fileInfo={fileInfo}
-                        channel={channel}
-                        loading={loading}
-                        wildcardAccess={wildcardAccess}
-                        users={users}
-                        onAppendUsers={onAppendUsers}
-                        onSetWildcardAccess={setWildcardAccess}
-                    />
-                    {channel && (
-                        <PermissionsList
-                            users={users}
-                            error={error}
-                            onRemoveUser={onRemoveUser}
-                            onChangeUserPermissions={onChangeUserPermissions}
-                        />
-                    )}
-                    <PermissionsFooter
-                        users={users}
-                        onClose={onExit}
-                        fileInfo={fileInfo}
-                        loading={loading || error}
-                        wildcardAccess={wildcardAccess}
-                    />
-                </div>
-            </div>
-        </Modal>
-    );
+          <span aria-hidden='true'>{'×'}</span>
+          <span className='sr-only'>{'Close'}</span>
+        </button>
+      </Modal.Header>
+      <div
+        className='onlyoffice-permissions-modal__body'
+        style={channel ? {} : { maxHeight: '20rem' }}
+      >
+        <div className='filtered-user-list'>
+          <PermissionsHeader
+            fileInfo={fileInfo}
+            channel={channel}
+            loading={loading}
+            wildcardAccess={wildcardAccess}
+            users={users}
+            onAppendUsers={onAppendUsers}
+            onSetWildcardAccess={setWildcardAccess}
+          />
+          {channel && (
+            <PermissionsList
+              users={users}
+              error={error}
+              onRemoveUser={onRemoveUser}
+              onChangeUserPermissions={onChangeUserPermissions}
+            />
+          )}
+          <PermissionsFooter
+            users={users}
+            onClose={onExit}
+            fileInfo={fileInfo}
+            loading={loading || error}
+            wildcardAccess={wildcardAccess}
+          />
+        </div>
+      </div>
+    </Modal>
+  );
 }
