@@ -35,7 +35,10 @@ type Props = {
 export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
     return (
-        <div className='more-modal__list' style={{ padding: '0rem 1.5rem' }}>
+        <div
+            className='more-modal__list'
+            style={{padding: '0rem 1.5rem'}}
+        >
             <div>
                 {props.error ? (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
@@ -61,7 +64,10 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
     return (
-        <div className='more-modal__row' style={{ padding: 0 }}>
+        <div
+            className='more-modal__row'
+            style={{padding: 0}}
+        >
             <UserIcon {...props}/>
             <UserDetails {...props}/>
             <UserActions {...props}/>
@@ -122,7 +128,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
             className='more-modal__actions'
             style={{display: 'flex', paddingRight: '0.3rem', margin: 0}}
         >
-            <div style={{ width: 'auto', minWidth: '113px', maxWidth: '15rem' }}>
+            <div style={{width: 'auto', minWidth: '113px', maxWidth: '15rem'}}>
                 <Select
                     isSearchable={false}
                     value={{
