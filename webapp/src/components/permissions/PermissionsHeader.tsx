@@ -166,7 +166,7 @@ export const PermissionsHeader = (props: Props) => {
         >
           <span>{accessHeader}</span>
         </span>
-        <div style={{ marginRight: '2.5rem', marginLeft: '10px', width: '15rem' }}>
+        <div style={{ marginLeft: '10px' }}>
           <Select
             isSearchable={false}
             value={{
@@ -176,6 +176,61 @@ export const PermissionsHeader = (props: Props) => {
             options={permissionsMap}
             onChange={(selected) => props.onSetWildcardAccess(selected?.value)}
             isDisabled={props.loading}
+            components={{
+              IndicatorSeparator: () => null,
+            }}
+            styles={{
+              control: (provided: any) => ({
+                ...provided,
+                width: 'auto',
+                height: '32px',
+                border: 'none',
+                borderRadius: '4px',
+                boxShadow: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                padding: '4px 10px 5px 12px',
+                ':hover': {
+                  backgroundColor: '#1C58D914',
+                },
+              }),
+              valueContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }),
+              indicatorsContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }),
+              singleValue: (provided: any) => ({
+                ...provided,
+                color: '#1C58D9',
+                marginRight: '6px',
+              }),
+              dropdownIndicator: (provided: any) => ({
+                ...provided,
+                color: '#1C58D9',
+                padding: 0,
+                marginRight: '0px',
+                ':hover': {
+                  color: '#1C58D9',
+                },
+                svg: {
+                  width: '14px',
+                  height: '14px',
+                  fill: '#1C58D9',
+                  ':hover': {
+                    fill: '#1C58D9',
+                  },
+                }
+              }),
+            }}
           />
         </div>
       </div>
