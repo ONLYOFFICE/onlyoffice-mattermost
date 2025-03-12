@@ -2,6 +2,7 @@
 
 ## 1.1.4
 ## Changed
+- fixed styles
 - dependency bump for enhanced security
 
 ## 1.1.3
