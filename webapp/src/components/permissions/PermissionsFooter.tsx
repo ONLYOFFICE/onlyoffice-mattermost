@@ -19,78 +19,78 @@
  *
  */
 
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
-import {getTranslations} from 'util/lang';
-import type {SubmitPermissionsRequest} from 'util/permission';
-import {getFilePermissions} from 'util/permission';
-import type {MattermostUser} from 'util/user';
+import { ONLYOFFICE_WILDCARD_USER } from 'util/const';
+import { getTranslations } from 'util/lang';
+import type { SubmitPermissionsRequest } from 'util/permission';
+import { getFilePermissions } from 'util/permission';
+import type { MattermostUser } from 'util/user';
 
-import {get, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS, post} from 'api';
+import { get, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS, post } from 'api';
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type { FileInfo } from 'mattermost-redux/types/files';
 
 type Props = {
-    fileInfo: FileInfo;
-    loading: boolean;
-    users: MattermostUser[];
-    wildcardAccess: string;
-    onClose: () => void;
+  fileInfo: FileInfo;
+  loading: boolean;
+  users: MattermostUser[];
+  wildcardAccess: string;
+  onClose: () => void;
 };
 
 const onSubmit = async (props: Props) => {
-    const requestBody: SubmitPermissionsRequest[] = [];
-    const wildcardBody: SubmitPermissionsRequest = {
-        fileID: props.fileInfo.id,
-        userID: ONLYOFFICE_WILDCARD_USER,
-        username: ONLYOFFICE_WILDCARD_USER,
-        permissions: getFilePermissions(props.wildcardAccess),
-    };
+  const requestBody: SubmitPermissionsRequest[] = [];
+  const wildcardBody: SubmitPermissionsRequest = {
+    fileID: props.fileInfo.id,
+    userID: ONLYOFFICE_WILDCARD_USER,
+    username: ONLYOFFICE_WILDCARD_USER,
+    permissions: getFilePermissions(props.wildcardAccess),
+  };
 
-    requestBody.push(wildcardBody);
-    props.users.forEach((user) => {
-        requestBody.push({
-            fileID: props.fileInfo.id,
-            userID: user.value,
-            username: user.label,
-            permissions: getFilePermissions(user.fileAccess),
-        });
+  requestBody.push(wildcardBody);
+  props.users.forEach((user) => {
+    requestBody.push({
+      fileID: props.fileInfo.id,
+      userID: user.value,
+      username: user.label,
+      permissions: getFilePermissions(user.fileAccess),
     });
+  });
 
-    try {
-        //TODO: Handle too many permission entries
-        if (requestBody.length <= 25) {
-            const code = await get<string>(ONLYOFFICE_PLUGIN_GET_CODE);
-            await post<SubmitPermissionsRequest[], void>(`${ONLYOFFICE_PLUGIN_PERMISSIONS}?code=${code}`, requestBody);
-        }
-    } finally {
-        props.onClose();
+  try {
+    //TODO: Handle too many permission entries
+    if (requestBody.length <= 25) {
+      const code = await get<string>(ONLYOFFICE_PLUGIN_GET_CODE);
+      await post<SubmitPermissionsRequest[], void>(`${ONLYOFFICE_PLUGIN_PERMISSIONS}?code=${code}`, requestBody);
     }
+  } finally {
+    props.onClose();
+  }
 };
 
 export const PermissionsFooter = (props: Props) => {
-    const i18n = getTranslations();
-    return (
-        <div
-            className='filter-controls'
-            style={{display: 'flex', justifyContent: ' flex-end', padding: 0, margin: '1rem', maxHeight: '4rem'}}
-        >
-            <Button
-                className='btn btn-md'
-                style={{marginRight: '1rem', border: 'none'}}
-                disabled={props.loading}
-                onClick={props.onClose}
-            >
-                <span style={{color: 'var(--button-bg)'}}>{i18n['permissions.modal_button_cancel']}</span>
-            </Button>
-            <Button
-                className='btn btn-md btn-primary'
-                onClick={() => onSubmit(props)}
-                disabled={props.loading}
-            >
-                {i18n['permissions.modal_button_save']}
-            </Button>
-        </div>
-    );
+  const i18n = getTranslations();
+  return (
+    <div
+      className='filter-controls'
+      style={{ display: 'flex', justifyContent: ' flex-end' }}
+    >
+      <Button
+        className='btn btn-md'
+        style={{ marginRight: '1rem', border: 'none' }}
+        disabled={props.loading}
+        onClick={props.onClose}
+      >
+        <span style={{ color: 'var(--button-bg)' }}>{i18n['permissions.modal_button_cancel']}</span>
+      </Button>
+      <Button
+        className='btn btn-md btn-primary'
+        onClick={() => onSubmit(props)}
+        disabled={props.loading}
+      >
+        {i18n['permissions.modal_button_save']}
+      </Button>
+    </div>
+  );
 };
