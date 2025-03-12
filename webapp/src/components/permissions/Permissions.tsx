@@ -127,7 +127,7 @@ export default function OnlyofficeFilePermissions({ visible, close, fileInfo }: 
       role='dialog'
       id='onlyoffice-permissions-modal'
     >
-      <Modal.Header className='onlyoffice-permissions-modal__header' closeButton={true}>
+      <Modal.Header className='onlyoffice-permissions-modal__header'>
         {`${i18n['permissions.modal_header']} ${fileInfo.name}`}
         <button
           type='button'
