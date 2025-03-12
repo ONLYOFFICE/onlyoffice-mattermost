@@ -74,7 +74,7 @@ export const PermissionsHeader = (props: Props) => {
           style={{ marginBottom: '1rem' }}
         >
           <div style={{ display: 'flex' }}>
-            <div style={{ flexGrow: 1, marginRight: '2rem' }}>
+            <div style={{ flexGrow: 1, marginRight: '0.5rem' }}>
               <AsyncSelect
                 id='onlyoffice-permissions-select'
                 placeholder={i18n['permissions.modal_search_placeholder']}
