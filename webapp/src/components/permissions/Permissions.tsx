@@ -130,7 +130,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Pr
             id='onlyoffice-permissions-modal'
         >
             <Modal.Header className='onlyoffice-permissions-modal__header'>
-                {`${i18n['permissions.modal_header']} ${fileInfo.name}`}
+                <span style={{fontWeight: 600}}>{`${i18n['permissions.modal_header']} ${fileInfo.name}`}</span>
                 <button
                     type='button'
                     className='close'
