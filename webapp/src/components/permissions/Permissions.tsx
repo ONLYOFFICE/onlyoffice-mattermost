@@ -45,36 +45,40 @@ type Props = {
     visible: boolean;
     close: () => (dispatch: Dispatch) => void;
     fileInfo: FileInfo;
-}
+};
 
-const removeInAnimation = () => {
+const removeInAnimation = (): void => {
     const modal = document.getElementById('onlyoffice-permissions-modal');
     const backdrop = modal?.previousElementSibling;
-    // eslint-disable-next-line no-unused-expressions
     modal?.classList.remove('in');
-    // eslint-disable-next-line no-unused-expressions
     backdrop?.classList.remove('in');
 };
 
 export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Props) {
     const i18n = getTranslations();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [channel, setChannel] = useState<Channel | null>();
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<boolean>(false);
+    const [channel, setChannel] = useState<Channel | null>(null);
     const [users, setUsers] = useState<MattermostUser[]>([]);
     const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
 
-    const onLoading = async () => {
+    const fetchData = async (): Promise<void> => {
         setChannel(null);
-        const arr = window.location.href.split('/');
+        const urlParts = window.location.href.split('/');
         try {
-            if (arr.includes('channels')) {
-                const team = await Client4.getTeamByName(arr[arr.length - 3]);
-                const chnl = await Client4.getChannelByName(team.id, arr[arr.length - 1]);
+            if (urlParts.includes('channels')) {
+                const teamName = urlParts[urlParts.length - 3];
+                const channelName = urlParts[urlParts.length - 1];
+                const team = await Client4.getTeamByName(teamName);
+                const chnl = await Client4.getChannelByName(team.id, channelName);
                 setChannel(chnl);
             }
-            const response = await get<OnlyofficeUser[]>(`${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`) || [];
-            pipe<any>(getPermissionsTypeByPermissions, setWildcardAccess)(response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions);
+            const response = (await get<OnlyofficeUser[]>(
+                `${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`,
+            )) || [];
+            pipe<any>(getPermissionsTypeByPermissions, setWildcardAccess)(
+                response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions,
+            );
             pipe<any>(mapUsersToMattermostUsers, sortMattermostUsers, setUsers)(response);
         } catch (err) {
             setError(true);
@@ -83,36 +87,34 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Pr
         }
     };
 
-    const onExit = () => {
+    const handleExit = (): void => {
         removeInAnimation();
-        setTimeout(() => {
-            close();
-        }, 300);
+        setTimeout(() => close(), 300);
     };
 
-    const onAppendUsers = (newUsers: MattermostUser[]) => {
-        setUsers([...new Set([...users, ...newUsers])]);
+    const handleAppendUsers = (newUsers: MattermostUser[]): void => {
+        setUsers((prevUsers) => {
+            const allUsers = [...prevUsers, ...newUsers];
+            return [...new Set(allUsers)];
+        });
     };
 
-    const onRemoveUser = (username: string) => {
-        const newUsers = users.filter((user) => user.label !== username);
-        setUsers([...newUsers]);
+    const handleRemoveUser = (username: string): void => {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.label !== username));
     };
 
-    const onChangeUserPermissions = (username: string, newPermissions: string) => {
-        setUsers((prevUsers: MattermostUser[]) => prevUsers.map((user: MattermostUser) => {
-            if (user.label === username) {
-                user.fileAccess = newPermissions;
-            }
-            return user;
-        }));
+    const handleChangeUserPermissions = (username: string, newPermissions: string): void => {
+        setUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                (user.label === username ? {...user, fileAccess: newPermissions} : user),
+            ),
+        );
     };
 
     useEffect(() => {
-        if (!visible) {
-            return;
+        if (visible) {
+            fetchData();
         }
-        onLoading();
     }, [visible]);
 
     if (!visible) {
@@ -122,18 +124,18 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Pr
     return (
         <Modal
             show={visible}
-            onHide={onExit}
-            onExited={onExit}
+            onHide={handleExit}
+            onExited={handleExit}
             role='dialog'
             id='onlyoffice-permissions-modal'
         >
-            <Modal.Header closeButton={true}>
-                {`${i18n['permissions.modal_header']} ${fileInfo.name}`}
+            <Modal.Header className='onlyoffice-permissions-modal__header'>
+                <span style={{fontWeight: 600}}>{`${i18n['permissions.modal_header']} ${fileInfo.name}`}</span>
                 <button
                     type='button'
                     className='close'
                     aria-label='Close'
-                    onClick={onExit}
+                    onClick={handleExit}
                     disabled={loading}
                 >
                     <span aria-hidden='true'>{'×'}</span>
@@ -151,20 +153,20 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Pr
                         loading={loading}
                         wildcardAccess={wildcardAccess}
                         users={users}
-                        onAppendUsers={onAppendUsers}
+                        onAppendUsers={handleAppendUsers}
                         onSetWildcardAccess={setWildcardAccess}
                     />
                     {channel && (
                         <PermissionsList
                             users={users}
                             error={error}
-                            onRemoveUser={onRemoveUser}
-                            onChangeUserPermissions={onChangeUserPermissions}
+                            onRemoveUser={handleRemoveUser}
+                            onChangeUserPermissions={handleChangeUserPermissions}
                         />
                     )}
                     <PermissionsFooter
                         users={users}
-                        onClose={onExit}
+                        onClose={handleExit}
                         fileInfo={fileInfo}
                         loading={loading || error}
                         wildcardAccess={wildcardAccess}
@@ -174,3 +176,4 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo}: Pr
         </Modal>
     );
 }
+
