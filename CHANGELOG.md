@@ -4,6 +4,7 @@
 ## Changed
 - fixed styles
 - dependency bump for enhanced security
+- support mattermost v9 and v10
 
 ## 1.1.3
 ## Added
