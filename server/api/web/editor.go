@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	oovalidator "github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
-	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type editorParameters struct {
@@ -44,7 +45,7 @@ func (c *editorParameters) Validate() error {
 func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "got an editor request")
-		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeApiRootSuffix
+		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeAPIRootSuffix
 
 		user, err := plugin.API.GetUser(r.Header.Get(plugin.Configuration.MMAuthHeader))
 		if err != nil {
@@ -135,6 +136,8 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		}
 
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "building an editor window")
-		plugin.EditorTemplate.ExecuteTemplate(rw, "editor.html", data)
+		if err := plugin.EditorTemplate.ExecuteTemplate(rw, "editor.html", data); err != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not execute editor template: " + err.Error())
+		}
 	}
 }

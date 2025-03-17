@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pkg/errors"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
-	"github.com/pkg/errors"
 )
 
 var _ = Registry.RegisterHandler(2, _saveFile)
@@ -33,7 +34,7 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	a.API.LogDebug(_OnlyofficeLoggerPrefix + "file " + c.FileID + " save call")
 
 	if c.URL == "" {
-		return &InvalidFileDownloadUrlError{
+		return &InvalidFileDownloadURLError{
 			FileID: c.FileID,
 		}
 	}

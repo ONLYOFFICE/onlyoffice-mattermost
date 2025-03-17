@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +18,27 @@
  * limitations under the License.
  *
  */
+
+import {getTranslations} from 'util/lang';
+import type {FileAccess} from 'util/permission';
+import {getFileAccess} from 'util/permission';
+import type {MattermostUser} from 'util/user';
+
 import React from 'react';
 import Select from 'react-select';
 
-import {getTranslations} from 'util/lang';
-import {getFileAccess, FileAccess} from 'util/permission';
-import {MattermostUser} from 'util/user';
-
 type Props = {
-    onRemoveUser: (username: string) => void,
-    onChangeUserPermissions: (username: string, newPermission: string) => void
+    onRemoveUser: (username: string) => void;
+    onChangeUserPermissions: (username: string, newPermission: string) => void;
 };
 
-export const PermissionsList = (props: Props & { error: boolean, users: MattermostUser[] }) => {
+export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
     return (
-        <div className='more-modal__list'>
+        <div
+            className='more-modal__list'
+            style={{padding: '0rem 1.5rem'}}
+        >
             <div>
                 {props.error ? (
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
@@ -56,7 +64,10 @@ export const PermissionsList = (props: Props & { error: boolean, users: Mattermo
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
     return (
-        <div className='more-modal__row'>
+        <div
+            className='more-modal__row'
+            style={{padding: 0}}
+        >
             <UserIcon {...props}/>
             <UserDetails {...props}/>
             <UserActions {...props}/>
@@ -115,9 +126,9 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
     return (
         <div
             className='more-modal__actions'
-            style={{display: 'flex', paddingRight: '0.3rem'}}
+            style={{display: 'flex', paddingRight: '0.3rem', margin: 0}}
         >
-            <div style={{width: '15rem'}}>
+            <div style={{width: 'auto', minWidth: '113px', maxWidth: '15rem'}}>
                 <Select
                     isSearchable={false}
                     value={{

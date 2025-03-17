@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.0
+## Added
+- support mattermost v9 and v10
+
+## Changed
+- fixed styles
+- dependency bump for enhanced security
+
 ## 1.1.3
 ## Added
 - link to docs cloud

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,12 @@ import "strings"
 
 func (h helper) IsExtensionSupported(fileExt string) bool {
 	_, exists := OnlyofficeFileExtensions[strings.ToLower(fileExt)]
-	if exists {
-		return true
-	}
-	return false
+	return exists
 }
 
 func (h helper) IsExtensionEditable(fileExt string) bool {
 	_, exists := OnlyofficeEditableExtensions[strings.ToLower(fileExt)]
-	if exists {
-		return true
-	}
-	return false
+	return exists
 }
 
 func (h helper) GetFileType(fileExt string) (string, error) {

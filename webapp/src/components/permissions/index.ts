@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +18,14 @@
  * limitations under the License.
  *
  */
-import {connect} from 'react-redux';
-import {bindActionCreators, Dispatch} from 'redux';
-import {GlobalState} from 'mattermost-redux/types/store';
 
-import {permissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
+import {connect} from 'react-redux';
+import type {Dispatch} from 'redux';
+import {bindActionCreators} from 'redux';
 import {closePermissions} from 'redux/actions';
+import {permissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import OnlyofficeFilePermissions from './Permissions';
 

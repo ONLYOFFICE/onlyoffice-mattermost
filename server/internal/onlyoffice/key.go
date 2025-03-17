@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-
 package onlyoffice
 
 import (
@@ -26,5 +25,5 @@ import (
 
 func (h helper) GenerateKey() string {
 	uuidWithHyphen := uuid.New()
-	return strings.Replace(uuidWithHyphen.String(), "-", "", -1)
+	return strings.ReplaceAll(uuidWithHyphen.String(), "-", "")
 }

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ import (
 func BuildCodeHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		code := plugin.OnlyofficeHelper.GenerateKey()
-		plugin.API.KVSetWithExpiry(code, []byte(r.Header.Get(plugin.Configuration.MMAuthHeader)), 120)
+		if err := plugin.API.KVSetWithExpiry(code, []byte(r.Header.Get(plugin.Configuration.MMAuthHeader)), 120); err != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not set code: " + err.Error())
+		}
+
 		api.WriteJSON(rw, code)
 	}
 }

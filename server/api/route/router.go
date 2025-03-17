@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/web"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/web/middleware"
-	"github.com/gorilla/mux"
 )
 
 func recoverRoutes(next http.Handler) http.Handler {
@@ -46,15 +47,15 @@ func timeoutRoutes(timeout time.Duration) func(next func(rw http.ResponseWriter,
 	}
 }
 
-func NewRouter(API api.PluginAPI) *mux.Router {
+func NewRouter(api api.PluginAPI) *mux.Router {
 	router := mux.NewRouter()
 	router.Use(recoverRoutes)
 
 	subrouter := router.PathPrefix("/api").Subrouter()
-	subrouter.Handle("/callback", timeoutRoutes(5*time.Second)(web.BuildCallbackHandler(API))).Methods(http.MethodPost)
-	subrouter.Handle("/download", timeoutRoutes(5*time.Second)(web.BuildDownloadHandler(API))).Methods(http.MethodGet)
+	subrouter.Handle("/callback", timeoutRoutes(5*time.Second)(web.BuildCallbackHandler(api))).Methods(http.MethodPost)
+	subrouter.Handle("/download", timeoutRoutes(5*time.Second)(web.BuildDownloadHandler(api))).Methods(http.MethodGet)
 
-	authMiddleware := middleware.MattermostAuthorizationMiddleware(API)
+	authMiddleware := middleware.MattermostAuthorizationMiddleware(api)
 
 	subrouter.Handle("/permissions", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildSetFilePermissionsHandler))).Methods(http.MethodPost)
 	subrouter.HandleFunc("/editor", authMiddleware(web.BuildEditorHandler)).Methods(http.MethodGet)

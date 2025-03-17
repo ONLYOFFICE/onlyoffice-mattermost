@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 package bot
 
-import "github.com/mattermost/mattermost-server/v6/plugin"
+import "github.com/mattermost/mattermost/server/public/plugin"
 
 var _ Bot = (*onlyofficeBot)(nil)
 
@@ -27,9 +27,9 @@ type Bot interface {
 	BotCreateReply(message string, channelID string, parentID string)
 }
 
-func NewBot(ID string, API plugin.API) Bot {
+func NewBot(id string, api plugin.API) Bot {
 	return onlyofficeBot{
-		ID:  ID,
-		API: API,
+		ID:  id,
+		API: api,
 	}
 }

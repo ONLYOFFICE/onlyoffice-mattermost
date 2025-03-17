@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +18,17 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import {useDispatch} from 'react-redux';
-import {FileInfo} from 'mattermost-redux/types/files';
-
-import {openEditor, openPermissions} from 'redux/actions';
 
 import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import editor from 'public/images/editor.svg';
 import permissions from 'public/images/permissions.svg';
+import React from 'react';
+import {useDispatch} from 'react-redux';
+import {openEditor, openPermissions} from 'redux/actions';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
 import 'public/scss/preview.scss';
 
 type Props = {
@@ -65,7 +68,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                                 <img
                                     className='onlyoffice_preview__btn'
                                     alt={'permissions button'}
-                                    onClick={() => dispatch(openPermissions(props.fileInfo))}
+                                    onClick={() => openPermissions(props.fileInfo)(dispatch)}
                                     src={permissions}
                                 />
                             )
@@ -73,7 +76,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                     <img
                         className='onlyoffice_preview__btn'
                         alt={'open editor'}
-                        onClick={() => dispatch(openEditor(props.fileInfo))}
+                        onClick={() => openEditor(props.fileInfo)(dispatch)}
                         src={editor}
                     />
                 </div>

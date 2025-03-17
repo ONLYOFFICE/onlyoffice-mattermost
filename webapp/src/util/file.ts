@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +18,15 @@
  * limitations under the License.
  *
  */
-import {FileInfo} from 'mattermost-redux/types/files';
 
-import xlsx from 'public/images/xlsx.svg';
 import docx from 'public/images/docx.svg';
-import pptx from 'public/images/pptx.svg';
-import word from 'public/images/generic_word.svg';
 import cell from 'public/images/generic_cell.svg';
 import slide from 'public/images/generic_slide.svg';
+import word from 'public/images/generic_word.svg';
+import pptx from 'public/images/pptx.svg';
+import xlsx from 'public/images/xlsx.svg';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {getCookie} from './cookie';
 

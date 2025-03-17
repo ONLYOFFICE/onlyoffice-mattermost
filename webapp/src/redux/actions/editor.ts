@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +18,10 @@
  * limitations under the License.
  *
  */
-import {Dispatch} from 'redux';
-import {FileInfo} from 'mattermost-redux/types/files';
+
+import type {Dispatch} from 'redux';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {CLOSE_EDITOR_MODAL, OPEN_EDITOR_MODAL} from './types';
 

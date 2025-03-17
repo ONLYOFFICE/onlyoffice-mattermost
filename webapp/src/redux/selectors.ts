@@ -1,6 +1,9 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +18,12 @@
  * limitations under the License.
  *
  */
-import {GlobalState} from 'mattermost-redux/types/store';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {id as pluginId} from '../manifest';
 
-//@ts-ignore
+//@ts-expect-error: Suppressing error because state['plugins-' + pluginId] might be undefined
 const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
 
 export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
