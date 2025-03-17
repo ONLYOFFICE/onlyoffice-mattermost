@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.1.4
+## 1.2.0
 ## Changed
 - fixed styles
 - dependency bump for enhanced security
