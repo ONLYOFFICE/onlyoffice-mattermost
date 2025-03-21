@@ -6,7 +6,7 @@ require (
 	github.com/go-git/go-git/v5 v5.14.0
 	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-resty/resty/v2 v2.16.5
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/mattermost/mattermost-plugin-starter-template/build v0.0.0-20230331081206-b874f4747e3b
 	github.com/mattermost/mattermost/server/public v0.1.10
 	github.com/mattermost/mattermost/server/v8 v8.0.0-20250228172344-7ab585e1324c
@@ -49,9 +49,6 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/tools v0.29.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
 
