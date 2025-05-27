@@ -23,7 +23,7 @@ import (
 )
 
 var ErrDeprecatedDocumentServerVersion = errors.New(_OnlyofficeLoggerPrefix + "old document server version")
-var ErrParseDocumentServerVersion = errors.New(_OnlyofficeLoggerPrefix + "could not parse document server version")
+var ErrParseDocumentServerVersion = errors.New(_OnlyofficeLoggerPrefix + "could not parse document server version. Make sure that document server version is 8.2 or higher")
 var ErrCreateBotProfile = errors.New(_OnlyofficeLoggerPrefix + "could not create bot profile")
 var ErrLoadBotProfileImage = errors.New(_OnlyofficeLoggerPrefix + "could not load bot profile image")
 var ErrSetBotProfileImage = errors.New(_OnlyofficeLoggerPrefix + "could not set bot profile image")

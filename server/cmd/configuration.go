@@ -166,7 +166,10 @@ func (c *configuration) IsValid() error {
 	}, 4*time.Second)
 
 	if err != nil {
-		return err
+		return &BadConfigurationError{
+			Property: "Document Server Connection",
+			Reason:   "Could not retrieve document server version, please check your credentials and make sure that document server version is 8.2 or higher: " + err.Error(),
+		}
 	}
 
 	if resp.Error != 0 {
@@ -185,7 +188,7 @@ func (c *configuration) IsValid() error {
 		return ErrParseDocumentServerVersion
 	}
 
-	if version < 7 {
+	if version < 8 {
 		return ErrDeprecatedDocumentServerVersion
 	}
 
