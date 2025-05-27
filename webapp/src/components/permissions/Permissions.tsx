@@ -55,6 +55,19 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
+const getStyles = (theme: string) => ({
+    headerText: {
+        fontWeight: 600,
+        color: theme === 'dark' ? '#ffffff' : undefined,
+    },
+    closeButton: {
+        color: theme === 'dark' ? '#ffffff' : undefined,
+    },
+    modalBody: (hasChannel: boolean) => ({
+        maxHeight: hasChannel ? undefined : '20rem',
+    }),
+});
+
 export default function OnlyofficeFilePermissions({visible, close, fileInfo, theme}: Props) {
     const i18n = getTranslations();
     const [loading, setLoading] = useState<boolean>(true);
@@ -62,6 +75,8 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
     const [channel, setChannel] = useState<Channel | null>(null);
     const [users, setUsers] = useState<MattermostUser[]>([]);
     const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
+
+    const styles = getStyles(theme);
 
     const fetchData = async (): Promise<void> => {
         setChannel(null);
@@ -135,19 +150,14 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                 className='onlyoffice-permissions-modal__header'
                 data-theme={theme}
             >
-                <span style={{
-                    fontWeight: 600,
-                    color: theme === 'dark' ? '#ffffff' : undefined,
-                }}>{`${i18n['permissions.modal_header']} ${fileInfo.name}`}</span>
+                <span style={styles.headerText}>{`${i18n['permissions.modal_header']} ${fileInfo.name}`}</span>
                 <button
                     type='button'
                     className='close'
                     aria-label='Close'
                     onClick={handleExit}
                     disabled={loading}
-                    style={{
-                        color: theme === 'dark' ? '#ffffff' : undefined,
-                    }}
+                    style={styles.closeButton}
                 >
                     <span aria-hidden='true'>{'×'}</span>
                     <span className='sr-only'>{'Close'}</span>
@@ -155,7 +165,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
             </Modal.Header>
             <div
                 className='onlyoffice-permissions-modal__body'
-                style={channel ? {} : {maxHeight: '20rem'}}
+                style={styles.modalBody(Boolean(channel))}
                 data-theme={theme}
             >
                 <div className='filtered-user-list'>

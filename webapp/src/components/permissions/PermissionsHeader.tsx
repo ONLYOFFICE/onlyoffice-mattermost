@@ -25,7 +25,7 @@ import type {FileAccess} from 'util/permission';
 import {getFileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Button} from 'react-bootstrap';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
@@ -55,6 +55,174 @@ export const PermissionsHeader: React.FC<Props> = ({
     theme,
 }) => {
     const i18n = getTranslations();
+    const styles = useMemo(() => ({
+        filterRow: {
+            marginBottom: channel ? '1rem' : undefined,
+            marginTop: channel ? '1rem' : undefined,
+            maxHeight: channel ? undefined : '10rem',
+        },
+        userColumn: {
+            marginBottom: '1rem',
+        },
+        userSelectContainer: {
+            display: 'flex',
+        },
+        asyncSelect: {
+            flexGrow: 1,
+            marginRight: '0.5rem',
+        },
+        bottomSection: {
+            marginTop: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        permissionSelect: {
+            marginLeft: '10px',
+        },
+        selectStyles: {
+            container: (provided: any) => ({...provided, height: '100%'}),
+            control: (provided: any) => ({
+                ...provided,
+                minHeight: '100%',
+                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+            }),
+            menu: (provided: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+            }),
+            option: (provided: any, state: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' 
+                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                    : provided.backgroundColor,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+            input: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+            placeholder: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : provided.color,
+            }),
+            multiValue: (provided: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0',
+                borderRadius: '49px',
+                margin: '2px 4px',
+                padding: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+            }),
+            multiValueLabel: (provided: any) => ({
+                ...provided,
+                textAlign: 'center',
+                color: theme === 'dark' ? '#ffffff' : '#3d3c40',
+                fontSize: '12px',
+                fontWeight: 400,
+                lineHeight: '16px',
+                padding: 0,
+            }),
+            multiValueRemove: (provided: any) => ({
+                ...provided,
+                width: '10px',
+                height: '10px',
+                minWidth: '10px',
+                minHeight: '10px',
+                borderRadius: '50%',
+                margin: 0,
+                padding: 0,
+                fontSize: '0.8rem',
+                lineHeight: 1,
+                border: '1px solid #ababad',
+                backgroundColor: '#ababad',
+                color: '#f0f0f0',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ':hover': {
+                    backgroundColor: '#9c9c9e',
+                },
+            }),
+        },
+        permissionSelectStyles: {
+            control: (provided: any) => ({
+                ...provided,
+                width: 'auto',
+                height: '32px',
+                border: 'none',
+                borderRadius: '4px',
+                boxShadow: 'none',
+                backgroundColor: theme === 'dark' ? '#1b1d22' : 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                padding: '4px 10px 5px 12px',
+                ':hover': {
+                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                },
+            }),
+            valueContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+            }),
+            indicatorsContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+            }),
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                marginRight: '6px',
+            }),
+            dropdownIndicator: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                padding: 0,
+                marginRight: '0px',
+                ':hover': {
+                    color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                },
+                svg: {
+                    width: '14px',
+                    height: '14px',
+                    fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                    ':hover': {
+                        fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                    },
+                },
+            }),
+            menu: (provided: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+            }),
+            option: (provided: any, state: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark'
+                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                    : state.isFocused ? '#1C58D914' : provided.backgroundColor,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+                ':hover': {
+                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                },
+            }),
+        },
+    }), [theme, channel]);
+
     const permissionsOptions = getFileAccess().map((entry: FileAccess) => ({
         value: entry.toString(),
         label:
@@ -86,15 +254,15 @@ export const PermissionsHeader: React.FC<Props> = ({
     return (
         <div
             className='filter-row'
-            style={channel ? {marginBottom: '1rem', marginTop: '1rem'} : {maxHeight: '10rem'}}
+            style={styles.filterRow}
         >
             {channel && (
                 <div
                     className='col-xs-12'
-                    style={{marginBottom: '1rem'}}
+                    style={styles.userColumn}
                 >
-                    <div style={{display: 'flex'}}>
-                        <div style={{flexGrow: 1, marginRight: '0.5rem'}}>
+                    <div style={styles.userSelectContainer}>
+                        <div style={styles.asyncSelect}>
                             <AsyncSelect
                                 id='onlyoffice-permissions-select'
                                 placeholder={i18n['permissions.modal_search_placeholder']}
@@ -112,72 +280,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
                                 }}
-                                styles={{
-                                    container: (provided: any) => ({...provided, height: '100%'}),
-                                    control: (provided: any) => ({
-                                        ...provided,
-                                        minHeight: '100%',
-                                        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-                                        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-                                    }),
-                                    menu: (provided: any) => ({
-                                        ...provided,
-                                        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-                                    }),
-                                    option: (provided: any, state: any) => ({
-                                        ...provided,
-                                        backgroundColor: theme === 'dark' 
-                                            ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                                            : provided.backgroundColor,
-                                        color: theme === 'dark' ? '#ffffff' : provided.color,
-                                    }),
-                                    singleValue: (provided: any) => ({
-                                        ...provided,
-                                        color: theme === 'dark' ? '#ffffff' : provided.color,
-                                    }),
-                                    multiValue: (provided: any) => ({
-                                        ...provided,
-                                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0',
-                                        borderRadius: '49px',
-                                        margin: '2px 4px',
-                                        padding: '2px 4px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                    }),
-                                    multiValueLabel: (provided: any) => ({
-                                        ...provided,
-                                        textAlign: 'center',
-                                        color: theme === 'dark' ? '#ffffff' : '#3d3c40',
-                                        fontSize: '12px',
-                                        fontWeight: 400,
-                                        lineHeight: '16px',
-                                        padding: 0,
-                                    }),
-                                    multiValueRemove: (provided: any) => ({
-                                        ...provided,
-                                        width: '10px',
-                                        height: '10px',
-                                        minWidth: '10px',
-                                        minHeight: '10px',
-                                        borderRadius: '50%',
-                                        margin: 0,
-                                        padding: 0,
-                                        fontSize: '0.8rem',
-                                        lineHeight: 1,
-                                        border: '1px solid #ababad',
-                                        backgroundColor: '#ababad',
-                                        color: '#f0f0f0',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        ':hover': {
-                                            backgroundColor: '#9c9c9e',
-                                        },
-                                    }),
-                                }}
+                                styles={styles.selectStyles}
                             />
                         </div>
                         <Button
@@ -192,17 +295,12 @@ export const PermissionsHeader: React.FC<Props> = ({
             )}
             <div
                 className='col-sm-12'
-                style={{
-                    marginTop: '2rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                }}
+                style={styles.bottomSection}
             >
                 <span className='member-count pull-left onlyoffice-permissions__access-header'>
                     <span>{accessHeader}</span>
                 </span>
-                <div style={{marginLeft: '10px'}}>
+                <div style={styles.permissionSelect}>
                     <Select
                         isSearchable={false}
                         value={{
@@ -217,73 +315,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                         components={{
                             IndicatorSeparator: () => null,
                         }}
-                        styles={{
-                            control: (provided: any) => ({
-                                ...provided,
-                                width: 'auto',
-                                height: '32px',
-                                border: 'none',
-                                borderRadius: '4px',
-                                boxShadow: 'none',
-                                backgroundColor: theme === 'dark' ? '#1b1d22' : 'transparent',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                padding: '4px 10px 5px 12px',
-                                ':hover': {
-                                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
-                                },
-                            }),
-                            valueContainer: (provided: any) => ({
-                                ...provided,
-                                padding: 0,
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                            }),
-                            indicatorsContainer: (provided: any) => ({
-                                ...provided,
-                                padding: 0,
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                            }),
-                            singleValue: (provided: any) => ({
-                                ...provided,
-                                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
-                                marginRight: '6px',
-                            }),
-                            dropdownIndicator: (provided: any) => ({
-                                ...provided,
-                                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
-                                padding: 0,
-                                marginRight: '0px',
-                                ':hover': {
-                                    color: theme === 'dark' ? '#ffffff' : '#1C58D9',
-                                },
-                                svg: {
-                                    width: '14px',
-                                    height: '14px',
-                                    fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
-                                    ':hover': {
-                                        fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
-                                    },
-                                },
-                            }),
-                            menu: (provided: any) => ({
-                                ...provided,
-                                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-                                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-                            }),
-                            option: (provided: any, state: any) => ({
-                                ...provided,
-                                backgroundColor: theme === 'dark'
-                                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                                    : state.isFocused ? '#1C58D914' : provided.backgroundColor,
-                                color: theme === 'dark' ? '#ffffff' : provided.color,
-                                ':hover': {
-                                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
-                                },
-                            }),
-                        }}
+                        styles={styles.permissionSelectStyles}
                     />
                 </div>
             </div>

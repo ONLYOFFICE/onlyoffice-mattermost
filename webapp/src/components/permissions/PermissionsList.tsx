@@ -33,18 +33,76 @@ type Props = {
     theme: string;
 };
 
+const getStyles = (theme: string) => ({
+    actions: {
+        display: 'flex',
+        paddingRight: '0.3rem',
+        margin: 0,
+    },
+    selectContainer: {
+        width: 'auto',
+        minWidth: '113px',
+        maxWidth: '15rem',
+    },
+    removeButton: {
+        marginLeft: '1rem',
+    },
+    row: {
+        padding: 0,
+    },
+    list: {
+        padding: '0rem 1.5rem',
+    },
+    errorContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+    },
+    errorText: {
+        fontSize: '7',
+    },
+    name: {
+        display: 'block',
+    },
+    selectStyles: {
+        control: (provided: any) => ({
+            ...provided,
+            backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+            borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+        }),
+        menu: (provided: any) => ({
+            ...provided,
+            backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+        }),
+        option: (provided: any, state: any) => ({
+            ...provided,
+            backgroundColor: theme === 'dark' 
+                ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                : provided.backgroundColor,
+            color: theme === 'dark' ? '#ffffff' : provided.color,
+        }),
+        singleValue: (provided: any) => ({
+            ...provided,
+            color: theme === 'dark' ? '#ffffff' : provided.color,
+        }),
+    },
+});
+
 export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
+    const styles = getStyles(props.theme);
+
     return (
         <div
             className='more-modal__list'
-            style={{padding: '0rem 1.5rem'}}
+            style={styles.list}
             data-theme={props.theme}
         >
             <div>
                 {props.error ? (
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                        <span style={{fontSize: '7'}}>{i18n['permissions.modal_fetch_error']}</span>
+                    <div style={styles.errorContainer}>
+                        <span style={styles.errorText}>{i18n['permissions.modal_fetch_error']}</span>
                     </div>
                 ) : (
                     <>
@@ -66,14 +124,16 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
 };
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
+    const styles = getStyles(props.theme);
+
     return (
         <div
             className='more-modal__row'
-            style={{padding: 0}}
+            style={styles.row}
             data-theme={props.theme}
         >
             <UserIcon {...props}/>
-            <UserDetails {...props}/>
+            <UserDetails user={props.user} theme={props.theme}/>
             <UserActions {...props}/>
         </div>
     );
@@ -96,12 +156,14 @@ const UserIcon = ({user}: {user: MattermostUser}) => {
     );
 };
 
-const UserDetails = ({user}: {user: MattermostUser}) => {
+const UserDetails = ({user, theme}: {user: MattermostUser; theme: string}) => {
+    const styles = getStyles(theme);
+
     return (
         <div className='more-modal__details'>
             <div
                 className='more-modal__name'
-                style={{display: 'block'}}
+                style={styles.name}
             >
                 {`@${user.label}`}
             </div>
@@ -114,12 +176,16 @@ const UserDetails = ({user}: {user: MattermostUser}) => {
 
 const UserActions = (props: Props & { user: MattermostUser }) => {
     const i18n = getTranslations();
+
+    const styles = getStyles(props.theme);
+
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {
             value: entry.toString(),
             label: i18n[`types.permissions.${entry.toString().toLowerCase() as 'edit' | 'read'}`] || entry.toString(),
         };
     });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChange = (value: any) => {
         if (value.value) {
@@ -130,9 +196,9 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
     return (
         <div
             className='more-modal__actions'
-            style={{display: 'flex', paddingRight: '0.3rem', margin: 0}}
+            style={styles.actions}
         >
-            <div style={{width: 'auto', minWidth: '113px', maxWidth: '15rem'}}>
+            <div style={styles.selectContainer}>
                 <Select
                     isSearchable={false}
                     value={{
@@ -141,28 +207,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
-                    styles={{
-                        control: (provided: any) => ({
-                            ...provided,
-                            backgroundColor: props.theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-                            borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-                        }),
-                        menu: (provided: any) => ({
-                            ...provided,
-                            backgroundColor: props.theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-                        }),
-                        option: (provided: any, state: any) => ({
-                            ...provided,
-                            backgroundColor: props.theme === 'dark' 
-                                ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                                : provided.backgroundColor,
-                            color: props.theme === 'dark' ? '#ffffff' : provided.color,
-                        }),
-                        singleValue: (provided: any) => ({
-                            ...provided,
-                            color: props.theme === 'dark' ? '#ffffff' : provided.color,
-                        }),
-                    }}
+                    styles={styles.selectStyles}
                 />
             </div>
             <button
@@ -170,7 +215,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 className='close'
                 aria-label='Close'
                 onClick={() => props.onRemoveUser(props.user.label)}
-                style={{marginLeft: '1rem'}}
+                style={styles.removeButton}
             >
                 <span aria-hidden='true'>{'×'}</span>
             </button>
