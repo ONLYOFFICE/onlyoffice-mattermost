@@ -54,6 +54,7 @@ func NewRouter(api api.PluginAPI) *mux.Router {
 	subrouter := router.PathPrefix("/api").Subrouter()
 	subrouter.Handle("/callback", timeoutRoutes(5*time.Second)(web.BuildCallbackHandler(api))).Methods(http.MethodPost)
 	subrouter.Handle("/download", timeoutRoutes(5*time.Second)(web.BuildDownloadHandler(api))).Methods(http.MethodGet)
+	subrouter.Handle("/image", timeoutRoutes(5*time.Second)(web.BuildImageHandler(api))).Methods(http.MethodGet)
 
 	authMiddleware := middleware.MattermostAuthorizationMiddleware(api)
 

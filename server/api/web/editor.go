@@ -96,6 +96,11 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			permissions = plugin.OnlyofficeHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
 		}
 
+		code := plugin.OnlyofficeHelper.GenerateKey()
+		if err := plugin.API.KVSetWithExpiry(code, []byte(payload.UserID), 10); err != nil {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not set code: " + err.Error())
+		}
+
 		config := oomodel.Config{
 			Document: oomodel.Document{
 				FileType:    fileInfo.Extension,
@@ -107,8 +112,9 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			DocumentType: docType,
 			EditorConfig: oomodel.EditorConfig{
 				User: oomodel.User{
-					ID:   payload.UserID,
-					Name: payload.Username,
+					ID:    payload.UserID,
+					Name:  payload.Username,
+					Image: fmt.Sprintf("%s/image?code=%s", serverURL, code),
 				},
 				CallbackURL: serverURL + "/callback?file=" + payload.FileID,
 				Customization: oomodel.Customization{
