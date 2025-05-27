@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
@@ -157,7 +158,7 @@ func (c *configuration) IsValid() error {
 	}
 
 	command := client.NewOnlyofficeCommandClient(crypto.NewJwtManager([]byte(c.DESJwt)))
-	resp, err := command.SendVersion(c.DESAddress+client.OnlyofficeCommandServicePath, model.CommandVersionRequest{
+	resp, err := command.SendVersion(c.DESAddress+client.OnlyofficeCommandServicePath+"?shardkey="+uuid.New().String(), model.CommandVersionRequest{
 		Command: client.OnlyofficeCommandServiceVersion,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
