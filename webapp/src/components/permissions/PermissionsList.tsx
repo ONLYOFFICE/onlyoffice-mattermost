@@ -30,6 +30,7 @@ import Select from 'react-select';
 type Props = {
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
+    theme: string;
 };
 
 export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
@@ -38,6 +39,7 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
         <div
             className='more-modal__list'
             style={{padding: '0rem 1.5rem'}}
+            data-theme={props.theme}
         >
             <div>
                 {props.error ? (
@@ -52,6 +54,7 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
                                 user={user}
                                 onRemoveUser={props.onRemoveUser}
                                 onChangeUserPermissions={props.onChangeUserPermissions}
+                                theme={props.theme}
                             />
                         ))}
                     </>
@@ -67,6 +70,7 @@ const PermissionsRow = (props: Props & { user: MattermostUser }) => {
         <div
             className='more-modal__row'
             style={{padding: 0}}
+            data-theme={props.theme}
         >
             <UserIcon {...props}/>
             <UserDetails {...props}/>
@@ -137,6 +141,28 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
+                    styles={{
+                        control: (provided: any) => ({
+                            ...provided,
+                            backgroundColor: props.theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                            borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                        }),
+                        menu: (provided: any) => ({
+                            ...provided,
+                            backgroundColor: props.theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                        }),
+                        option: (provided: any, state: any) => ({
+                            ...provided,
+                            backgroundColor: props.theme === 'dark' 
+                                ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                                : provided.backgroundColor,
+                            color: props.theme === 'dark' ? '#ffffff' : provided.color,
+                        }),
+                        singleValue: (provided: any) => ({
+                            ...provided,
+                            color: props.theme === 'dark' ? '#ffffff' : provided.color,
+                        }),
+                    }}
                 />
             </div>
             <button

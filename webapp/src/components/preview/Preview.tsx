@@ -33,6 +33,7 @@ import 'public/scss/preview.scss';
 
 type Props = {
     fileInfo: FileInfo;
+    theme: string;
 }
 
 export default function OnlyofficeFilePreview(props: Props) {
@@ -61,7 +62,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                 <div className='file-details__info'>
                     {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}
                 </div>
-                <div className='file-details__onlyoffice'>
+                <div className='file-details__onlyoffice' data-theme={props.theme}>
                     {
                         showPermissions &&
                             (
@@ -70,6 +71,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                                     alt={'permissions button'}
                                     onClick={() => openPermissions(props.fileInfo)(dispatch)}
                                     src={permissions}
+                                    data-theme={props.theme}
                                 />
                             )
                     }
@@ -78,6 +80,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                         alt={'open editor'}
                         onClick={() => openEditor(props.fileInfo)(dispatch)}
                         src={editor}
+                        data-theme={props.theme}
                     />
                 </div>
             </div>

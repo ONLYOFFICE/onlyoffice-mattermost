@@ -25,15 +25,17 @@ import {getTranslations} from 'util/lang';
 import errorIcon from 'public/images/error.svg';
 import React, {useEffect, useState} from 'react';
 
-export default function EditorLoader() {
+type Props = {
+    theme: string;
+};
+
+export default function EditorLoader({theme}: Props) {
     const [error, setError] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
     const i18n = getTranslations();
 
     const disableLoading = () => {
-        const container = document.getElementsByClassName('onlyoffice-editor__loader-container').item(0);
-        if (container) {
-            container.classList.add('onlyoffice-editor__loader-container_hidden');
-        }
+        setIsVisible(false);
     };
 
     const requestClose = () => {
@@ -51,8 +53,15 @@ export default function EditorLoader() {
         };
     }, []);
 
+    if (!isVisible) {
+        return null;
+    }
+
     return (
-        <div className='onlyoffice-editor__loader-container'>
+        <div 
+            className='onlyoffice-editor__loader-container' 
+            data-theme={theme}
+        >
             {!error && <div className='onlyoffice-editor__loader-icon'><div/><div/><div/></div>}
             {error && (
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>

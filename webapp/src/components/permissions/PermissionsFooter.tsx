@@ -37,6 +37,7 @@ type Props = {
     users: MattermostUser[];
     wildcardAccess: string;
     onClose: () => void;
+    theme: string;
 };
 
 export const PermissionsFooter: React.FC<Props> = ({
@@ -45,6 +46,7 @@ export const PermissionsFooter: React.FC<Props> = ({
     users,
     wildcardAccess,
     onClose,
+    theme,
 }) => {
     const i18n = getTranslations();
 
@@ -82,10 +84,16 @@ export const PermissionsFooter: React.FC<Props> = ({
         <div
             className='filter-controls'
             style={{display: 'flex', justifyContent: 'flex-end'}}
+            data-theme={theme}
         >
             <Button
                 className='btn btn-md'
-                style={{marginRight: '1rem', border: 'none'}}
+                style={{
+                    marginRight: '1rem',
+                    border: 'none',
+                    backgroundColor: theme === 'dark' ? '#1b1d22' : undefined,
+                    color: theme === 'dark' ? '#ffffff' : undefined,
+                }}
                 disabled={loading}
                 onClick={onClose}
             >
@@ -97,6 +105,10 @@ export const PermissionsFooter: React.FC<Props> = ({
                 className='btn btn-md btn-primary'
                 onClick={handleSubmit}
                 disabled={loading}
+                style={{
+                    backgroundColor: theme === 'dark' ? '#166de0' : undefined,
+                    color: theme === 'dark' ? '#ffffff' : undefined,
+                }}
             >
                 {i18n['permissions.modal_button_save']}
             </Button>

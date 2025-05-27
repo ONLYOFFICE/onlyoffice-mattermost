@@ -7,7 +7,13 @@
 }
 
 .onlyoffice_preview__btn:hover{
-    box-shadow: 0 0 11px $shadow_dark;
+    @include light-theme {
+        box-shadow: 0 0 11px $shadow_dark;
+    }
+
+    @include dark-theme {
+        box-shadow: 0 0 11px $shadow_light;
+    }
 }
 
 .file-details__onlyoffice {

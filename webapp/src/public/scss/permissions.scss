@@ -1,6 +1,19 @@
+@import './colors';
+@import './mixins';
+
 #onlyoffice-permissions-modal {
   font-family: 'Open sans';
   padding-left: 0px !important;
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+    color: $text_light;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+    color: $text_dark;
+  }
 }
 
 .onlyoffice-permissions-modal__header {
@@ -17,15 +30,66 @@
 
 .onlyoffice-permissions__access-header {
   max-width: 60%;
+
+  @include dark-theme {
+    color: $text_light;
+  }
+
+  @include light-theme {
+    color: $text_dark;
+  }
 }
 
 .filtered-user-list {
   scrollbar-width: none;
   min-height: 400px;
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+  }
 }
 
 .react-select__value-container {
   max-width: 40rem;
+}
+
+// Dark theme styles for react-select components
+.react-select-container {
+  @include dark-theme {
+    .react-select__control {
+      background-color: $modal_background_dark;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .react-select__menu {
+      background-color: $modal_background_dark;
+    }
+
+    .react-select__option {
+      color: $text_light;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .react-select__single-value,
+    .react-select__input {
+      color: $text_light;
+    }
+
+    .react-select__multi-value {
+      background-color: rgba(255, 255, 255, 0.1);
+      
+      .react-select__multi-value__label {
+        color: $text_light;
+      }
+    }
+  }
 }
 
 @media all and (max-width: 497px) {

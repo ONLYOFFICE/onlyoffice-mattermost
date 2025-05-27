@@ -1,15 +1,26 @@
 $backdrop_light: #f5f5f5;
-$backdrop_dark: rgba(0,0,0,0.25);
-$modal_color: rgb(0, 0, 0);
-$modal_background_color: rgb(255,255,255);
+$backdrop_dark: rgba(0, 0, 0, 0.25);
+$modal_background_light: rgb(255, 255, 255);
+$modal_background_dark: #1b1d22;
+$text_light: #ffffff;
+$text_dark: #000000;
 
 $brand_blue: #166de0;
 $brand_light_blue: #5DC0E8;
 $brand_orange: #FF6F3D;
 $brand_green: #95C038;
 
-$text_light: #ffffff;
-$text_dark: #000000;
-
 $shadow_light: #cfcfcf;
 $shadow_dark: rgba(33, 33, 33, 0.2);
+
+@mixin light-theme {
+  [data-theme="light"] & {
+    @content;
+  }
+}
+
+@mixin dark-theme {
+  [data-theme="dark"] & {
+    @content;
+  }
+}

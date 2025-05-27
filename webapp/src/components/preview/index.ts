@@ -21,13 +21,13 @@
 
 import {connect} from 'react-redux';
 
-import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
 import type {GlobalState} from 'mattermost-redux/types/store';
+import { getCurrentTheme } from 'redux/selectors';
 
 import OnlyofficeFilePreview from './Preview';
 
 const mapStateToProps = (state: GlobalState) => ({
-    theme: getTheme(state),
+    theme: getCurrentTheme(state),
 });
 
 export default connect(mapStateToProps)(OnlyofficeFilePreview);

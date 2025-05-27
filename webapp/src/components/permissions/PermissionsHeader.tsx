@@ -41,6 +41,7 @@ type Props = {
     users: MattermostUser[];
     onSetWildcardAccess: (value: any) => void;
     onAppendUsers: (newUsers: MattermostUser[]) => void;
+    theme: string;
 };
 
 export const PermissionsHeader: React.FC<Props> = ({
@@ -51,6 +52,7 @@ export const PermissionsHeader: React.FC<Props> = ({
     users,
     onSetWildcardAccess,
     onAppendUsers,
+    theme,
 }) => {
     const i18n = getTranslations();
     const permissionsOptions = getFileAccess().map((entry: FileAccess) => ({
@@ -112,10 +114,30 @@ export const PermissionsHeader: React.FC<Props> = ({
                                 }}
                                 styles={{
                                     container: (provided: any) => ({...provided, height: '100%'}),
-                                    control: (provided: any) => ({...provided, minHeight: '100%'}),
+                                    control: (provided: any) => ({
+                                        ...provided,
+                                        minHeight: '100%',
+                                        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                                        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                                    }),
+                                    menu: (provided: any) => ({
+                                        ...provided,
+                                        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                                    }),
+                                    option: (provided: any, state: any) => ({
+                                        ...provided,
+                                        backgroundColor: theme === 'dark' 
+                                            ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                                            : provided.backgroundColor,
+                                        color: theme === 'dark' ? '#ffffff' : provided.color,
+                                    }),
+                                    singleValue: (provided: any) => ({
+                                        ...provided,
+                                        color: theme === 'dark' ? '#ffffff' : provided.color,
+                                    }),
                                     multiValue: (provided: any) => ({
                                         ...provided,
-                                        backgroundColor: '#f0f0f0',
+                                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0',
                                         borderRadius: '49px',
                                         margin: '2px 4px',
                                         padding: '2px 4px',
@@ -127,7 +149,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                                     multiValueLabel: (provided: any) => ({
                                         ...provided,
                                         textAlign: 'center',
-                                        color: '#3d3c40',
+                                        color: theme === 'dark' ? '#ffffff' : '#3d3c40',
                                         fontSize: '12px',
                                         fontWeight: 400,
                                         lineHeight: '16px',
@@ -203,13 +225,13 @@ export const PermissionsHeader: React.FC<Props> = ({
                                 border: 'none',
                                 borderRadius: '4px',
                                 boxShadow: 'none',
-                                backgroundColor: 'transparent',
+                                backgroundColor: theme === 'dark' ? '#1b1d22' : 'transparent',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 justifyContent: 'flex-end',
                                 padding: '4px 10px 5px 12px',
                                 ':hover': {
-                                    backgroundColor: '#1C58D914',
+                                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
                                 },
                             }),
                             valueContainer: (provided: any) => ({
@@ -226,24 +248,39 @@ export const PermissionsHeader: React.FC<Props> = ({
                             }),
                             singleValue: (provided: any) => ({
                                 ...provided,
-                                color: '#1C58D9',
+                                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
                                 marginRight: '6px',
                             }),
                             dropdownIndicator: (provided: any) => ({
                                 ...provided,
-                                color: '#1C58D9',
+                                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
                                 padding: 0,
                                 marginRight: '0px',
                                 ':hover': {
-                                    color: '#1C58D9',
+                                    color: theme === 'dark' ? '#ffffff' : '#1C58D9',
                                 },
                                 svg: {
                                     width: '14px',
                                     height: '14px',
-                                    fill: '#1C58D9',
+                                    fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
                                     ':hover': {
-                                        fill: '#1C58D9',
+                                        fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
                                     },
+                                },
+                            }),
+                            menu: (provided: any) => ({
+                                ...provided,
+                                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                            }),
+                            option: (provided: any, state: any) => ({
+                                ...provided,
+                                backgroundColor: theme === 'dark'
+                                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
+                                    : state.isFocused ? '#1C58D914' : provided.backgroundColor,
+                                color: theme === 'dark' ? '#ffffff' : provided.color,
+                                ':hover': {
+                                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
                                 },
                             }),
                         }}

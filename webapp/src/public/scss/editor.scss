@@ -11,9 +11,16 @@
   top: 0;
   z-index: 2000;
   overflow: hidden;
-  background-color: $backdrop_light;
   animation-name: fadeIn;
   animation-duration: 0.3s;
+
+  @include light-theme {
+    background-color: $backdrop_light;
+  }
+
+  @include dark-theme {
+    background-color: $backdrop_dark;
+  }
 }
 
 .onlyoffice-modal__backdrop_hide {
@@ -26,19 +33,36 @@
   padding: 0;
   overflow: hidden;
   border: none;
-  color: $modal_color;
-  background-color: $modal_background_color;
   animation-name: fadeIn;
   animation-duration: 0.3s;
+
+  @include light-theme {
+    color: $text_dark;
+    background-color: $modal_background_light;
+  }
+
+  @include dark-theme {
+    color: $text_light;
+    background-color: $modal_background_dark;
+  }
 }
 
 .onlyoffice-editor__loader-container {
   position: absolute;
   width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  @include light-theme {
+    background-color: $modal_background_light;
+  }
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+  }
 }
 
 .onlyoffice-editor__loader-container_hidden {
@@ -201,7 +225,14 @@
   display: flex;
   align-items: center;
   text-align: center;
-  color: $text_dark;
+
+  @include light-theme {
+    color: $text_dark;
+  }
+
+  @include dark-theme {
+    color: $text_light;
+  }
 }
 
 .onlyoffice-editor__loader-btn {
@@ -222,8 +253,17 @@
   height: 48px;
   border-radius: 2px;
   transition: all 0.5s ease-in-out;
-}
+  cursor: pointer;
 
-.onlyoffice-editor__loader-btn:hover {
-  box-shadow: 3px 7px $shadow_light;
+  [data-theme="light"] & {
+    &:hover {
+      box-shadow: 3px 7px $shadow_dark;
+    }
+  }
+
+  [data-theme="dark"] & {
+    &:hover {
+      box-shadow: 3px 7px $shadow_light;
+    }
+  }
 }

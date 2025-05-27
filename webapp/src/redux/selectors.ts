@@ -20,6 +20,7 @@
  */
 
 import type {GlobalState} from 'mattermost-redux/types/store';
+import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
 
 import {id as pluginId} from '../manifest';
 
@@ -31,3 +32,9 @@ export const editorModalFileInfo = (state: GlobalState) => getPluginState(state)
 
 export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
 export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;
+
+export const getCurrentTheme = (state: GlobalState) => {
+    const theme = getTheme(state);
+    const dark = theme.type === 'indigo' || theme.type === 'onyx';
+    return dark ? 'dark' : 'light';
+};
