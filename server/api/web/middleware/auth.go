@@ -26,14 +26,19 @@ import (
 func MattermostAuthorizationMiddleware(plugin api.PluginAPI) func(next func(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request)) func(rw http.ResponseWriter, r *http.Request) {
 	return func(next func(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request)) func(rw http.ResponseWriter, r *http.Request) {
 		return func(rw http.ResponseWriter, r *http.Request) {
-			uid, err := plugin.API.KVGet(r.URL.Query().Get("code"))
+			userID := r.Header.Get(plugin.Configuration.MMAuthHeader)
+			if userID == "" {
+				code := r.URL.Query().Get("code")
+				uid, err := plugin.API.KVGet(code)
 
-			if r.Header.Get(plugin.Configuration.MMAuthHeader) == "" && err != nil {
-				plugin.API.LogWarn("[ONLYOFFICE Mattermost Authorization]: could not find uid")
-				rw.WriteHeader(http.StatusForbidden)
-				return
-			} else if r.Header.Get(plugin.Configuration.MMAuthHeader) == "" && err == nil {
-				r.Header.Set(plugin.Configuration.MMAuthHeader, string(uid))
+				if err != nil || len(uid) == 0 {
+					plugin.API.LogWarn("[ONLYOFFICE Mattermost Authorization]: could not find uid")
+					rw.WriteHeader(http.StatusForbidden)
+					return
+				}
+
+				userID = string(uid)
+				r.Header.Set(plugin.Configuration.MMAuthHeader, userID)
 			}
 
 			next(plugin)(rw, r)
