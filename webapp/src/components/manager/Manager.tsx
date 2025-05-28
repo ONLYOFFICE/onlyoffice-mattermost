@@ -33,6 +33,7 @@ import 'public/scss/manager.scss';
 
 type Props = {
     visible: boolean;
+    theme: string;
     close: () => (dispatch: Dispatch) => void;
 };
 
@@ -42,7 +43,7 @@ const types = [
     {label: 'PPTX', value: 'pptx'},
 ];
 
-export default function Manager({visible, close}: Props) {
+export default function Manager({visible, theme, close}: Props) {
     const i18n = getTranslations() as any;
     const channelId = useSelector(getCurrentChannelId);
     const [fileType, setFileType] = useState<string>('docx');
@@ -95,9 +96,9 @@ export default function Manager({visible, close}: Props) {
             onExited={handleClose}
             role="dialog"
             id="onlyoffice-manager-modal"
-            data-theme="dark"
+            data-theme={theme}
         >
-            <Modal.Header className="onlyoffice-manager-modal__header" data-theme="dark">
+            <Modal.Header className="onlyoffice-manager-modal__header" data-theme={theme}>
                 <span style={{fontWeight: 600}}>
                     {i18n['manager.modal_header']}
                 </span>
