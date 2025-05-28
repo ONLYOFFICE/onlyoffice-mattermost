@@ -1,0 +1,4 @@
+[submodule "public/template"]
+	path = public/template
+	url = https://github.com/ONLYOFFICE/document-templates.git
+	branch = main/new

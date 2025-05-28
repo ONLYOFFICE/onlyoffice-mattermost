@@ -1,0 +1,98 @@
+@import './colors';
+@import './mixins';
+
+#onlyoffice-manager-modal {
+  font-family: 'Open sans';
+  padding-left: 0px !important;
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+    color: $text_light;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+    color: $text_dark;
+  }
+}
+
+.onlyoffice-manager-modal__header {
+  padding-left: 2rem !important;
+  display: flex;
+  align-items: center;
+
+  .close {
+    margin-left: auto;
+  }
+}
+
+.onlyoffice-manager-modal__body {
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  min-width: 400px;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.1s linear, opacity 0.1s linear;
+}
+
+.onlyoffice-manager__container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.onlyoffice-manager__form-row {
+  display: flex;
+  align-items: center;
+}
+
+.onlyoffice-manager__label {
+  min-width: 90px;
+  font-weight: 500;
+}
+
+.onlyoffice-manager__input {
+  margin-left: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  font-size: 15px;
+
+  @include dark-theme {
+    background: #23272f;
+    color: #fff;
+  }
+
+  @include light-theme {
+    background: #fff;
+    color: #333;
+    border-color: #ccc;
+  }
+}
+
+.onlyoffice-manager__select {
+  min-width: 120px;
+}
+
+.onlyoffice-manager__text-input {
+  min-width: 220px;
+}
+
+.onlyoffice-manager__error {
+  color: #ff4d4f;
+  font-weight: 500;
+  margin-left: 102px;
+}
+
+.onlyoffice-manager__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.onlyoffice-manager__button {
+  min-width: 90px;
+}
+
+.onlyoffice-manager__cancel-button {
+  margin-right: 1rem;
+}

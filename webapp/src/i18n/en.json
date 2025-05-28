@@ -17,5 +17,13 @@
   "permissions.modal_search_no_options_placeholder": "No options",
   "permissions.modal_fetch_error": "Could not fetch users",
   "editor.close_button": "Close",
-  "editor.events.error": "Oops! Something went wrong..."
+  "editor.events.error": "Oops! Something went wrong...",
+  "manager.modal_header": "Create New File",
+  "manager.file_type_label": "File type",
+  "manager.file_name_label": "File name",
+  "manager.create_button": "Create",
+  "manager.cancel_button": "Cancel",
+  "manager.error_empty_name": "File name cannot be empty.",
+  "manager.error_invalid_name": "Invalid file name.",
+  "manager.error_create_failed": "Failed to create file. Please try again."
 }

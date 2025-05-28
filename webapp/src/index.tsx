@@ -19,12 +19,13 @@
  *
  */
 
+import React from 'react';
 import {isExtensionSupported, isFileAuthor} from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import manifest from 'manifest';
 import type {Action, AnyAction, Store} from 'redux';
-import {openEditor, openPermissions} from 'redux/actions';
+import {openEditor, openManager, openPermissions} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
@@ -35,6 +36,9 @@ import OnlyofficeEditor from 'components/editor';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
 
+import {ManagerIcon} from 'components/manager/Icon';
+import OnlyofficeManager from 'components/manager';
+
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
 
@@ -44,6 +48,7 @@ export default class Plugin {
         registry.registerReducer(Reducer);
         registry.registerRootComponent(OnlyofficeEditor);
         registry.registerRootComponent(OnlyofficeFilePermissions);
+        registry.registerRootComponent(OnlyofficeManager);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerFileDropdownMenuAction) {
@@ -64,6 +69,12 @@ export default class Plugin {
                 return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
             },
             OnlyofficeFilePreview,
+        );
+
+        registry.registerFileUploadMethod(
+            <ManagerIcon />,
+            () => dispatch(openManager()),
+            "ONLYOFFICE",
         );
     }
 }

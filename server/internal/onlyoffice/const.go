@@ -17,6 +17,8 @@
  */
 package onlyoffice
 
+import "strings"
+
 const (
 	_OnlyofficeLoggerPrefix            string = "[ONLYOFFICE Helper]: "
 	OnlyofficeWordType                 string = "word"
@@ -75,4 +77,58 @@ var OnlyofficeFileExtensions = map[string]string{
 	"fb2":  OnlyofficeWordType,
 	"epub": OnlyofficeWordType,
 	"xps":  OnlyofficeWordType,
+}
+
+var OnlyofficeLanguageMapping = map[string]string{
+	"en": "en-US",
+	"ru": "ru-RU",
+	"de": "de-DE",
+	"fr": "fr-FR",
+	"es": "es-ES",
+	"it": "it-IT",
+	"pt": "pt-PT",
+	"zh": "zh-CN",
+	"ja": "ja-JP",
+	"ko": "ko-KR",
+	"ar": "ar-SA",
+	"bg": "bg-BG",
+	"ca": "ca-ES",
+	"cs": "cs-CZ",
+	"da": "da-DK",
+	"el": "el-GR",
+	"eu": "eu-ES",
+	"fi": "fi-FI",
+	"gl": "gl-ES",
+	"he": "he-IL",
+	"hu": "hu-HU",
+	"hy": "hy-AM",
+	"id": "id-ID",
+	"lv": "lv-LV",
+	"ms": "ms-MY",
+	"nl": "nl-NL",
+	"nb": "nb-NO",
+	"pl": "pl-PL",
+	"ro": "ro-RO",
+	"si": "si-LK",
+	"sk": "sk-SK",
+	"sl": "sl-SI",
+	"sq": "sq-AL",
+	"sr": "sr-Latn-RS",
+	"sv": "sv-SE",
+	"tr": "tr-TR",
+	"uk": "uk-UA",
+	"ur": "ur-PK",
+	"vi": "vi-VN",
+}
+
+func MapLanguageToTemplate(locale string) string {
+	if strings.Contains(locale, "-") {
+		return locale
+	}
+
+	if mapped, exists := OnlyofficeLanguageMapping[locale]; exists {
+		return mapped
+	}
+
+	return "default"
 }

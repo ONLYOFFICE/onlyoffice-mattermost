@@ -19,6 +19,18 @@
  *
  */
 
-export {closePermissions, openPermissions} from './permissions';
-export {closeEditor, openEditor} from './editor';
-export {closeManager, openManager} from './manager';
+import type {Dispatch} from 'redux';
+
+import {CLOSE_MANAGER_MODAL, OPEN_MANAGER_MODAL} from './types';
+
+export const openManager = () => (dispatch: Dispatch) => {
+    dispatch({
+        type: OPEN_MANAGER_MODAL
+    });
+};
+
+export const closeManager = () => (dispatch: Dispatch) => {
+    dispatch({
+        type: CLOSE_MANAGER_MODAL,
+    });
+};

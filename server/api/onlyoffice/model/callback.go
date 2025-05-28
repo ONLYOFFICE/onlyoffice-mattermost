@@ -39,3 +39,13 @@ type CallbackResponse struct {
 func (c *Callback) Validate() error {
 	return validator.New().Struct(c)
 }
+
+type NewFile struct {
+	ChannelID string `json:"channel_id" validate:"required,min=1"`
+	FileName  string `json:"file_name" validate:"required,min=1"`
+	FileType  string `json:"file_type" validate:"required,min=1"`
+}
+
+func (n *NewFile) Validate() error {
+	return validator.New().Struct(n)
+}

@@ -27,5 +27,14 @@ export async function http<T>(path: string, config: RequestInit): Promise<T> {
         throw new Error(response.statusText);
     }
 
-    return response.json().catch();
+    const contentLength = response.headers.get('content-length');
+    const contentType = response.headers.get('content-type');
+    if (contentLength === '0' || (!contentType?.includes('application/json') && !contentLength))
+        return undefined as T;
+
+    try {
+        return await response.json();
+    } catch (error) {
+        return undefined as T;
+    }
 }

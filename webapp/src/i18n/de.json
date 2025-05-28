@@ -17,5 +17,13 @@
     "permissions.modal_search_no_options_placeholder": "Keine Optionen",
     "permissions.modal_fetch_error": "Abrufen von Benutzern ist unmöglich",
     "editor.close_button": "Schließen",
-    "editor.events.error": "Hoppla! Ein Fehler ist aufgetreten..."
+    "editor.events.error": "Hoppla! Ein Fehler ist aufgetreten...",
+    "manager.modal_header": "Create New File",
+    "manager.file_type_label": "File type",
+    "manager.file_name_label": "File name",
+    "manager.create_button": "Create",
+    "manager.cancel_button": "Cancel",
+    "manager.error_empty_name": "File name cannot be empty.",
+    "manager.error_invalid_name": "Invalid file name.",
+    "manager.error_create_failed": "Failed to create file. Please try again."
 }

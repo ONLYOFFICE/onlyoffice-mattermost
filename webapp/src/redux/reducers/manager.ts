@@ -19,6 +19,20 @@
  *
  */
 
-export {closePermissions, openPermissions} from './permissions';
-export {closeEditor, openEditor} from './editor';
-export {closeManager, openManager} from './manager';
+import type {AnyAction} from 'redux';
+import {OPEN_MANAGER_MODAL, CLOSE_MANAGER_MODAL} from 'redux/actions/types';
+
+export const managerModal = (state = {isVisible: false}, action: AnyAction) => {
+    switch (action.type) {
+    case OPEN_MANAGER_MODAL:
+        return {
+            isVisible: true,
+        };
+    case CLOSE_MANAGER_MODAL:
+        return {
+            isVisible: false,
+        };
+    default:
+        return state;
+    }
+};

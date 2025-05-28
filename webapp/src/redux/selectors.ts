@@ -33,6 +33,8 @@ export const editorModalFileInfo = (state: GlobalState) => getPluginState(state)
 export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
 export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;
 
+export const managerModalVisible = (state: GlobalState) => getPluginState(state).managerModal.isVisible;
+
 export const getCurrentTheme = (state: GlobalState) => {
     const theme = getTheme(state);
     const dark = theme.type === 'indigo' || theme.type === 'onyx';

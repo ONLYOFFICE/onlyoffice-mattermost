@@ -23,8 +23,10 @@ import {combineReducers} from 'redux';
 
 import {editorModal} from './editor';
 import {permissionsModal} from './permissions';
+import {managerModal} from './manager';
 
 export default combineReducers({
     permissionsModal,
     editorModal,
+    managerModal,
 });

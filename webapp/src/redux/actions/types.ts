@@ -29,6 +29,9 @@ export const CLOSE_EDITOR_MODAL = pluginId + '_close_editor_modal';
 export const OPEN_PERMISSIONS_MODAL = pluginId + '_open_permissions_modal';
 export const CLOSE_PERMISSIONS_MODAL = pluginId + '_close_permissions_modal';
 
+export const OPEN_MANAGER_MODAL = pluginId + '_open_manager_modal';
+export const CLOSE_MANAGER_MODAL = pluginId + '_close_manager_modal';
+
 export const MATTERMOST_ME_ACTION = 'RECEIVED_ME';
 
 export const SUBMENU = pluginId + '_submenu';
