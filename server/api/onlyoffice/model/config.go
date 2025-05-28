@@ -17,7 +17,7 @@
  */
 package model
 
-import "github.com/golang-jwt/jwt/v5"
+import jwt "github.com/golang-jwt/jwt/v5"
 
 type Config struct {
 	jwt.RegisteredClaims

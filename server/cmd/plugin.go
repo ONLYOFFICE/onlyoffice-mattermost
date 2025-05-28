@@ -75,7 +75,7 @@ func (p *Plugin) OnActivate() error {
 func (p *Plugin) OnConfigurationChange() error {
 	var configuration = new(configuration)
 
-	if err := p.API.LoadPluginConfiguration(configuration); err != nil {
+	if err := p.MattermostPlugin.API.LoadPluginConfiguration(configuration); err != nil {
 		return errors.Wrap(err, "failed to load plugin configuration")
 	}
 
@@ -84,8 +84,8 @@ func (p *Plugin) OnConfigurationChange() error {
 	configuration.Error = configuration.IsValid()
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.API.DisablePlugin(PluginID); err != nil {
-				p.API.LogInfo(_OnlyofficeLoggerPrefix+"Could not disable the plugin via Mattermost API: ", err.Message)
+			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
+				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix+"Could not disable the plugin via Mattermost API: ", err.Message)
 			}
 		})
 
@@ -96,36 +96,36 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
 	p.OnlyofficeHelper = onlyoffice.NewHelper()
 	p.OnlyofficeConverter = converter.NewConverter()
-	bpath, _ := p.API.GetBundlePath()
+	bpath, _ := p.MattermostPlugin.API.GetBundlePath()
 	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.API.DisablePlugin(PluginID); err != nil {
-				p.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
+				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
 			}
 		})
 		return nil
 	}
 
-	license := p.API.GetLicense()
-	serverConfig := p.API.GetUnsanitizedConfig()
+	license := p.MattermostPlugin.API.GetLicense()
+	serverConfig := p.MattermostPlugin.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
 	p.Filestore, configuration.Error = filestore.NewFileBackend(filestore.NewFileBackendSettingsFromConfig(&serverConfig.FileSettings, (license != nil && *license.Features.Compliance), true))
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.API.DisablePlugin(PluginID); err != nil {
-				p.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
+				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
 			}
 		})
 		return nil
 	}
 
-	p.API.LogInfo(_OnlyofficeLoggerPrefix + "The server responded without errors")
+	p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "The server responded without errors")
 	return nil
 }
 
 func (p *Plugin) EnsureBot() (bot.Bot, error) {
-	botID, err := p.API.EnsureBotUser(&model.Bot{
+	botID, err := p.MattermostPlugin.API.EnsureBotUser(&model.Bot{
 		Username:    "onlyoffice",
 		DisplayName: "ONLYOFFICE",
 		Description: "ONLYOFFICE Helper",
@@ -134,7 +134,7 @@ func (p *Plugin) EnsureBot() (bot.Bot, error) {
 		return nil, ErrCreateBotProfile
 	}
 
-	bundlePath, err := p.API.GetBundlePath()
+	bundlePath, err := p.MattermostPlugin.API.GetBundlePath()
 	if err != nil {
 		return nil, err
 	}
@@ -144,11 +144,11 @@ func (p *Plugin) EnsureBot() (bot.Bot, error) {
 		return nil, ErrLoadBotProfileImage
 	}
 
-	if appErr := p.API.SetProfileImage(botID, profileImage); appErr != nil {
+	if appErr := p.MattermostPlugin.API.SetProfileImage(botID, profileImage); appErr != nil {
 		return nil, ErrSetBotProfileImage
 	}
 
-	return bot.NewBot(botID, p.API), nil
+	return bot.NewBot(botID, p.MattermostPlugin.API), nil
 }
 
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {

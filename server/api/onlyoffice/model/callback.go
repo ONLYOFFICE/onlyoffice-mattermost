@@ -17,7 +17,7 @@
  */
 package model
 
-import "github.com/go-playground/validator/v10"
+import validator "github.com/go-playground/validator/v10"
 
 type Callback struct {
 	Actions []struct {

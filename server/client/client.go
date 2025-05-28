@@ -21,7 +21,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-resty/resty/v2"
+	resty "github.com/go-resty/resty/v2"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"

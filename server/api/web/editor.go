@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
+	validator "github.com/go-playground/validator/v10"
+	jwt "github.com/golang-jwt/jwt/v5"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"

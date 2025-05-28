@@ -17,7 +17,7 @@
  */
 package crypto
 
-import "github.com/golang-jwt/jwt/v5"
+import jwt "github.com/golang-jwt/jwt/v5"
 
 var _ JwtManager = (*onlyofficeJwtManager)(nil)
 var _ Encoder = (*messageDigest)(nil)
