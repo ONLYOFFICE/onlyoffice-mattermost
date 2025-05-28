@@ -146,7 +146,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
             id='onlyoffice-permissions-modal'
             data-theme={theme}
         >
-            <Modal.Header 
+            <Modal.Header
                 className='onlyoffice-permissions-modal__header'
                 data-theme={theme}
             >

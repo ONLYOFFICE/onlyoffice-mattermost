@@ -19,8 +19,8 @@
  *
  */
 
-import type {GlobalState} from 'mattermost-redux/types/store';
 import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {id as pluginId} from '../manifest';
 

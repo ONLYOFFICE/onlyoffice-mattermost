@@ -92,13 +92,20 @@ export const PermissionsHeader: React.FC<Props> = ({
                 ...provided,
                 backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
             }),
-            option: (provided: any, state: any) => ({
-                ...provided,
-                backgroundColor: theme === 'dark' 
-                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                    : provided.backgroundColor,
-                color: theme === 'dark' ? '#ffffff' : provided.color,
-            }),
+            option: (provided: any, state: any) => {
+                let backgroundColor;
+                if (theme === 'dark') {
+                    backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
+                } else {
+                    backgroundColor = provided.backgroundColor;
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color: theme === 'dark' ? '#ffffff' : provided.color,
+                };
+            },
             singleValue: (provided: any) => ({
                 ...provided,
                 color: theme === 'dark' ? '#ffffff' : provided.color,
@@ -210,16 +217,23 @@ export const PermissionsHeader: React.FC<Props> = ({
                 backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
                 borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
             }),
-            option: (provided: any, state: any) => ({
-                ...provided,
-                backgroundColor: theme === 'dark'
-                    ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                    : state.isFocused ? '#1C58D914' : provided.backgroundColor,
-                color: theme === 'dark' ? '#ffffff' : provided.color,
-                ':hover': {
-                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
-                },
-            }),
+            option: (provided: any, state: any) => {
+                let backgroundColor;
+                if (theme === 'dark') {
+                    backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
+                } else {
+                    backgroundColor = state.isFocused ? '#1C58D914' : provided.backgroundColor;
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color: theme === 'dark' ? '#ffffff' : provided.color,
+                    ':hover': {
+                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                    },
+                };
+            },
         },
     }), [theme, channel]);
 

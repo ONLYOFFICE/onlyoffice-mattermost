@@ -75,13 +75,20 @@ const getStyles = (theme: string) => ({
             ...provided,
             backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
         }),
-        option: (provided: any, state: any) => ({
-            ...provided,
-            backgroundColor: theme === 'dark' 
-                ? state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22'
-                : provided.backgroundColor,
-            color: theme === 'dark' ? '#ffffff' : provided.color,
-        }),
+        option: (provided: any, state: any) => {
+            let backgroundColor;
+            if (theme === 'dark') {
+                backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
+            } else {
+                backgroundColor = provided.backgroundColor;
+            }
+
+            return {
+                ...provided,
+                backgroundColor,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            };
+        },
         singleValue: (provided: any) => ({
             ...provided,
             color: theme === 'dark' ? '#ffffff' : provided.color,
@@ -133,7 +140,10 @@ const PermissionsRow = (props: Props & { user: MattermostUser }) => {
             data-theme={props.theme}
         >
             <UserIcon {...props}/>
-            <UserDetails user={props.user} theme={props.theme}/>
+            <UserDetails
+                user={props.user}
+                theme={props.theme}
+            />
             <UserActions {...props}/>
         </div>
     );

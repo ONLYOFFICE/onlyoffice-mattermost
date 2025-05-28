@@ -58,8 +58,8 @@ export default function EditorLoader({theme}: Props) {
     }
 
     return (
-        <div 
-            className='onlyoffice-editor__loader-container' 
+        <div
+            className='onlyoffice-editor__loader-container'
             data-theme={theme}
         >
             {!error && <div className='onlyoffice-editor__loader-icon'><div/><div/><div/></div>}

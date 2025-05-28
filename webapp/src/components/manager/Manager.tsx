@@ -20,13 +20,13 @@
  */
 
 import {getTranslations} from 'util/lang';
+
+import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
+import React, {useState} from 'react';
+import {Modal} from 'react-bootstrap';
+import {useSelector} from 'react-redux';
 import type {Dispatch} from 'redux';
 
-import React, {useState} from 'react';
-import { Modal } from 'react-bootstrap';
-import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
-
-import {useSelector} from 'react-redux';
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels';
 
 import 'public/scss/manager.scss';
@@ -57,14 +57,14 @@ export default function Manager({visible, theme, close}: Props) {
 
     const handleCreate = async (): Promise<void> => {
         setError('');
-        
+
         if (!fileName.trim()) {
             setError(i18n['manager.error_empty_name']);
             return;
         }
-        
+
         setLoading(true);
-        
+
         try {
             const code = await get<string>(ONLYOFFICE_PLUGIN_GET_CODE);
             await post(`${ONLYOFFICE_PLUGIN_CREATE}?code=${code}`, {
@@ -74,7 +74,7 @@ export default function Manager({visible, theme, close}: Props) {
             }, {
                 credentials: 'include',
             });
-            
+
             setFileName('');
             setFileType('docx');
             close();
@@ -86,7 +86,9 @@ export default function Manager({visible, theme, close}: Props) {
     };
 
     const handleClose = (): void => {
-        if (!loading) close();
+        if (!loading) {
+            close();
+        }
     };
 
     return (
@@ -94,77 +96,83 @@ export default function Manager({visible, theme, close}: Props) {
             show={visible}
             onHide={handleClose}
             onExited={handleClose}
-            role="dialog"
-            id="onlyoffice-manager-modal"
+            role='dialog'
+            id='onlyoffice-manager-modal'
             data-theme={theme}
         >
-            <Modal.Header className="onlyoffice-manager-modal__header" data-theme={theme}>
+            <Modal.Header
+                className='onlyoffice-manager-modal__header'
+                data-theme={theme}
+            >
                 <span style={{fontWeight: 600}}>
                     {i18n['manager.modal_header']}
                 </span>
                 <button
-                    type="button"
-                    className="close"
-                    aria-label="Close"
+                    type='button'
+                    className='close'
+                    aria-label='Close'
                     onClick={handleClose}
                     disabled={loading}
                 >
-                    <span aria-hidden="true">{'×'}</span>
-                    <span className="sr-only">{i18n['manager.cancel_button']}</span>
+                    <span aria-hidden='true'>{'×'}</span>
+                    <span className='sr-only'>{i18n['manager.cancel_button']}</span>
                 </button>
             </Modal.Header>
-            
-            <div className="onlyoffice-manager-modal__body">
-                <div className="onlyoffice-manager__container">
-                    <div className="onlyoffice-manager__form-row">
-                        <label className="onlyoffice-manager__label">
+
+            <div className='onlyoffice-manager-modal__body'>
+                <div className='onlyoffice-manager__container'>
+                    <div className='onlyoffice-manager__form-row'>
+                        <label className='onlyoffice-manager__label'>
                             {i18n['manager.file_type_label']}
                         </label>
                         <select
                             value={fileType}
                             onChange={(e) => setFileType(e.target.value)}
                             disabled={loading}
-                            className="onlyoffice-manager__input onlyoffice-manager__select"
+                            className='onlyoffice-manager__input onlyoffice-manager__select'
                         >
                             {types.map((type) => (
-                                <option key={type.value} value={type.value}>
+                                <option
+                                    key={type.value}
+                                    value={type.value}
+                                >
                                     {type.label}
                                 </option>
                             ))}
                         </select>
                     </div>
-                    
-                    <div className="onlyoffice-manager__form-row">
-                        <label className="onlyoffice-manager__label">
+
+                    <div className='onlyoffice-manager__form-row'>
+                        <label className='onlyoffice-manager__label'>
                             {i18n['manager.file_name_label']}
                         </label>
                         <input
-                            type="text"
+                            type='text'
                             value={fileName}
                             onChange={(e) => setFileName(e.target.value)}
                             disabled={loading}
                             placeholder={i18n['manager.file_name_placeholder'] || ''}
-                            className="onlyoffice-manager__input onlyoffice-manager__text-input"
+                            className='onlyoffice-manager__input onlyoffice-manager__text-input'
                         />
                     </div>
-                    
+
                     {error && (
-                        <div className="onlyoffice-manager__error">
+                        <div className='onlyoffice-manager__error'>
                             {error}
                         </div>
                     )}
                 </div>
-                
-                <div className="onlyoffice-manager__actions">
+
+                <div className='onlyoffice-manager__actions'>
                     <button
-                        className="btn btn-secondary onlyoffice-manager__button onlyoffice-manager__cancel-button"
+                        className='btn btn-secondary onlyoffice-manager__button onlyoffice-manager__cancel-button'
                         onClick={handleClose}
                         disabled={loading}
                     >
                         {i18n['manager.cancel_button']}
                     </button>
                     <button
-                        className="btn btn-primary onlyoffice-manager__button"
+                        className='btn btn-primary onlyoffice-manager__button'
                         onClick={handleCreate}
                         disabled={loading}
                     >

@@ -20,9 +20,9 @@
  */
 
 import {connect} from 'react-redux';
+import {getCurrentTheme} from 'redux/selectors';
 
 import type {GlobalState} from 'mattermost-redux/types/store';
-import { getCurrentTheme } from 'redux/selectors';
 
 import OnlyofficeFilePreview from './Preview';
 

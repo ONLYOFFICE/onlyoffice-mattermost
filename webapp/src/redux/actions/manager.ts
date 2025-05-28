@@ -25,7 +25,7 @@ import {CLOSE_MANAGER_MODAL, OPEN_MANAGER_MODAL} from './types';
 
 export const openManager = () => (dispatch: Dispatch) => {
     dispatch({
-        type: OPEN_MANAGER_MODAL
+        type: OPEN_MANAGER_MODAL,
     });
 };
 
