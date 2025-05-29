@@ -31,11 +31,13 @@ var _ OnlyofficeCommandClient = (*onlyofficeCommandClient)(nil)
 
 const (
 	OnlyofficeCommandServicePath    string = "/command"
+	OnlyofficeCommandConverterPath  string = "/converter"
 	OnlyofficeCommandServiceVersion string = "version"
 )
 
 type OnlyofficeCommandClient interface {
 	SendVersion(commandURL string, request model.CommandVersionRequest, timeout time.Duration) (model.CommandVersionResponse, error)
+	SendConvert(commandURL string, request model.CommandConvertRequest, timeout time.Duration) (model.CommandConvertResponse, error)
 }
 
 type onlyofficeCommandClient struct {
@@ -62,6 +64,32 @@ func (c onlyofficeCommandClient) SendVersion(commandURL string, request model.Co
 	}
 
 	var response model.CommandVersionResponse
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	if _, err := c.client.R().
+		SetBody(request).
+		SetResult(&response).
+		SetContext(ctx).
+		Post(commandURL); err != nil {
+		return response, err
+	}
+
+	return response, nil
+}
+
+func (c onlyofficeCommandClient) SendConvert(commandURL string, request model.CommandConvertRequest, timeout time.Duration) (model.CommandConvertResponse, error) {
+	var err error
+
+	if len(c.jwtManager.GetKey()) > 0 {
+		request.Token, err = c.jwtManager.Sign(request)
+	}
+
+	if err != nil {
+		return model.CommandConvertResponse{Error: 1, FileURL: "", FileType: ""}, err
+	}
+
+	var response model.CommandConvertResponse
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 

@@ -75,6 +75,38 @@ const AllowedExtensionsMap = new Map([
     ['rtf', ONLYOFFICE_WORD],
 ]);
 
+const ConvertExtensionsMap = new Map([
+    ['xls', ONLYOFFICE_CELL],
+    ['xlsm', ONLYOFFICE_CELL],
+    ['xlt', ONLYOFFICE_CELL],
+    ['xltx', ONLYOFFICE_CELL],
+    ['xltm', ONLYOFFICE_CELL],
+    ['ods', ONLYOFFICE_CELL],
+    ['fods', ONLYOFFICE_CELL],
+    ['ots', ONLYOFFICE_CELL],
+    ['csv', ONLYOFFICE_CELL],
+    ['pps', ONLYOFFICE_SLIDE],
+    ['ppsx', ONLYOFFICE_SLIDE],
+    ['ppsm', ONLYOFFICE_SLIDE],
+    ['ppt', ONLYOFFICE_SLIDE],
+    ['pptm', ONLYOFFICE_SLIDE],
+    ['pot', ONLYOFFICE_SLIDE],
+    ['potx', ONLYOFFICE_SLIDE],
+    ['potm', ONLYOFFICE_SLIDE],
+    ['odp', ONLYOFFICE_SLIDE],
+    ['fodp', ONLYOFFICE_SLIDE],
+    ['otp', ONLYOFFICE_SLIDE],
+    ['doc', ONLYOFFICE_WORD],
+    ['docm', ONLYOFFICE_WORD],
+    ['dot', ONLYOFFICE_WORD],
+    ['dotx', ONLYOFFICE_WORD],
+    ['dotm', ONLYOFFICE_WORD],
+    ['odt', ONLYOFFICE_WORD],
+    ['fodt', ONLYOFFICE_WORD],
+    ['ott', ONLYOFFICE_WORD],
+    ['rtf', ONLYOFFICE_WORD],
+]);
+
 const ExtensionIcons = new Map([
     ['xlsx', xlsx],
     ['pptx', pptx],
@@ -98,6 +130,14 @@ export function getFileTypeByExt(fileExt: string): string {
         return AllowedExtensionsMap.get(sanitized)!;
     }
     return '';
+}
+
+export function isConvertSupported(fileExt: string): boolean {
+    const sanitized = fileExt.replaceAll('.', '');
+    if (ConvertExtensionsMap.has(sanitized)) {
+        return true;
+    }
+    return false;
 }
 
 export function isExtensionSupported(fileExt: string, editOnly?: boolean): boolean {

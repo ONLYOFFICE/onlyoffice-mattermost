@@ -19,7 +19,21 @@
  *
  */
 
-export {closePermissions, openPermissions} from './permissions';
-export {closeEditor, openEditor} from './editor';
-export {closeManager, openManager} from './manager';
-export {closeConverter, openConverter} from './converter';
+import type {Dispatch} from 'redux';
+
+import type {FileInfo} from 'mattermost-redux/types/files';
+
+import {CLOSE_CONVERTER_MODAL, OPEN_CONVERTER_MODAL} from './types';
+
+export const closeConverter = () => (dispatch: Dispatch) => {
+    dispatch({
+        type: CLOSE_CONVERTER_MODAL,
+    });
+};
+
+export const openConverter = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
+    dispatch({
+        type: OPEN_CONVERTER_MODAL,
+        payload: fileInfo,
+    });
+};

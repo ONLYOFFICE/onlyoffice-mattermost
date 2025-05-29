@@ -3,6 +3,7 @@
     "types.permissions.read": "Чтение",
     "plugin.open_button": "Открыть файл в ONLYOFFICE",
     "plugin.access_button": "Изменить права доступа",
+    "plugin.convert_button": "Конвертировать файл",
     "preview.open_button": "Открыть в ONLYOFFICE",
     "preview.file_type": "Тип файла",
     "permissions.loading": "Загрузка...",
@@ -25,5 +26,16 @@
     "manager.cancel_button": "Cancel",
     "manager.error_empty_name": "File name cannot be empty.",
     "manager.error_invalid_name": "Invalid file name.",
-    "manager.error_create_failed": "Failed to create file. Please try again."
+    "manager.error_create_failed": "Failed to create file. Please try again.",
+    "converter.modal_header": "Convert File",
+    "converter.convert_button": "Convert",
+    "converter.cancel_button": "Cancel",
+    "converter.converting_button": "Converting...",
+    "converter.error_convert_failed": "Failed to convert file. Please try again.",
+    "converter.conversion_info_title": "File Conversion",
+    "converter.conversion_description": "This will convert your file to an OOXML format that is fully compatible with ONLYOFFICE editors.",
+    "converter.word_conversion": "Word documents (.doc, .odt, .rtf, etc.) → DOCX",
+    "converter.excel_conversion": "Spreadsheets (.xls, .ods, .csv, etc.) → XLSX",
+    "converter.powerpoint_conversion": "Presentations (.ppt, .odp, etc.) → PPTX",
+    "converter.conversion_note": "The converted file will be saved as a new attachment in this channel."
 }

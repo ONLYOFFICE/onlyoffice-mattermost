@@ -31,3 +31,21 @@ type CommandVersionResponse struct {
 	Error   int    `json:"error" mapstructure:"error"`
 	Version string `json:"version,omitempty" mapstructure:"version"`
 }
+
+type CommandConvertRequest struct {
+	jwt.RegisteredClaims
+	Async      bool   `json:"async"`
+	Key        string `json:"key"`
+	Filetype   string `json:"filetype"`
+	Outputtype string `json:"outputtype"`
+	Password   string `json:"password,omitempty"`
+	URL        string `json:"url"`
+	Token      string `json:"token,omitempty"`
+	Region     string `json:"region,omitempty"`
+}
+
+type CommandConvertResponse struct {
+	FileURL  string `json:"fileUrl"`
+	FileType string `json:"fileType"`
+	Error    int    `json:"error"`
+}

@@ -19,7 +19,22 @@
  *
  */
 
-export {closePermissions, openPermissions} from './permissions';
-export {closeEditor, openEditor} from './editor';
-export {closeManager, openManager} from './manager';
-export {closeConverter, openConverter} from './converter';
+import type {AnyAction} from 'redux';
+import {OPEN_CONVERTER_MODAL, CLOSE_CONVERTER_MODAL} from 'redux/actions/types';
+
+export const converterModal = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
+    switch (action.type) {
+    case OPEN_CONVERTER_MODAL:
+        return {
+            isVisible: true,
+            fileInfo: action.payload,
+        };
+    case CLOSE_CONVERTER_MODAL:
+        return {
+            isVisible: false,
+            fileInfo: null,
+        };
+    default:
+        return state;
+    }
+};

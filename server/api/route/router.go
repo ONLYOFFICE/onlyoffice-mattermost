@@ -18,6 +18,7 @@
 package route
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -43,7 +44,25 @@ func recoverRoutes(next http.Handler) http.Handler {
 
 func timeoutRoutes(timeout time.Duration) func(next func(rw http.ResponseWriter, r *http.Request)) http.Handler {
 	return func(next func(rw http.ResponseWriter, r *http.Request)) http.Handler {
-		return http.TimeoutHandler(http.HandlerFunc(next), timeout, "server request timeout")
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx, cancel := context.WithTimeout(r.Context(), timeout)
+			defer cancel()
+
+			done := make(chan struct{})
+			go func() {
+				next(w, r.WithContext(ctx))
+				close(done)
+			}()
+
+			select {
+			case <-ctx.Done():
+				w.WriteHeader(http.StatusGatewayTimeout)
+				w.Write([]byte("request timeout"))
+				return
+			case <-done:
+				return
+			}
+		})
 	}
 }
 
@@ -62,6 +81,7 @@ func NewRouter(api api.PluginAPI) *mux.Router {
 	subrouter.HandleFunc("/editor", authMiddleware(web.BuildEditorHandler)).Methods(http.MethodGet)
 	subrouter.Handle("/permissions", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildGetFilePermissionsHandler))).Methods(http.MethodGet)
 	subrouter.Handle("/create", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildCreateHandler))).Methods(http.MethodPost)
+	subrouter.Handle("/convert", timeoutRoutes(5*time.Second)(authMiddleware(web.BuildConvertHandler))).Methods(http.MethodPost)
 	subrouter.Handle("/code", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildCodeHandler))).Methods(http.MethodGet)
 
 	return router

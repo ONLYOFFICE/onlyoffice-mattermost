@@ -19,19 +19,20 @@
  *
  */
 
-import {isExtensionSupported, isFileAuthor} from 'util/file';
+import {isConvertSupported, isExtensionSupported, isFileAuthor} from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import manifest from 'manifest';
 import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
-import {openEditor, openManager, openPermissions} from 'redux/actions';
+import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 import type {GlobalState} from 'mattermost-redux/types/store';
 
+import OnlyofficeFileConverter from 'components/converter';
 import OnlyofficeEditor from 'components/editor';
 import OnlyofficeManager from 'components/manager';
 import {ManagerIcon} from 'components/manager/Icon';
@@ -48,6 +49,7 @@ export default class Plugin {
         registry.registerRootComponent(OnlyofficeEditor);
         registry.registerRootComponent(OnlyofficeFilePermissions);
         registry.registerRootComponent(OnlyofficeManager);
+        registry.registerRootComponent(OnlyofficeFileConverter);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerFileDropdownMenuAction) {
@@ -60,6 +62,11 @@ export default class Plugin {
                 (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
                 () => getTranslations()['plugin.access_button'],
                 (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
+            );
+            registry.registerFileDropdownMenuAction(
+                (fileInfo: FileInfo) => isConvertSupported(fileInfo.extension) && isFileAuthor(fileInfo),
+                () => getTranslations()['plugin.convert_button'],
+                (fileInfo: FileInfo) => dispatch(openConverter(fileInfo)),
             );
         }
 

@@ -27,6 +27,7 @@ import (
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 )
 
 type Encoder interface {
@@ -71,11 +72,12 @@ type PluginAPI struct {
 		Prefix       string
 		MMAuthHeader string
 	}
-	OnlyofficeHelper    OnlyofficeHelper
-	OnlyofficeConverter OnlyofficeCovnerter
-	Encoder             Encoder
-	Manager             JwtManager
-	Bot                 Bot
-	EditorTemplate      *template.Template
-	Filestore           filestore.FileBackend
+	OnlyofficeHelper        OnlyofficeHelper
+	OnlyofficeConverter     OnlyofficeCovnerter
+	Encoder                 Encoder
+	Manager                 JwtManager
+	Bot                     Bot
+	EditorTemplate          *template.Template
+	Filestore               filestore.FileBackend
+	OnlyofficeCommandClient client.OnlyofficeCommandClient
 }

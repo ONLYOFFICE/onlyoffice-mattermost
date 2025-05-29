@@ -27,6 +27,9 @@ import {id as pluginId} from '../manifest';
 //@ts-expect-error: Suppressing error because state['plugins-' + pluginId] might be undefined
 const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
 
+export const converterModalVisible = (state: GlobalState) => getPluginState(state).converterModal.isVisible;
+export const converterModalFileInfo = (state: GlobalState) => getPluginState(state).converterModal.fileInfo;
+
 export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
 export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModal.fileInfo;
 

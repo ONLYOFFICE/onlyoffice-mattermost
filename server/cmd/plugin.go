@@ -33,6 +33,7 @@ import (
 	integration "github.com/ONLYOFFICE/onlyoffice-mattermost"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/route"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/converter"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
@@ -46,15 +47,16 @@ var (
 
 type Plugin struct {
 	plugin.MattermostPlugin
-	configurationLock   sync.RWMutex
-	configuration       *configuration
-	Bot                 bot.Bot
-	OnlyofficeHelper    onlyoffice.Helper
-	OnlyofficeConverter converter.Converter
-	Encoder             crypto.Encoder
-	Manager             crypto.JwtManager
-	EditorTemplate      *template.Template
-	Filestore           filestore.FileBackend
+	configurationLock       sync.RWMutex
+	configuration           *configuration
+	Bot                     bot.Bot
+	OnlyofficeHelper        onlyoffice.Helper
+	OnlyofficeConverter     converter.Converter
+	Encoder                 crypto.Encoder
+	Manager                 crypto.JwtManager
+	EditorTemplate          *template.Template
+	Filestore               filestore.FileBackend
+	OnlyofficeCommandClient client.OnlyofficeCommandClient
 }
 
 func (p *Plugin) OnActivate() error {
@@ -96,6 +98,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
 	p.OnlyofficeHelper = onlyoffice.NewHelper()
 	p.OnlyofficeConverter = converter.NewConverter()
+	p.OnlyofficeCommandClient = client.NewOnlyofficeCommandClient(p.Manager)
 	bpath, _ := p.MattermostPlugin.API.GetBundlePath()
 	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
 	if configuration.Error != nil {
@@ -167,12 +170,13 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 			Prefix:       p.configuration.DESJwtPrefix,
 			MMAuthHeader: "Mattermost-User-Id",
 		},
-		OnlyofficeHelper:    p.OnlyofficeHelper,
-		OnlyofficeConverter: p.OnlyofficeConverter,
-		Encoder:             p.Encoder,
-		Manager:             p.Manager,
-		Bot:                 p.Bot,
-		EditorTemplate:      p.EditorTemplate,
-		Filestore:           p.Filestore,
+		OnlyofficeHelper:        p.OnlyofficeHelper,
+		OnlyofficeConverter:     p.OnlyofficeConverter,
+		Encoder:                 p.Encoder,
+		Manager:                 p.Manager,
+		Bot:                     p.Bot,
+		EditorTemplate:          p.EditorTemplate,
+		Filestore:               p.Filestore,
+		OnlyofficeCommandClient: p.OnlyofficeCommandClient,
 	}).ServeHTTP(w, r)
 }
