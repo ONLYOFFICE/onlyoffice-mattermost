@@ -29,56 +29,6 @@ const (
 	OnlyofficePermissionsWildcardKey   string = "*"
 )
 
-var OnlyofficeEditableExtensions = map[string]string{
-	"xlsx": OnlyofficeCellType,
-	"pptx": OnlyofficeSlideType,
-	"docx": OnlyofficeWordType,
-}
-
-var OnlyofficeFileExtensions = map[string]string{
-	"xls":  OnlyofficeCellType,
-	"xlsx": OnlyofficeCellType,
-	"xlsm": OnlyofficeCellType,
-	"xlt":  OnlyofficeCellType,
-	"xltx": OnlyofficeCellType,
-	"xltm": OnlyofficeCellType,
-	"ods":  OnlyofficeCellType,
-	"fods": OnlyofficeCellType,
-	"ots":  OnlyofficeCellType,
-	"csv":  OnlyofficeCellType,
-	"pps":  OnlyofficeSlideType,
-	"ppsx": OnlyofficeSlideType,
-	"ppsm": OnlyofficeSlideType,
-	"ppt":  OnlyofficeSlideType,
-	"pptx": OnlyofficeSlideType,
-	"pptm": OnlyofficeSlideType,
-	"pot":  OnlyofficeSlideType,
-	"potx": OnlyofficeSlideType,
-	"potm": OnlyofficeSlideType,
-	"odp":  OnlyofficeSlideType,
-	"fodp": OnlyofficeSlideType,
-	"otp":  OnlyofficeSlideType,
-	"doc":  OnlyofficeWordType,
-	"docx": OnlyofficeWordType,
-	"docm": OnlyofficeWordType,
-	"dot":  OnlyofficeWordType,
-	"dotx": OnlyofficeWordType,
-	"dotm": OnlyofficeWordType,
-	"odt":  OnlyofficeWordType,
-	"fodt": OnlyofficeWordType,
-	"ott":  OnlyofficeWordType,
-	"rtf":  OnlyofficeWordType,
-	"txt":  OnlyofficeWordType,
-	"html": OnlyofficeWordType,
-	"htm":  OnlyofficeWordType,
-	"mht":  OnlyofficeWordType,
-	"pdf":  OnlyofficeWordType,
-	"djvu": OnlyofficeWordType,
-	"fb2":  OnlyofficeWordType,
-	"epub": OnlyofficeWordType,
-	"xps":  OnlyofficeWordType,
-}
-
 var OnlyofficeLanguageMapping = map[string]string{
 	"en": "en-US",
 	"ru": "ru-RU",

@@ -110,7 +110,7 @@ func BuildCreateHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 			fileData, readErr = public.Templates.ReadFile(defaultTemplatePath)
 			if readErr != nil {
 				plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not read template file: " + readErr.Error())
-				rw.WriteHeader(http.StatusInternalServerError)
+				rw.WriteHeader(http.StatusBadRequest)
 				return
 			}
 		}

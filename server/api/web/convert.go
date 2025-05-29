@@ -105,18 +105,18 @@ func BuildConvertHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *h
 
 		region, _ := tag.Region()
 
-		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeAPIRootSuffix
-		outputType := "ooxml"
-		if file.Extension == "xml" {
-			if req.OutputType == "word" {
-				outputType = "docx"
-			} else if req.OutputType == "cell" {
-				outputType = "xlsx"
-			} else {
-				outputType = "ooxml"
-			}
+		_, supported := plugin.FormatManager.GetFormatByName(file.Extension)
+		if !supported {
+			rw.WriteHeader(http.StatusBadRequest)
+			return
 		}
 
+		outputType := "ooxml"
+		if _, supported := plugin.FormatManager.GetFormatByName(file.Extension); supported && req.OutputType != "" {
+			outputType = req.OutputType
+		}
+
+		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeAPIRootSuffix
 		creq := cmodel.CommandConvertRequest{
 			Async:      false,
 			Key:        uuid.NewString(),

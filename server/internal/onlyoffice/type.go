@@ -20,6 +20,7 @@ package onlyoffice
 import (
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 )
 
@@ -37,8 +38,12 @@ type Helper interface {
 	GetWildcardUser() string
 }
 
-type helper struct{}
+type helper struct {
+	formatManager public.FormatManager
+}
 
-func NewHelper() Helper {
-	return helper{}
+func NewHelper(formatManager public.FormatManager) Helper {
+	return &helper{
+		formatManager: formatManager,
+	}
 }

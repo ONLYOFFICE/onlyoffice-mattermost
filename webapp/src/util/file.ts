@@ -28,94 +28,16 @@ import xlsx from 'public/images/xlsx.svg';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 
+import {formatManager, formatHelpers} from './formats';
 import {getCookie} from './cookie';
-
-const ONLYOFFICE_CELL = 'cell';
-const ONLYOFFICE_WORD = 'word';
-const ONLYOFFICE_SLIDE = 'slide';
-
-const EditExtensionsMap = new Map([
-    ['docx', ONLYOFFICE_WORD],
-    ['xlsx', ONLYOFFICE_CELL],
-    ['pptx', ONLYOFFICE_SLIDE],
-]);
-
-const AllowedExtensionsMap = new Map([
-    ['xls', ONLYOFFICE_CELL],
-    ['xlsx', ONLYOFFICE_CELL],
-    ['xlsm', ONLYOFFICE_CELL],
-    ['xlt', ONLYOFFICE_CELL],
-    ['xltx', ONLYOFFICE_CELL],
-    ['xltm', ONLYOFFICE_CELL],
-    ['ods', ONLYOFFICE_CELL],
-    ['fods', ONLYOFFICE_CELL],
-    ['ots', ONLYOFFICE_CELL],
-    ['csv', ONLYOFFICE_CELL],
-    ['pps', ONLYOFFICE_SLIDE],
-    ['ppsx', ONLYOFFICE_SLIDE],
-    ['ppsm', ONLYOFFICE_SLIDE],
-    ['ppt', ONLYOFFICE_SLIDE],
-    ['pptx', ONLYOFFICE_SLIDE],
-    ['pptm', ONLYOFFICE_SLIDE],
-    ['pot', ONLYOFFICE_SLIDE],
-    ['potx', ONLYOFFICE_SLIDE],
-    ['potm', ONLYOFFICE_SLIDE],
-    ['odp', ONLYOFFICE_SLIDE],
-    ['fodp', ONLYOFFICE_SLIDE],
-    ['otp', ONLYOFFICE_SLIDE],
-    ['doc', ONLYOFFICE_WORD],
-    ['docx', ONLYOFFICE_WORD],
-    ['docm', ONLYOFFICE_WORD],
-    ['dot', ONLYOFFICE_WORD],
-    ['dotx', ONLYOFFICE_WORD],
-    ['dotm', ONLYOFFICE_WORD],
-    ['odt', ONLYOFFICE_WORD],
-    ['fodt', ONLYOFFICE_WORD],
-    ['ott', ONLYOFFICE_WORD],
-    ['rtf', ONLYOFFICE_WORD],
-    ['xml', ONLYOFFICE_WORD],
-]);
-
-const ConvertExtensionsMap = new Map([
-    ['xls', ONLYOFFICE_CELL],
-    ['xlsm', ONLYOFFICE_CELL],
-    ['xlt', ONLYOFFICE_CELL],
-    ['xltx', ONLYOFFICE_CELL],
-    ['xltm', ONLYOFFICE_CELL],
-    ['ods', ONLYOFFICE_CELL],
-    ['fods', ONLYOFFICE_CELL],
-    ['ots', ONLYOFFICE_CELL],
-    ['csv', ONLYOFFICE_CELL],
-    ['pps', ONLYOFFICE_SLIDE],
-    ['ppsx', ONLYOFFICE_SLIDE],
-    ['ppsm', ONLYOFFICE_SLIDE],
-    ['ppt', ONLYOFFICE_SLIDE],
-    ['pptm', ONLYOFFICE_SLIDE],
-    ['pot', ONLYOFFICE_SLIDE],
-    ['potx', ONLYOFFICE_SLIDE],
-    ['potm', ONLYOFFICE_SLIDE],
-    ['odp', ONLYOFFICE_SLIDE],
-    ['fodp', ONLYOFFICE_SLIDE],
-    ['otp', ONLYOFFICE_SLIDE],
-    ['doc', ONLYOFFICE_WORD],
-    ['docm', ONLYOFFICE_WORD],
-    ['dot', ONLYOFFICE_WORD],
-    ['dotx', ONLYOFFICE_WORD],
-    ['dotm', ONLYOFFICE_WORD],
-    ['odt', ONLYOFFICE_WORD],
-    ['fodt', ONLYOFFICE_WORD],
-    ['ott', ONLYOFFICE_WORD],
-    ['rtf', ONLYOFFICE_WORD],
-    ['xml', ONLYOFFICE_WORD],
-]);
 
 const ExtensionIcons = new Map([
     ['xlsx', xlsx],
     ['pptx', pptx],
     ['docx', docx],
-    [ONLYOFFICE_WORD, word],
-    [ONLYOFFICE_CELL, cell],
-    [ONLYOFFICE_SLIDE, slide],
+    ['word', word],
+    ['cell', cell],
+    ['slide', slide],
 ]);
 
 export function getIconByExt(fileExt: string): string {
@@ -123,48 +45,40 @@ export function getIconByExt(fileExt: string): string {
     if (ExtensionIcons.has(sanitized)) {
         return ExtensionIcons.get(sanitized)!;
     }
-    return ExtensionIcons.get(getFileTypeByExt(sanitized))!;
+    const format = formatManager.getFormatByName(sanitized);
+    return format ? ExtensionIcons.get(format.type)! : '';
 }
 
 export function getFileTypeByExt(fileExt: string): string {
     const sanitized = fileExt.replaceAll('.', '');
-    if (AllowedExtensionsMap.has(sanitized)) {
-        return AllowedExtensionsMap.get(sanitized)!;
-    }
-    return '';
+    const format = formatManager.getFormatByName(sanitized);
+    return format ? format.type : '';
 }
 
 export function isConvertSupported(fileExt: string): boolean {
     const sanitized = fileExt.replaceAll('.', '');
-    if (ConvertExtensionsMap.has(sanitized)) {
-        return true;
-    }
-    return false;
+    const format = formatManager.getFormatByName(sanitized);
+    return format ? formatHelpers.isAutoConvertable(format) : false;
 }
 
 export function isExtensionSupported(fileExt: string, editOnly?: boolean): boolean {
     const sanitized = fileExt.replaceAll('.', '');
-    if (editOnly) {
-        if (EditExtensionsMap.has(sanitized)) {
-            return true;
-        }
+    const format = formatManager.getFormatByName(sanitized);
+    
+    if (!format) {
         return false;
     }
-    if (AllowedExtensionsMap.has(sanitized)) {
-        return true;
+
+    if (editOnly) {
+        return formatHelpers.isEditable(format);
     }
 
-    return false;
+    return formatHelpers.isViewable(format);
 }
 
 export function isFileAuthor(fileInfo: FileInfo): boolean {
     const userId: string = getCookie('MMUSERID');
-
-    if (userId) {
-        return fileInfo.user_id === userId;
-    }
-
-    return false;
+    return userId ? fileInfo.user_id === userId : false;
 }
 
 const fileHelper = {

@@ -31,6 +31,7 @@ import (
 	"github.com/pkg/errors"
 
 	integration "github.com/ONLYOFFICE/onlyoffice-mattermost"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/route"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
@@ -57,6 +58,7 @@ type Plugin struct {
 	EditorTemplate          *template.Template
 	Filestore               filestore.FileBackend
 	OnlyofficeCommandClient client.OnlyofficeCommandClient
+	FormatManager           public.FormatManager
 }
 
 func (p *Plugin) OnActivate() error {
@@ -96,9 +98,19 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	p.Encoder = crypto.NewMD5Encoder()
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
-	p.OnlyofficeHelper = onlyoffice.NewHelper()
+	p.FormatManager, configuration.Error = public.NewMapFormatManager()
+	if configuration.Error != nil {
+		time.AfterFunc(100*time.Millisecond, func() {
+			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
+				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			}
+		})
+		return nil
+	}
+	p.OnlyofficeHelper = onlyoffice.NewHelper(p.FormatManager)
 	p.OnlyofficeConverter = converter.NewConverter()
 	p.OnlyofficeCommandClient = client.NewOnlyofficeCommandClient(p.Manager)
+
 	bpath, _ := p.MattermostPlugin.API.GetBundlePath()
 	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
 	if configuration.Error != nil {
@@ -178,5 +190,6 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 		EditorTemplate:          p.EditorTemplate,
 		Filestore:               p.Filestore,
 		OnlyofficeCommandClient: p.OnlyofficeCommandClient,
+		FormatManager:           p.FormatManager,
 	}).ServeHTTP(w, r)
 }

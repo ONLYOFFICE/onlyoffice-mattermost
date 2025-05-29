@@ -26,6 +26,7 @@ import (
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 )
@@ -80,4 +81,5 @@ type PluginAPI struct {
 	EditorTemplate          *template.Template
 	Filestore               filestore.FileBackend
 	OnlyofficeCommandClient client.OnlyofficeCommandClient
+	FormatManager           public.FormatManager
 }

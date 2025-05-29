@@ -17,22 +17,24 @@
  */
 package onlyoffice
 
-import "strings"
+import (
+	"strings"
+)
 
 func (h helper) IsExtensionSupported(fileExt string) bool {
-	_, exists := OnlyofficeFileExtensions[strings.ToLower(fileExt)]
-	return exists
+	format, exists := h.formatManager.GetFormatByName(strings.ToLower(fileExt))
+	return exists && format.IsViewable()
 }
 
 func (h helper) IsExtensionEditable(fileExt string) bool {
-	_, exists := OnlyofficeEditableExtensions[strings.ToLower(fileExt)]
-	return exists
+	format, exists := h.formatManager.GetFormatByName(strings.ToLower(fileExt))
+	return exists && format.IsEditable()
 }
 
 func (h helper) GetFileType(fileExt string) (string, error) {
-	fileType, exists := OnlyofficeFileExtensions[strings.ToLower(fileExt)]
-	if !exists {
+	format, exists := h.formatManager.GetFormatByName(strings.ToLower(fileExt))
+	if !exists || !format.IsViewable() {
 		return "", ErrOnlyofficeExtensionNotSupported
 	}
-	return fileType, nil
+	return format.Type, nil
 }

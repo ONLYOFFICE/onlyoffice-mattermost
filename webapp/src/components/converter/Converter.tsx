@@ -44,7 +44,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
     const [needsPassword, setNeedsPassword] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
     const [needsFormatSelection, setNeedsFormatSelection] = useState<boolean>(false);
-    const [selectedFormat, setSelectedFormat] = useState<'word' | 'cell' | null>(null);
+    const [selectedFormat, setSelectedFormat] = useState<'docx' | 'xlsx' | null>(null);
 
     if (!visible) {
         return null;
@@ -166,14 +166,14 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                             </div>
                             <div className='onlyoffice-converter__format-buttons'>
                                 <button
-                                    className={`onlyoffice-converter__format-button document ${selectedFormat === 'word' ? 'selected' : ''}`}
-                                    onClick={() => setSelectedFormat('word')}
+                                    className={`onlyoffice-converter__format-button document ${selectedFormat === 'docx' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedFormat('docx')}
                                 >
                                     {i18n['converter.format_document'] || 'Document'}
                                 </button>
                                 <button
-                                    className={`onlyoffice-converter__format-button cell ${selectedFormat === 'cell' ? 'selected' : ''}`}
-                                    onClick={() => setSelectedFormat('cell')}
+                                    className={`onlyoffice-converter__format-button cell ${selectedFormat === 'xlsx' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedFormat('xlsx')}
                                 >
                                     {i18n['converter.format_cell'] || 'Spreadsheet'}
                                 </button>
