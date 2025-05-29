@@ -170,3 +170,61 @@
         color: rgba(var(--center-channel-color-rgb), 0.64);
     }
 }
+
+.onlyoffice-converter__format-section {
+    margin: 20px 0;
+    padding: 0 20px;
+}
+
+.onlyoffice-converter__format-title {
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: var(--center-channel-color);
+}
+
+.onlyoffice-converter__format-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.onlyoffice-converter__format-button {
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background-color: #f0f0f0;
+    color: #000000;
+
+    &:hover {
+        transform: translateY(-1px);
+    }
+
+    &.document {
+        &.selected {
+            background-color: #0066cc;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &.cell {
+        &.selected {
+            background-color: #2eb85c;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    @include dark-theme {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+
+        &:not(.selected):hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+    }
+}

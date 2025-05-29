@@ -73,6 +73,7 @@ const AllowedExtensionsMap = new Map([
     ['fodt', ONLYOFFICE_WORD],
     ['ott', ONLYOFFICE_WORD],
     ['rtf', ONLYOFFICE_WORD],
+    ['xml', ONLYOFFICE_WORD],
 ]);
 
 const ConvertExtensionsMap = new Map([
@@ -105,6 +106,7 @@ const ConvertExtensionsMap = new Map([
     ['fodt', ONLYOFFICE_WORD],
     ['ott', ONLYOFFICE_WORD],
     ['rtf', ONLYOFFICE_WORD],
+    ['xml', ONLYOFFICE_WORD],
 ]);
 
 const ExtensionIcons = new Map([

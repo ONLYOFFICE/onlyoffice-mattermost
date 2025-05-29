@@ -43,6 +43,8 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
     const [loading, setLoading] = useState<boolean>(false);
     const [needsPassword, setNeedsPassword] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
+    const [needsFormatSelection, setNeedsFormatSelection] = useState<boolean>(false);
+    const [selectedFormat, setSelectedFormat] = useState<'word' | 'cell' | null>(null);
 
     if (!visible) {
         return null;
@@ -52,6 +54,8 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
         setNeedsPassword(false);
         setPassword('');
         setError('');
+        setNeedsFormatSelection(false);
+        setSelectedFormat(null);
         close();
     };
 
@@ -64,6 +68,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             const payload = {
                 file_id: fileInfo.id,
                 ...(needsPassword && {password}),
+                ...(needsFormatSelection && {output_type: selectedFormat}),
             };
             const response = await post<{file_id: string}, {error: number}>(`${ONLYOFFICE_PLUGIN_CONVERT}?code=${code}`, payload, {
                 credentials: 'include',
@@ -72,11 +77,16 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             if (response.error === -5) {
                 setNeedsPassword(true);
                 setError(i18n['converter.error_password_required'] || 'This file is password protected. Please enter the password.');
+            } else if (response.error === -9) {
+                setNeedsFormatSelection(true);
+                setError(i18n['converter.error_format_required'] || 'Please select the output format for conversion.');
             } else if (response.error !== 0) {
                 throw new Error('Failed to convert file. Please try again.');
             } else {
                 setNeedsPassword(false);
                 setPassword('');
+                setNeedsFormatSelection(false);
+                setSelectedFormat(null);
                 close();
             }
         } catch (error: any) {
@@ -149,6 +159,28 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                         </div>
                     )}
 
+                    {needsFormatSelection && (
+                        <div className='onlyoffice-converter__format-section'>
+                            <div className='onlyoffice-converter__format-title'>
+                                {i18n['converter.select_format'] || 'Select output format:'}
+                            </div>
+                            <div className='onlyoffice-converter__format-buttons'>
+                                <button
+                                    className={`onlyoffice-converter__format-button document ${selectedFormat === 'word' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedFormat('word')}
+                                >
+                                    {i18n['converter.format_document'] || 'Document'}
+                                </button>
+                                <button
+                                    className={`onlyoffice-converter__format-button cell ${selectedFormat === 'cell' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedFormat('cell')}
+                                >
+                                    {i18n['converter.format_cell'] || 'Spreadsheet'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {error && (
                         <div className='onlyoffice-converter__error'>
                             {error}
@@ -167,7 +199,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                     <button
                         className='btn btn-primary onlyoffice-converter__button'
                         onClick={handleConvert}
-                        disabled={loading || (needsPassword && !password)}
+                        disabled={loading || (needsPassword && !password) || (needsFormatSelection && !selectedFormat)}
                     >
                         {loading ?
                             (i18n['converter.converting_button'] || 'Converting...') :

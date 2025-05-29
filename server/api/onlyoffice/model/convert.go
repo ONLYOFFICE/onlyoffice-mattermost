@@ -7,8 +7,9 @@ import (
 )
 
 type ConvertFile struct {
-	FileID   string `json:"file_id" validate:"required,min=1"`
-	Password string `json:"password,omitempty"`
+	FileID     string `json:"file_id" validate:"required,min=1"`
+	OutputType string `json:"output_type,omitempty"`
+	Password   string `json:"password,omitempty"`
 }
 
 func (c *ConvertFile) Validate() error {
