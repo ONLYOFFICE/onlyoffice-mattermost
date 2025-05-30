@@ -19,6 +19,7 @@
     "permissions.modal_fetch_error": "Impossible de récupérer les utilisateurs",
     "editor.close_button": "Fermer",
     "editor.events.error": "Oups ! Un problème est survenu...",
+    "editor.events.unauthorized": "Unauthorized. Please check your permissions.",
     "manager.modal_header": "Create New File",
     "manager.file_type_label": "File type",
     "manager.file_name_label": "File name",

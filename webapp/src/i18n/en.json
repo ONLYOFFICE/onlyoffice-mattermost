@@ -19,6 +19,7 @@
   "permissions.modal_fetch_error": "Could not fetch users",
   "editor.close_button": "Close",
   "editor.events.error": "Oops! Something went wrong...",
+  "editor.events.unauthorized": "Unauthorized. Please check your permissions.",
   "manager.modal_header": "Create New File",
   "manager.file_type_label": "File type",
   "manager.file_name_label": "File name",

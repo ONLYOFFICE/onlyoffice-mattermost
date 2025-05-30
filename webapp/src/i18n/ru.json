@@ -19,6 +19,7 @@
     "permissions.modal_fetch_error": "Не удалось получить пользователей",
     "editor.close_button": "Закрыть",
     "editor.events.error": "Ошибка! Что-то пошло не так...",
+    "editor.events.unauthorized": "Unauthorized. Please check your permissions.",
     "manager.modal_header": "Create New File",
     "manager.file_type_label": "File type",
     "manager.file_name_label": "File name",

@@ -32,7 +32,8 @@ type Props = {
 export default function EditorLoader({theme}: Props) {
     const [error, setError] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
-    const i18n = getTranslations();
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const i18n = getTranslations() as {[key: string]: string};
 
     const disableLoading = () => {
         setIsVisible(false);
@@ -42,14 +43,21 @@ export default function EditorLoader({theme}: Props) {
         window.dispatchEvent(new Event(ONLYOFFICE_CLOSE_EVENT));
     };
 
-    const trackError = () => setError(true);
+    const trackError = (event: CustomEvent) => {
+        setError(true);
+        if (event.detail?.messageKey) {
+            setErrorMessage(i18n[event.detail.messageKey] || event.detail.fallbackText || i18n['editor.events.error']);
+        } else {
+            setErrorMessage(i18n['editor.events.error']);
+        }
+    };
 
     useEffect(() => {
         window.addEventListener(ONLYOFFICE_READY_EVENT, disableLoading);
-        window.addEventListener(ONLYOFFICE_ERROR_EVENT, trackError);
+        window.addEventListener(ONLYOFFICE_ERROR_EVENT, trackError as EventListener);
         return () => {
             window.removeEventListener(ONLYOFFICE_READY_EVENT, disableLoading);
-            window.removeEventListener(ONLYOFFICE_ERROR_EVENT, trackError);
+            window.removeEventListener(ONLYOFFICE_ERROR_EVENT, trackError as EventListener);
         };
     }, []);
 
@@ -69,7 +77,9 @@ export default function EditorLoader({theme}: Props) {
                         style={{width: '41px', height: '41px', marginBottom: '2rem'}}
                         src={errorIcon}
                     />
-                    <span className='onlyoffice-editor__loader_error'>{i18n['editor.events.error']}</span>
+                    <span className='onlyoffice-editor__loader_error'>
+                        {errorMessage}
+                    </span>
                 </div>
             )}
             <button

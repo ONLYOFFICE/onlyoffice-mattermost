@@ -19,6 +19,7 @@
     "permissions.modal_fetch_error": "Impossibile recuperare gli utenti",
     "editor.close_button": "Chiudi",
     "editor.events.error": "Ops! Qualcosa è andato storto...",
+    "editor.events.unauthorized": "Unauthorized. Please check your permissions.",
     "manager.modal_header": "Create New File",
     "manager.file_type_label": "File type",
     "manager.file_name_label": "File name",
