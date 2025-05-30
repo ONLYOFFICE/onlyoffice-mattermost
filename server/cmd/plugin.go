@@ -62,6 +62,10 @@ type Plugin struct {
 }
 
 func (p *Plugin) OnActivate() error {
+	if p.configuration == nil {
+		return errors.New("plugin configuration is not initialized")
+	}
+
 	if p.configuration.Error != nil {
 		return p.configuration.Error
 	}
@@ -83,59 +87,68 @@ func (p *Plugin) OnConfigurationChange() error {
 		return errors.Wrap(err, "failed to load plugin configuration")
 	}
 
-	p.setConfiguration(configuration)
-
-	configuration.Error = configuration.IsValid()
-	if configuration.Error != nil {
+	configuration.sanitizeConfiguration()
+	configuration.handleDemoConfiguration(p.API)
+	if err := configuration.IsValid(); err != nil {
+		configuration.Error = err
+		p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Configuration validation failed: " + err.Error())
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
-				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix+"Could not disable the plugin via Mattermost API: ", err.Message)
+			if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
+				p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + disableErr.Message)
 			}
 		})
-
-		return nil
+		p.setConfiguration(configuration)
+		return err
 	}
+
+	p.setConfiguration(configuration)
 
 	p.Encoder = crypto.NewMD5Encoder()
 	p.Manager = crypto.NewJwtManager([]byte(p.configuration.DESJwt))
-	p.FormatManager, configuration.Error = public.NewMapFormatManager()
-	if configuration.Error != nil {
+
+	var err error
+	p.FormatManager, err = public.NewMapFormatManager()
+	if err != nil {
+		p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Failed to initialize format manager: " + err.Error())
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
-				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
+				p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + disableErr.Message)
 			}
 		})
-		return nil
+		return err
 	}
+
 	p.OnlyofficeHelper = onlyoffice.NewHelper(p.FormatManager)
 	p.OnlyofficeConverter = converter.NewConverter()
 	p.OnlyofficeCommandClient = client.NewOnlyofficeCommandClient(p.Manager)
 
 	bpath, _ := p.MattermostPlugin.API.GetBundlePath()
-	p.EditorTemplate, configuration.Error = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
-	if configuration.Error != nil {
+	p.EditorTemplate, err = template.New("onlyoffice").ParseFiles(filepath.Join(bpath, "public/editor.html"))
+	if err != nil {
+		p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Failed to parse editor template: " + err.Error())
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
-				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
+				p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + disableErr.Message)
 			}
 		})
-		return nil
+		return err
 	}
 
 	license := p.MattermostPlugin.API.GetLicense()
 	serverConfig := p.MattermostPlugin.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
-	p.Filestore, configuration.Error = filestore.NewFileBackend(filestore.NewFileBackendSettingsFromConfig(&serverConfig.FileSettings, (license != nil && *license.Features.Compliance), true))
-	if configuration.Error != nil {
+	p.Filestore, err = filestore.NewFileBackend(filestore.NewFileBackendSettingsFromConfig(&serverConfig.FileSettings, (license != nil && *license.Features.Compliance), true))
+	if err != nil {
+		p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Failed to initialize file backend: " + err.Error())
 		time.AfterFunc(100*time.Millisecond, func() {
-			if err := p.MattermostPlugin.API.DisablePlugin(PluginID); err != nil {
-				p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + err.Message)
+			if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
+				p.MattermostPlugin.API.LogError(_OnlyofficeLoggerPrefix + "Could not disable the plugin via Mattermost API: " + disableErr.Message)
 			}
 		})
-		return nil
+		return err
 	}
 
-	p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "The server responded without errors")
+	p.MattermostPlugin.API.LogInfo(_OnlyofficeLoggerPrefix + "Configuration updated successfully")
 	return nil
 }
 
@@ -174,12 +187,24 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 			Secret       string
 			Header       string
 			Prefix       string
+			DemoEnabled  bool
+			DemoExpires  int64
+			DemoAddress  string
+			DemoHeader   string
+			DemoPrefix   string
+			DemoSecret   string
 			MMAuthHeader string
 		}{
 			Address:      p.configuration.DESAddress,
 			Secret:       p.configuration.DESJwt,
 			Header:       p.configuration.DESJwtHeader,
 			Prefix:       p.configuration.DESJwtPrefix,
+			DemoEnabled:  p.configuration.DemoEnabled,
+			DemoExpires:  p.configuration.DemoExpires,
+			DemoAddress:  p.configuration.DemoAddress,
+			DemoHeader:   p.configuration.DemoHeader,
+			DemoPrefix:   p.configuration.DemoPrefix,
+			DemoSecret:   p.configuration.DemoSecret,
 			MMAuthHeader: "Mattermost-User-Id",
 		},
 		OnlyofficeHelper:        p.OnlyofficeHelper,

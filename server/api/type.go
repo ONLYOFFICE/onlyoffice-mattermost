@@ -71,6 +71,12 @@ type PluginAPI struct {
 		Secret       string
 		Header       string
 		Prefix       string
+		DemoEnabled  bool
+		DemoExpires  int64
+		DemoAddress  string
+		DemoHeader   string
+		DemoPrefix   string
+		DemoSecret   string
 		MMAuthHeader string
 	}
 	OnlyofficeHelper        OnlyofficeHelper

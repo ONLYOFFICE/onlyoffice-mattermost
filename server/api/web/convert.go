@@ -24,6 +24,20 @@ func BuildConvertHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *h
 		_ = r.Context() // TODO: Proper timeouts
 		var req oomodel.ConvertFile
 
+		hasOwnCredentials := plugin.Configuration.Address != plugin.Configuration.DemoAddress &&
+			plugin.Configuration.Secret != "" &&
+			plugin.Configuration.Header != "" &&
+			plugin.Configuration.Prefix != ""
+
+		demoActive := plugin.Configuration.DemoEnabled &&
+			plugin.Configuration.DemoExpires >= time.Now().UnixMilli()
+
+		if !demoActive && !hasOwnCredentials {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "no valid credentials and demo is not active")
+			rw.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		userID := r.Header.Get(plugin.Configuration.MMAuthHeader)
 		if userID == "" {
 			plugin.API.LogError(_OnlyofficeLoggerPrefix + "could not get user ID from request")

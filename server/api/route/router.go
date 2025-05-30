@@ -81,7 +81,7 @@ func NewRouter(api api.PluginAPI) *mux.Router {
 	subrouter.HandleFunc("/editor", authMiddleware(web.BuildEditorHandler)).Methods(http.MethodGet)
 	subrouter.Handle("/permissions", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildGetFilePermissionsHandler))).Methods(http.MethodGet)
 	subrouter.Handle("/create", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildCreateHandler))).Methods(http.MethodPost)
-	subrouter.Handle("/convert", timeoutRoutes(5*time.Second)(authMiddleware(web.BuildConvertHandler))).Methods(http.MethodPost)
+	subrouter.Handle("/convert", timeoutRoutes(10*time.Second)(authMiddleware(web.BuildConvertHandler))).Methods(http.MethodPost)
 	subrouter.Handle("/code", timeoutRoutes(2*time.Second)(authMiddleware(web.BuildCodeHandler))).Methods(http.MethodGet)
 
 	return router

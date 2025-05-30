@@ -52,3 +52,11 @@ type BadConfigurationError struct {
 func (e *BadConfigurationError) Error() string {
 	return fmt.Sprintf(_OnlyofficeLoggerPrefix+"bad property '%s' configuration (%s)", e.Property, e.Reason)
 }
+
+type DemoModeExpiredError struct {
+	Reason string
+}
+
+func (e *DemoModeExpiredError) Error() string {
+	return fmt.Sprintf(_OnlyofficeLoggerPrefix+"demo mode expired (%s)", e.Reason)
+}

@@ -23,13 +23,13 @@ import (
 	"strings"
 	"time"
 
-	jwt "github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/client/model"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/internal/validator"
+	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 // configuration captures the plugin's external configuration as exposed in the Mattermost server
@@ -48,6 +48,12 @@ type configuration struct {
 	DESJwt       string
 	DESJwtHeader string
 	DESJwtPrefix string
+	DemoEnabled  bool
+	DemoExpires  int64
+	DemoAddress  string
+	DemoHeader   string
+	DemoPrefix   string
+	DemoSecret   string
 	Error        error
 }
 
@@ -59,6 +65,12 @@ func (c *configuration) Clone() *configuration {
 		DESJwt:       c.DESJwt,
 		DESJwtHeader: c.DESJwtHeader,
 		DESJwtPrefix: c.DESJwtPrefix,
+		DemoEnabled:  c.DemoEnabled,
+		DemoExpires:  c.DemoExpires,
+		DemoAddress:  c.DemoAddress,
+		DemoHeader:   c.DemoHeader,
+		DemoPrefix:   c.DemoPrefix,
+		DemoSecret:   c.DemoSecret,
 	}
 }
 
@@ -67,6 +79,26 @@ func (c *configuration) sanitizeConfiguration() {
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
+
+	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
+	c.DemoHeader = "AuthorizationJWT"
+	c.DemoPrefix = "Bearer "
+	c.DemoSecret = "sn2puSUF7muF5Jas"
+
+	if !c.DemoEnabled || c.DemoExpires <= time.Now().UnixMilli() {
+		if c.DESAddress == c.DemoAddress {
+			c.DESAddress = ""
+		}
+		if c.DESJwt == c.DemoSecret {
+			c.DESJwt = ""
+		}
+		if c.DESJwtHeader == c.DemoHeader {
+			c.DESJwtHeader = ""
+		}
+		if c.DESJwtPrefix == c.DemoPrefix {
+			c.DESJwtPrefix = ""
+		}
+	}
 
 	if strings.HasSuffix(c.DESAddress, "/") {
 		for {
@@ -94,6 +126,77 @@ func (p *Plugin) getConfiguration() *configuration {
 	return p.configuration
 }
 
+func (c *configuration) handleDemoConfiguration(api plugin.API) {
+	if !c.DemoEnabled {
+		return
+	}
+
+	hasUserCredentials := c.DESAddress != "" &&
+		c.DESJwt != "" &&
+		c.DESJwtHeader != "" &&
+		c.DESJwtPrefix != "" &&
+		(c.DESAddress != c.DemoAddress ||
+			c.DESJwt != c.DemoSecret ||
+			c.DESJwtHeader != c.DemoHeader ||
+			c.DESJwtPrefix != c.DemoPrefix)
+
+	if hasUserCredentials {
+		return
+	}
+
+	now := time.Now().UnixMilli()
+
+	start, kvErr := api.KVGet(DemoKey)
+	if kvErr != nil || len(start) == 0 {
+		if err := api.KVSet(DemoKey, []byte(strconv.FormatInt(now, 10))); err == nil {
+			c.DemoExpires = now + _DemoPeriodMillis
+			c.DESAddress = c.DemoAddress
+			c.DESJwt = c.DemoSecret
+			c.DESJwtHeader = c.DemoHeader
+			c.DESJwtPrefix = c.DemoPrefix
+		}
+		return
+	}
+
+	startTime, parseErr := strconv.ParseInt(string(start), 10, 64)
+	if parseErr != nil {
+		if err := api.KVSet(DemoKey, []byte(strconv.FormatInt(now, 10))); err == nil {
+			c.DemoExpires = now + _DemoPeriodMillis
+			c.DESAddress = c.DemoAddress
+			c.DESJwt = c.DemoSecret
+			c.DESJwtHeader = c.DemoHeader
+			c.DESJwtPrefix = c.DemoPrefix
+		}
+		return
+	}
+
+	expirationTime := startTime + _DemoPeriodMillis
+	if now > expirationTime {
+		c.DemoEnabled = false
+		c.DemoExpires = expirationTime
+		if c.DESAddress == c.DemoAddress {
+			c.DESAddress = ""
+		}
+		if c.DESJwt == c.DemoSecret {
+			c.DESJwt = ""
+		}
+		if c.DESJwtHeader == c.DemoHeader {
+			c.DESJwtHeader = ""
+		}
+		if c.DESJwtPrefix == c.DemoPrefix {
+			c.DESJwtPrefix = ""
+		}
+	} else {
+		c.DemoExpires = expirationTime
+		if !hasUserCredentials {
+			c.DESAddress = c.DemoAddress
+			c.DESJwt = c.DemoSecret
+			c.DESJwtHeader = c.DemoHeader
+			c.DESJwtPrefix = c.DemoPrefix
+		}
+	}
+}
+
 // setConfiguration replaces the active configuration under lock.
 //
 // Do not call setConfiguration while holding the configurationLock, as sync.Mutex is not
@@ -119,11 +222,31 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 	}
 
 	configuration.sanitizeConfiguration()
-
+	configuration.handleDemoConfiguration(p.API)
 	p.configuration = configuration
 }
 
 func (c *configuration) IsValid() error {
+	// Check if demo is active
+	demoActive := c.DemoEnabled && c.DemoExpires > time.Now().UnixMilli()
+
+	// Check if we have valid credentials
+	hasCredentials := c.DESAddress != "" && c.DESJwt != "" && c.DESJwtHeader != "" && c.DESJwtPrefix != ""
+
+	// If no demo and no credentials, fail
+	if !demoActive && !hasCredentials {
+		return &BadConfigurationError{
+			Property: "Document Server Configuration",
+			Reason:   "No valid credentials provided and demo mode is not active",
+		}
+	}
+
+	// If demo is active, allow it
+	if demoActive {
+		return nil
+	}
+
+	// Validate credentials
 	if c.DESAddress == "" {
 		return &InvalidDocumentServerAddressError{
 			Reason: "Document server address is empty",
@@ -145,7 +268,7 @@ func (c *configuration) IsValid() error {
 
 	if c.DESJwtPrefix == "" {
 		return &BadConfigurationError{
-			Property: "Document Serve Prefix",
+			Property: "Document Server Prefix",
 			Reason:   "Please specify document server prefix",
 		}
 	}
@@ -184,7 +307,6 @@ func (c *configuration) IsValid() error {
 	}
 
 	version, err := strconv.ParseInt(resp.Version[0:1], 10, 64)
-
 	if err != nil {
 		return ErrParseDocumentServerVersion
 	}

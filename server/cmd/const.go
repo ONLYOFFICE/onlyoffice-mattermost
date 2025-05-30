@@ -18,5 +18,7 @@
 package cmd
 
 const (
+	_DemoPeriodMillis       int64  = 1000 * 60 * 60 * 24 * 30
 	_OnlyofficeLoggerPrefix string = "[ONLYOFFICE CMD]: "
+	DemoKey                 string = "onlyoffice_demo"
 )

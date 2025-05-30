@@ -45,6 +45,20 @@ func (c *editorParameters) Validate() error {
 func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *http.Request) {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "got an editor request")
+		hasOwnCredentials := plugin.Configuration.Address != plugin.Configuration.DemoAddress &&
+			plugin.Configuration.Secret != "" &&
+			plugin.Configuration.Header != "" &&
+			plugin.Configuration.Prefix != ""
+
+		demoActive := plugin.Configuration.DemoEnabled &&
+			plugin.Configuration.DemoExpires >= time.Now().UnixMilli()
+
+		if !demoActive && !hasOwnCredentials {
+			plugin.API.LogError(_OnlyofficeLoggerPrefix + "no valid credentials and demo is not active")
+			rw.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeAPIRootSuffix
 
 		user, err := plugin.API.GetUser(r.Header.Get(plugin.Configuration.MMAuthHeader))

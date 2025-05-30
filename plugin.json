@@ -53,6 +53,12 @@
                 "type": "text",
                 "placeholder": "Enter your JWT header prefix",
                 "default": "Bearer "
+            },
+            {
+                "key": "DemoEnabled",
+                "display_name": "Demo Mode Enabled: ",
+                "type": "bool",
+                "default": false
             }
         ]
     }
