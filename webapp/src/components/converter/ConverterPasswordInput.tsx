@@ -19,9 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import {getTranslations} from 'util/lang';
+
+import React from 'react';
 
 type Props = {
     password: string;
@@ -40,9 +40,9 @@ export default function ConverterPasswordInput({password, onPasswordChange}: Pro
                     placeholder={i18n['converter.password_placeholder'] || 'Enter file password'}
                     value={password}
                     onChange={(e) => onPasswordChange(e.target.value)}
-                    required
+                    required={true}
                 />
             </div>
         </div>
     );
-} 
+}

@@ -19,9 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import {getTranslations} from 'util/lang';
+
+import React from 'react';
 
 type Props = {
     loading: boolean;
@@ -54,4 +54,4 @@ export default function ManagerActions({
             </button>
         </div>
     );
-} 
+}

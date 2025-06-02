@@ -23,8 +23,9 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeEditor} from 'redux/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
 import {editorModalVisible, editorModalFileInfo, getCurrentTheme} from 'redux/selectors';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import Editor from 'components/editor/Editor';
 

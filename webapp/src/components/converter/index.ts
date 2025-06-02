@@ -23,8 +23,9 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeConverter} from 'redux/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
 import {getCurrentTheme, converterModalVisible, converterModalFileInfo} from 'redux/selectors';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 import OnlyofficeFileConverter from 'components/converter/Converter';
 

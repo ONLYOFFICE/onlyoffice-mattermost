@@ -19,20 +19,20 @@
  *
  */
 
+import {getTranslations} from 'util/lang';
+
+import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 import type {Dispatch} from 'redux';
+
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels';
 
-import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
-
-import {getTranslations} from 'util/lang';
-
-import ManagerHeader from 'components/manager/ManagerHeader';
-import ManagerForm from 'components/manager/ManagerForm';
-import ManagerError from 'components/manager/ManagerError';
 import ManagerActions from 'components/manager/ManagerActions';
+import ManagerError from 'components/manager/ManagerError';
+import ManagerForm from 'components/manager/ManagerForm';
+import ManagerHeader from 'components/manager/ManagerHeader';
 
 import 'public/scss/manager.scss';
 
@@ -115,7 +115,7 @@ export default function Manager({visible, theme, close}: Props) {
                         onFileNameChange={setFileName}
                     />
 
-                    <ManagerError error={error} />
+                    <ManagerError error={error}/>
                 </div>
 
                 <ManagerActions

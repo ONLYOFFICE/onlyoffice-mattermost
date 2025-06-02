@@ -19,12 +19,13 @@
  *
  */
 
+import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
+
 import React, {useCallback, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
-import type {FileInfo} from 'mattermost-redux/types/files';
 
-import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import EditorLoader from 'components/editor/EditorLoader';
 
@@ -53,15 +54,16 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         const iframe = event.target as HTMLIFrameElement;
         try {
             const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-            if (!iframeDoc?.body.textContent?.trim())
+            if (!iframeDoc?.body.textContent?.trim()) {
                 setTimeout(() => {
                     window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT, {
                         detail: {
                             messageKey: 'editor.events.unauthorized',
-                            fallbackText: 'Unauthorized. Please check your permissions.'
-                        }
+                            fallbackText: 'Unauthorized. Please check your permissions.',
+                        },
                     }));
                 }, 1000);
+            }
         } catch (error) {
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT));
@@ -85,7 +87,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
             data-theme={theme}
             className='onlyoffice-modal__backdrop'
         >
-            <EditorLoader theme={theme} />
+            <EditorLoader theme={theme}/>
             <iframe
                 src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}`}
                 className='onlyoffice-modal__frame'

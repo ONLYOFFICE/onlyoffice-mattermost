@@ -35,4 +35,4 @@ export default function ManagerError({error}: Props) {
             {error}
         </div>
     );
-} 
+}

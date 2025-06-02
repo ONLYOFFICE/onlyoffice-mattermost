@@ -68,7 +68,8 @@ export class MapFormatManager implements FormatManager {
     }
 
     public escapeFileName(filename: string): string {
-        return filename.replace(/[\\\/]/g, ':');
+        // eslint-disable-next-line no-useless-escape
+        return filename.replace(/[\\/]/g, ':');
     }
 
     public getFormatByName(name: string): Format | undefined {
@@ -106,21 +107,21 @@ export const formatHelpers = {
     },
 
     isOpenXMLConvertable(format: Format): boolean {
-        return format.convert.has('docx') || 
-               format.convert.has('pptx') || 
+        return format.convert.has('docx') ||
+               format.convert.has('pptx') ||
                format.convert.has('xlsx');
     },
 
     getOpenXMLExtension(format: Format): string {
         switch (format.type) {
-            case 'cell':
-                return 'xlsx';
-            case 'slide':
-                return 'pptx';
-            default:
-                return 'docx';
+        case 'cell':
+            return 'xlsx';
+        case 'slide':
+            return 'pptx';
+        default:
+            return 'docx';
         }
-    }
+    },
 };
 
 export const formatManager = new MapFormatManager();

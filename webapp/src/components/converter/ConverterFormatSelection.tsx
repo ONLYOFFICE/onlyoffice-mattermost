@@ -19,9 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import {getTranslations} from 'util/lang';
+
+import React from 'react';
 
 type Props = {
     selectedFormat: 'docx' | 'xlsx' | null;
@@ -52,4 +52,4 @@ export default function ConverterFormatSelection({selectedFormat, onFormatSelect
             </div>
         </div>
     );
-} 
+}

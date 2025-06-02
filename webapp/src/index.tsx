@@ -19,24 +19,25 @@
  *
  */
 
+import {isConvertSupported, isExtensionSupported, isFileAuthor} from 'util/file';
+import {getTranslations} from 'util/lang';
+
 import manifest from 'manifest';
 import React from 'react';
-import Reducer from 'redux/reducers';
-import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
 import type {Action, AnyAction, Store} from 'redux';
-import type {FileInfo} from 'mattermost-redux/types/files';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
+import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
-import {getTranslations} from 'util/lang';
-import {isConvertSupported, isExtensionSupported, isFileAuthor} from 'util/file';
+import type {FileInfo} from 'mattermost-redux/types/files';
+import type {GlobalState} from 'mattermost-redux/types/store';
 
-import {ManagerIcon} from 'components/manager/Icon';
-import OnlyofficeEditor from 'components/editor';
 import OnlyofficeFileConverter from 'components/converter';
+import OnlyofficeEditor from 'components/editor';
+import OnlyofficeManager from 'components/manager';
+import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
-import OnlyofficeManager from 'components/manager';
 
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';

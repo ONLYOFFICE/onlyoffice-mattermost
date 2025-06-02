@@ -19,9 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import {getTranslations} from 'util/lang';
+
+import React from 'react';
 
 export default function ConverterInfo() {
     const i18n = getTranslations();
@@ -46,4 +46,4 @@ export default function ConverterInfo() {
             </div>
         </div>
     );
-} 
+}

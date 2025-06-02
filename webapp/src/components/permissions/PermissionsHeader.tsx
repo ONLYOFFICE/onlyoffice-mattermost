@@ -19,18 +19,19 @@
  *
  */
 
-import React, {useState, useEffect, useMemo} from 'react';
-import AsyncSelect from 'react-select/async';
-import {Button} from 'react-bootstrap';
-import Select from 'react-select';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
-
 import {debounceUsersLoad} from 'util/func';
-import {getFileAccess} from 'util/permission';
 import {getTranslations} from 'util/lang';
+import {getFileAccess} from 'util/permission';
 import type {FileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
+
+import React, {useState, useEffect, useMemo} from 'react';
+import {Button} from 'react-bootstrap';
+import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
+
+import type {Channel} from 'mattermost-redux/types/channels';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 type Props = {
     loading: boolean;

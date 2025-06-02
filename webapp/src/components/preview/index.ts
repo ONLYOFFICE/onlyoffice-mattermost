@@ -21,6 +21,7 @@
 
 import {connect} from 'react-redux';
 import {getCurrentTheme} from 'redux/selectors';
+
 import type {GlobalState} from 'mattermost-redux/types/store';
 
 import OnlyofficeFilePreview from 'components/preview/Preview';

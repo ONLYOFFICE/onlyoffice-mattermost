@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost/server/public/model"
@@ -111,8 +111,8 @@ func (p *Plugin) provideFormatManager() public.FormatManager {
 }
 
 func (p *Plugin) provideFileBackend() filestore.FileBackend {
-	license := p.API.GetLicense()
-	serverConfig := p.API.GetUnsanitizedConfig()
+	license := p.MattermostPlugin.API.GetLicense()
+	serverConfig := p.MattermostPlugin.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
 	fs, err := filestore.NewFileBackend(
 		filestore.NewFileBackendSettingsFromConfig(
@@ -135,9 +135,11 @@ func (p *Plugin) initializeContainer() *fx.App {
 		fx.NopLogger,
 		fx.Supply(p),
 		fx.Provide(
-			func() plugin.API { return p.API },
+			func() plugin.API { return p.MattermostPlugin.API },
 			func() *configuration.Configuration { return p.configuration },
-			func() middleware.AuthorizationMiddleware { return middleware.NewAuthorizationMiddleware(p.API) },
+			func() middleware.AuthorizationMiddleware {
+				return middleware.NewAuthorizationMiddleware(p.MattermostPlugin.API)
+			},
 			p.provideFormatManager,
 			p.provideFileBackend,
 			controller.NewCreateHandler,
@@ -410,7 +412,7 @@ func (p *Plugin) EnsureBot() (string, error) {
 
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	if p.router == nil {
-		p.API.LogError("Router not initialized")
+		p.MattermostPlugin.API.LogError("Router not initialized")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -445,6 +447,6 @@ func (p *Plugin) setConfiguration(configuration *configuration.Configuration) {
 	}
 
 	configuration.SanitizeConfiguration()
-	configuration.HandleDemoConfiguration(p.API)
+	configuration.HandleDemoConfiguration(p.MattermostPlugin.API)
 	p.configuration = configuration
 }

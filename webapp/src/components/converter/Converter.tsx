@@ -19,14 +19,14 @@
  *
  */
 
+import {getTranslations} from 'util/lang';
+
+import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_CONVERT} from 'api';
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import type {Dispatch} from 'redux';
+
 import type {FileInfo} from 'mattermost-redux/types/files';
-
-import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_CONVERT} from 'api';
-
-import {getTranslations} from 'util/lang';
 
 import ConverterActions from 'components/converter/ConverterActions';
 import ConverterError from 'components/converter/ConverterError';
@@ -87,7 +87,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             } else if (response.error === -9) {
                 setNeedsFormatSelection(true);
                 setError(i18n['converter.error_format_required'] || 'Please select the output format for conversion.');
-            } else if (response.error !== 0) {
+            } else if (response.error < 0) {
                 throw new Error('Failed to convert file. Please try again.');
             } else {
                 setNeedsPassword(false);
@@ -118,7 +118,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             />
             <div className='onlyoffice-converter-modal__body'>
                 <div className='onlyoffice-converter__container'>
-                    <ConverterInfo />
+                    <ConverterInfo/>
                     {needsPassword && (
                         <ConverterPasswordInput
                             password={password}
@@ -131,7 +131,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                             onFormatSelect={setSelectedFormat}
                         />
                     )}
-                    <ConverterError error={error} />
+                    <ConverterError error={error}/>
                 </div>
                 <ConverterActions
                     loading={loading}

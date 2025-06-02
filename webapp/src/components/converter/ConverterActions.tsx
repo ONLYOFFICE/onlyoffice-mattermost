@@ -19,9 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import {getTranslations} from 'util/lang';
+
+import React from 'react';
 
 type Props = {
     loading: boolean;
@@ -44,8 +44,8 @@ export default function ConverterActions({
 }: Props) {
     const i18n = getTranslations();
 
-    const isConvertDisabled = loading || 
-        (needsPassword && !password) || 
+    const isConvertDisabled = loading ||
+        (needsPassword && !password) ||
         (needsFormatSelection && !selectedFormat);
 
     return (
@@ -69,4 +69,4 @@ export default function ConverterActions({
             </button>
         </div>
     );
-} 
+}

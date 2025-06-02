@@ -19,8 +19,6 @@
  *
  */
 
-import type {FileInfo} from 'mattermost-redux/types/files';
-
 import docx from 'public/images/docx.svg';
 import cell from 'public/images/generic_cell.svg';
 import slide from 'public/images/generic_slide.svg';
@@ -28,8 +26,10 @@ import word from 'public/images/generic_word.svg';
 import pptx from 'public/images/pptx.svg';
 import xlsx from 'public/images/xlsx.svg';
 
-import {formatManager, formatHelpers} from './formats';
+import type {FileInfo} from 'mattermost-redux/types/files';
+
 import {getCookie} from './cookie';
+import {formatManager, formatHelpers} from './formats';
 
 const ExtensionIcons = new Map([
     ['xlsx', xlsx],
@@ -64,7 +64,7 @@ export function isConvertSupported(fileExt: string): boolean {
 export function isExtensionSupported(fileExt: string, editOnly?: boolean): boolean {
     const sanitized = fileExt.replaceAll('.', '');
     const format = formatManager.getFormatByName(sanitized);
-    
+
     if (!format) {
         return false;
     }

@@ -19,9 +19,8 @@
  *
  */
 
-import React from 'react';
-
 import editor from 'public/images/editor.svg';
+import React from 'react';
 
 export function ManagerIcon() {
     return (

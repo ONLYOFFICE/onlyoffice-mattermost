@@ -19,13 +19,13 @@
  *
  */
 
-import React from 'react';
-import Select from 'react-select';
-
-import {getFileAccess} from 'util/permission';
 import {getTranslations} from 'util/lang';
+import {getFileAccess} from 'util/permission';
 import type {FileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
+
+import React from 'react';
+import Select from 'react-select';
 
 type Props = {
     onRemoveUser: (username: string) => void;

@@ -19,21 +19,21 @@
  *
  */
 
-import React, {useState, useEffect} from 'react';
-import {Modal} from 'react-bootstrap';
-import type {Dispatch} from 'redux';
-import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
-
-import {get, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
-
+import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {pipe} from 'util/func';
 import {getTranslations} from 'util/lang';
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
 import {mapUsersToMattermostUsers, sortMattermostUsers} from 'util/user';
 import type {MattermostUser, OnlyofficeUser} from 'util/user';
+
+import {get, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
+import React, {useState, useEffect} from 'react';
+import {Modal} from 'react-bootstrap';
+import type {Dispatch} from 'redux';
+
+import {Client4} from 'mattermost-redux/client';
+import type {Channel} from 'mattermost-redux/types/channels';
+import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {PermissionsFooter} from 'components/permissions/PermissionsFooter';
 import {PermissionsHeader} from 'components/permissions/PermissionsHeader';

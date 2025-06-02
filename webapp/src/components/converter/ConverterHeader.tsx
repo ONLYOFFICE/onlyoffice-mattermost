@@ -19,10 +19,10 @@
  *
  */
 
+import {getTranslations} from 'util/lang';
+
 import React from 'react';
 import {Modal} from 'react-bootstrap';
-
-import {getTranslations} from 'util/lang';
 
 type Props = {
     theme: string;
@@ -51,4 +51,4 @@ export default function ConverterHeader({theme, onClose}: Props) {
             </button>
         </Modal.Header>
     );
-} 
+}
