@@ -19,14 +19,14 @@
  *
  */
 
+import type {FileInfo} from 'mattermost-redux/types/files';
+
 import docx from 'public/images/docx.svg';
 import cell from 'public/images/generic_cell.svg';
 import slide from 'public/images/generic_slide.svg';
 import word from 'public/images/generic_word.svg';
 import pptx from 'public/images/pptx.svg';
 import xlsx from 'public/images/xlsx.svg';
-
-import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {formatManager, formatHelpers} from './formats';
 import {getCookie} from './cookie';

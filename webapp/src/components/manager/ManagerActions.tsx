@@ -1,0 +1,57 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
+/**
+ *
+ * (c) Copyright Ascensio System SIA 2025
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import React from 'react';
+
+import {getTranslations} from 'util/lang';
+
+type Props = {
+    loading: boolean;
+    onClose: () => void;
+    onCreate: () => void;
+};
+
+export default function ManagerActions({
+    loading,
+    onClose,
+    onCreate,
+}: Props) {
+    const i18n = getTranslations();
+
+    return (
+        <div className='onlyoffice-manager__actions'>
+            <button
+                className='btn btn-secondary onlyoffice-manager__button onlyoffice-manager__cancel-button'
+                onClick={onClose}
+                disabled={loading}
+            >
+                {i18n['manager.cancel_button']}
+            </button>
+            <button
+                className='btn btn-primary onlyoffice-manager__button'
+                onClick={onCreate}
+                disabled={loading}
+            >
+                {loading ? 'Creating...' : i18n['manager.create_button']}
+            </button>
+        </div>
+    );
+} 

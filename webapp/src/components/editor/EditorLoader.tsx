@@ -19,11 +19,12 @@
  *
  */
 
+import React, {useEffect, useState} from 'react';
+
 import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_ERROR_EVENT, ONLYOFFICE_READY_EVENT} from 'util/const';
 import {getTranslations} from 'util/lang';
 
 import errorIcon from 'public/images/error.svg';
-import React, {useEffect, useState} from 'react';
 
 type Props = {
     theme: string;

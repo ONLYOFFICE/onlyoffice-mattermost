@@ -19,15 +19,14 @@
  *
  */
 
-import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
-
 import React, {useCallback, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
-
 import type {FileInfo} from 'mattermost-redux/types/files';
 
-import EditorLoader from './EditorLoader';
+import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
+
+import EditorLoader from 'components/editor/EditorLoader';
 
 type Props = {
     visible: boolean;

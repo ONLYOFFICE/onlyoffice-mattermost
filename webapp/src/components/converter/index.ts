@@ -23,11 +23,10 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeConverter} from 'redux/actions';
+import type {GlobalState} from 'mattermost-redux/types/store';
 import {getCurrentTheme, converterModalVisible, converterModalFileInfo} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
-
-import OnlyofficeFileConverter from './Converter';
+import OnlyofficeFileConverter from 'components/converter/Converter';
 
 const mapStateToProps = (state: GlobalState) => ({
     visible: converterModalVisible(state),

@@ -19,16 +19,17 @@
  *
  */
 
+import React from 'react';
+import {useDispatch} from 'react-redux';
+import {openEditor, openPermissions} from 'redux/actions';
+import type {FileInfo} from 'mattermost-redux/types/files';
+
 import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import editor from 'public/images/editor.svg';
 import permissions from 'public/images/permissions.svg';
-import React from 'react';
-import {useDispatch} from 'react-redux';
-import {openEditor, openPermissions} from 'redux/actions';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
 import 'public/scss/preview.scss';
 
 type Props = {

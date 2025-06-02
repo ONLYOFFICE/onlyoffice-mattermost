@@ -19,17 +19,17 @@
  *
  */
 
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
-import {getTranslations} from 'util/lang';
-import type {SubmitPermissionsRequest} from 'util/permission';
-import {getFilePermissions} from 'util/permission';
-import type {MattermostUser} from 'util/user';
-
-import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
 import React from 'react';
 import {Button} from 'react-bootstrap';
-
 import type {FileInfo} from 'mattermost-redux/types/files';
+
+import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
+
+import {getTranslations} from 'util/lang';
+import type {MattermostUser} from 'util/user';
+import {getFilePermissions} from 'util/permission';
+import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
+import type {SubmitPermissionsRequest} from 'util/permission';
 
 type Props = {
     fileInfo: FileInfo;

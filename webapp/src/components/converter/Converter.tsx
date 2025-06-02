@@ -19,14 +19,21 @@
  *
  */
 
-import {getTranslations} from 'util/lang';
-
-import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_CONVERT} from 'api';
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import type {Dispatch} from 'redux';
-
 import type {FileInfo} from 'mattermost-redux/types/files';
+
+import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_CONVERT} from 'api';
+
+import {getTranslations} from 'util/lang';
+
+import ConverterActions from 'components/converter/ConverterActions';
+import ConverterError from 'components/converter/ConverterError';
+import ConverterFormatSelection from 'components/converter/ConverterFormatSelection';
+import ConverterHeader from 'components/converter/ConverterHeader';
+import ConverterInfo from 'components/converter/ConverterInfo';
+import ConverterPasswordInput from 'components/converter/ConverterPasswordInput';
 
 import 'public/scss/converter.scss';
 
@@ -105,108 +112,36 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             id='onlyoffice-converter-modal'
             data-theme={theme}
         >
-            <Modal.Header
-                className='onlyoffice-converter-modal__header'
-                data-theme={theme}
-            >
-                <span style={{fontWeight: 600}}>
-                    {i18n['converter.modal_header'] || 'Convert File'}
-                </span>
-                <button
-                    type='button'
-                    className='close'
-                    aria-label='Close'
-                    onClick={handleClose}
-                >
-                    <span aria-hidden='true'>{'×'}</span>
-                    <span className='sr-only'>{i18n['converter.cancel_button'] || 'Cancel'}</span>
-                </button>
-            </Modal.Header>
-
+            <ConverterHeader
+                theme={theme}
+                onClose={handleClose}
+            />
             <div className='onlyoffice-converter-modal__body'>
                 <div className='onlyoffice-converter__container'>
-                    <div className='onlyoffice-converter__conversion-info'>
-                        <div className='onlyoffice-converter__info-section'>
-                            <h4>{i18n['converter.conversion_info_title'] || 'File Conversion'}</h4>
-                            <div className='onlyoffice-converter__info-description'>
-                                <p>{i18n['converter.conversion_description'] || 'This will convert your file to an OOXML format that is fully compatible with ONLYOFFICE editors.'}</p>
-                                <ul className='onlyoffice-converter__conversion-list'>
-                                    <li>{i18n['converter.word_conversion'] || 'Word documents (.doc, .odt, .rtf, etc.) → DOCX'}</li>
-                                    <li>{i18n['converter.excel_conversion'] || 'Spreadsheets (.xls, .ods, .csv, etc.) → XLSX'}</li>
-                                    <li>{i18n['converter.powerpoint_conversion'] || 'Presentations (.ppt, .odp, etc.) → PPTX'}</li>
-                                </ul>
-                                <div className='onlyoffice-converter__info-note'>
-                                    <span className='onlyoffice-converter__note-text'>
-                                        {i18n['converter.conversion_note'] || 'The converted file will be saved as a new attachment in this channel.'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <ConverterInfo />
                     {needsPassword && (
-                        <div className='onlyoffice-converter__password-section'>
-                            <div className='onlyoffice-converter__password-input-container'>
-                                <input
-                                    type='password'
-                                    className='onlyoffice-converter__password-input form-control'
-                                    placeholder={i18n['converter.password_placeholder'] || 'Enter file password'}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
+                        <ConverterPasswordInput
+                            password={password}
+                            onPasswordChange={setPassword}
+                        />
                     )}
-
                     {needsFormatSelection && (
-                        <div className='onlyoffice-converter__format-section'>
-                            <div className='onlyoffice-converter__format-title'>
-                                {i18n['converter.select_format'] || 'Select output format:'}
-                            </div>
-                            <div className='onlyoffice-converter__format-buttons'>
-                                <button
-                                    className={`onlyoffice-converter__format-button document ${selectedFormat === 'docx' ? 'selected' : ''}`}
-                                    onClick={() => setSelectedFormat('docx')}
-                                >
-                                    {i18n['converter.format_document'] || 'Document'}
-                                </button>
-                                <button
-                                    className={`onlyoffice-converter__format-button cell ${selectedFormat === 'xlsx' ? 'selected' : ''}`}
-                                    onClick={() => setSelectedFormat('xlsx')}
-                                >
-                                    {i18n['converter.format_cell'] || 'Spreadsheet'}
-                                </button>
-                            </div>
-                        </div>
+                        <ConverterFormatSelection
+                            selectedFormat={selectedFormat}
+                            onFormatSelect={setSelectedFormat}
+                        />
                     )}
-
-                    {error && (
-                        <div className='onlyoffice-converter__error'>
-                            {error}
-                        </div>
-                    )}
+                    <ConverterError error={error} />
                 </div>
-
-                <div className='onlyoffice-converter__actions'>
-                    <button
-                        className='btn btn-secondary onlyoffice-converter__button onlyoffice-converter__cancel-button'
-                        onClick={handleClose}
-                        disabled={loading}
-                    >
-                        {i18n['converter.cancel_button'] || 'Cancel'}
-                    </button>
-                    <button
-                        className='btn btn-primary onlyoffice-converter__button'
-                        onClick={handleConvert}
-                        disabled={loading || (needsPassword && !password) || (needsFormatSelection && !selectedFormat)}
-                    >
-                        {loading ?
-                            (i18n['converter.converting_button'] || 'Converting...') :
-                            (i18n['converter.convert_button'] || 'Convert')
-                        }
-                    </button>
-                </div>
+                <ConverterActions
+                    loading={loading}
+                    needsPassword={needsPassword}
+                    password={password}
+                    needsFormatSelection={needsFormatSelection}
+                    selectedFormat={selectedFormat}
+                    onClose={handleClose}
+                    onConvert={handleConvert}
+                />
             </div>
         </Modal>
     );

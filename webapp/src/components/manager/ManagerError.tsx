@@ -19,22 +19,20 @@
  *
  */
 
-import {connect} from 'react-redux';
-import type {Dispatch} from 'redux';
-import {bindActionCreators} from 'redux';
-import {closeManager} from 'redux/actions';
-import type {GlobalState} from 'mattermost-redux/types/store';
-import {getCurrentTheme, managerModalVisible} from 'redux/selectors';
+import React from 'react';
 
-import Manager from 'components/manager/Manager';
+type Props = {
+    error: string;
+};
 
-const mapStateToProps = (state: GlobalState) => ({
-    visible: managerModalVisible(state),
-    theme: getCurrentTheme(state),
-});
+export default function ManagerError({error}: Props) {
+    if (!error) {
+        return null;
+    }
 
-const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
-    close: closeManager,
-}, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(Manager);
+    return (
+        <div className='onlyoffice-manager__error'>
+            {error}
+        </div>
+    );
+} 
