@@ -26,9 +26,16 @@
     *
     -->
     <title>ONLYOFFICE</title>
+    <script>
+      var isDark = {{if .dark}}true{{else}}false{{end}};
+      if (isDark) {
+        document.body.style.background = '#1b1d22';
+      } else {
+        document.body.style.background = '#fff';
+      }
+    </script>
     <style>
         body {
-            background: #fff;
             color: #333;
             font-family: Arial, Tahoma, sans-serif;
             font-size: 12px;

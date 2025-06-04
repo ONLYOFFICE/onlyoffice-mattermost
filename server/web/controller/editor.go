@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -145,6 +146,11 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not set code: " + err.Error())
 	}
 
+	theme := "default-light"
+	if strings.ToLower(query.Get("dark")) == "true" {
+		theme = "default-dark"
+	}
+
 	config := oomodel.Config{
 		Document: oomodel.Document{
 			FileType:    fileInfo.Extension,
@@ -165,6 +171,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 				Goback: oomodel.Goback{
 					RequestClose: true,
 				},
+				UiTheme: theme,
 			},
 			Lang: payload.Lang,
 		},
@@ -189,6 +196,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js",
 		"config": string(encodedConfig),
+		"dark":   query.Get("dark"),
 	}
 
 	h.api.LogDebug(onlyofficeLoggerPrefix + "building an editor window")

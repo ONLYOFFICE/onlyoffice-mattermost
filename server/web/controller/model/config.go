@@ -52,7 +52,8 @@ type User struct {
 }
 
 type Customization struct {
-	Goback Goback `json:"goback"`
+	Goback  Goback `json:"goback"`
+	UiTheme string `json:"uiTheme,omitempty"`
 }
 
 type Goback struct {

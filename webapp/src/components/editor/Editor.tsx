@@ -89,7 +89,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         >
             <EditorLoader theme={theme}/>
             <iframe
-                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}`}
+                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
                 className='onlyoffice-modal__frame'
                 name='iframeEditor'
                 data-theme={theme}
