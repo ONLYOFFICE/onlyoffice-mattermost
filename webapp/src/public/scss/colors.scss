@@ -13,6 +13,15 @@ $brand_green: #95C038;
 $shadow_light: #cfcfcf;
 $shadow_dark: rgba(33, 33, 33, 0.2);
 
+$preview_background_light: #FFFFFF;
+$preview_background_dark: #191A20;
+$preview_border_light: #DEDEDE;
+$preview_border_dark: #37393E;
+$preview_title_light: #000000E6;
+$preview_title_dark: #FFFFFFE6;
+$preview_subtitle_light: #00000080;
+$preview_subtitle_dark: #FFFFFF80;
+
 @mixin light-theme {
   [data-theme="light"] & {
     @content;
