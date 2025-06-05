@@ -20,11 +20,13 @@
  */
 
 import docx from 'public/images/docx.svg';
-import cell from 'public/images/generic_cell.svg';
-import slide from 'public/images/generic_slide.svg';
-import word from 'public/images/generic_word.svg';
 import pptx from 'public/images/pptx.svg';
 import xlsx from 'public/images/xlsx.svg';
+import pdf from 'public/images/pdf.svg';
+import html from 'public/images/html.svg';
+import txt from 'public/images/txt.svg';
+import form from 'public/images/form.svg';
+import neutral from 'public/images/neutral.svg';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 
@@ -35,9 +37,18 @@ const ExtensionIcons = new Map([
     ['xlsx', xlsx],
     ['pptx', pptx],
     ['docx', docx],
-    ['word', word],
-    ['cell', cell],
-    ['slide', slide],
+    ['doc', docx],
+    ['ppt', pptx],
+    ['xls', xlsx],
+    ['csv', xlsx],
+    ['pdf', pdf],
+    ['xml', html],
+    ['html', html],
+    ['txt', txt],
+    ['oform', form],
+    ['word', neutral],
+    ['cell', neutral],
+    ['slide', neutral],
 ]);
 
 export function getIconByExt(fileExt: string): string {
