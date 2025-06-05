@@ -19,15 +19,22 @@
  *
  */
 
-import editor from 'public/images/editor.svg';
 import React from 'react';
 
-export function ManagerIcon() {
+import managerDark from 'public/images/manager_dark.svg';
+import managerLight from 'public/images/manager_light.svg';
+
+type Props = {
+    theme: string;
+};
+
+export function ManagerIcon({theme}: Props) {
+    const icon = theme === 'dark' ? managerDark : managerLight;
     return (
         <img
             style={{width: '16px', height: '16px'}}
             alt={'open manager'}
-            src={editor}
+            src={icon}
         />
     );
 }

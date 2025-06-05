@@ -25,6 +25,7 @@ import {getTranslations} from 'util/lang';
 import manifest from 'manifest';
 import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
+import {getCurrentTheme} from 'redux/selectors';
 import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
@@ -78,7 +79,7 @@ export default class Plugin {
         );
 
         registry.registerFileUploadMethod(
-            <ManagerIcon/>,
+            <ManagerIcon theme={getCurrentTheme(store.getState())} />,
             () => dispatch(openManager()),
             'ONLYOFFICE',
         );
