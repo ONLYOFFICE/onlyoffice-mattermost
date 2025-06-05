@@ -146,9 +146,9 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not set code: " + err.Error())
 	}
 
-	theme := "default-light"
+	theme := "theme-classic-light"
 	if strings.ToLower(query.Get("dark")) == "true" {
-		theme = "default-dark"
+		theme = "theme-dark"
 	}
 
 	config := oomodel.Config{
