@@ -41,6 +41,13 @@ type Props = {
     close: () => (dispatch: Dispatch) => void;
 };
 
+const removeInAnimation = (): void => {
+    const modal = document.getElementById('onlyoffice-manager-modal');
+    const backdrop = modal?.previousElementSibling;
+    modal?.classList.remove('in');
+    backdrop?.classList.remove('in');
+};
+
 export default function Manager({visible, theme, close}: Props) {
     const i18n = getTranslations();
     const channelId = useSelector(getCurrentChannelId);
@@ -52,6 +59,11 @@ export default function Manager({visible, theme, close}: Props) {
     if (!visible) {
         return null;
     }
+
+    const handleExit = (): void => {
+        removeInAnimation();
+        setTimeout(() => close(), 300);
+    };
 
     const handleCreate = async (): Promise<void> => {
         if (!fileName.trim()) {
@@ -74,7 +86,7 @@ export default function Manager({visible, theme, close}: Props) {
 
             setFileName('');
             setFileType('docx');
-            close();
+            handleExit();
         } catch (error) {
             setError(i18n['manager.error_create_failed']);
         } finally {
@@ -91,17 +103,11 @@ export default function Manager({visible, theme, close}: Props) {
         }
     };
 
-    const handleClose = (): void => {
-        if (!loading) {
-            close();
-        }
-    };
-
     return (
         <Modal
             show={visible}
-            onHide={handleClose}
-            onExited={handleClose}
+            onHide={handleExit}
+            onExited={handleExit}
             role='dialog'
             id='onlyoffice-manager-modal'
             data-theme={theme}
@@ -109,7 +115,7 @@ export default function Manager({visible, theme, close}: Props) {
             <ManagerHeader
                 theme={theme}
                 loading={loading}
-                onClose={handleClose}
+                onClose={handleExit}
             />
 
             <div className='onlyoffice-manager-modal__body'>
@@ -126,7 +132,7 @@ export default function Manager({visible, theme, close}: Props) {
 
                 <ManagerActions
                     loading={loading}
-                    onClose={handleClose}
+                    onClose={handleExit}
                     onCreate={handleCreate}
                 />
             </div>

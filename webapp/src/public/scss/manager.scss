@@ -14,6 +14,12 @@
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  
+  &.in {
+    opacity: 1;
+  }
   
   @include dark-theme {
     background-color: $modal_dark_bg;
@@ -267,7 +273,12 @@
   }
 }
 
-// Add styles for the modal backdrop
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease-in-out !important;
+
+  &.in {
+    opacity: 0.5 !important;
+  }
 }
