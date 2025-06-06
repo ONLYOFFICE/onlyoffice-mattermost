@@ -51,14 +51,14 @@ export default function ConverterActions({
     return (
         <div className='onlyoffice-converter__actions'>
             <button
-                className='btn btn-secondary onlyoffice-converter__button onlyoffice-converter__cancel-button'
+                className='btn btn-tertiary'
                 onClick={onClose}
                 disabled={loading}
             >
                 {i18n['converter.cancel_button'] || 'Cancel'}
             </button>
             <button
-                className='btn btn-primary onlyoffice-converter__button'
+                className='btn btn-primary'
                 onClick={onConvert}
                 disabled={isConvertDisabled}
             >

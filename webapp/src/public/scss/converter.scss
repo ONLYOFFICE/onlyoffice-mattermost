@@ -23,10 +23,13 @@
   font-family: 'Open sans';
   padding-left: 0px !important;
   position: fixed !important;
-  top: 50% !important;
+  top: 0 !important;
   left: 50% !important;
-  transform: translate(-50%, -50%) !important;
+  transform: translateX(-50%) !important;
   margin: 0 !important;
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
   
   @include dark-theme {
     background-color: $modal_background_dark;
@@ -44,6 +47,15 @@
   display: flex;
   align-items: center;
 
+  span {
+    font-family: 'Metropolis', 'Open Sans', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 17px;
+    letter-spacing: 0%;
+    vertical-align: middle;
+  }
+
   .close {
     margin-left: auto;
   }
@@ -55,6 +67,8 @@
   opacity: 1;
   visibility: visible;
   transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  overflow-y: auto;
+  flex: 1 1 auto;
 }
 
 .onlyoffice-converter__container {
@@ -71,9 +85,12 @@
 
 .onlyoffice-converter__info-section {
   h4 {
-    font-size: 1.1rem;
+    font-family: Open Sans;
     font-weight: 600;
-    margin-bottom: 1rem;
+    font-size: 14px;
+    line-height: 17px;
+    letter-spacing: 0%;
+    vertical-align: middle;
     color: #1c58d9;
   }
 }
@@ -83,6 +100,13 @@
     margin-bottom: 1rem;
     line-height: 1.5;
   }
+
+  font-family: Open Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  vertical-align: middle;
 }
 
 .onlyoffice-converter__conversion-list {
@@ -117,8 +141,13 @@
 }
 
 .onlyoffice-converter__note-text {
-  font-size: 0.9rem;
-  font-style: italic;
+  font-family: Open Sans;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #000000;
 }
 
 .onlyoffice-converter__error {

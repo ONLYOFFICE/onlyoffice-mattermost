@@ -30,7 +30,7 @@
   "manager.error_empty_name": "File name cannot be empty.",
   "manager.error_invalid_name": "Invalid file name.",
   "manager.error_create_failed": "Failed to create file. Please try again.",
-  "converter.modal_header": "Convert File",
+  "converter.modal_header": "File conversion",
   "converter.convert_button": "Convert",
   "converter.cancel_button": "Cancel",
   "converter.converting_button": "Converting...",

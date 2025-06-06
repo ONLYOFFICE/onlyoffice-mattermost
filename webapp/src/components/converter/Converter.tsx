@@ -104,7 +104,7 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                 setPassword('');
                 setNeedsFormatSelection(false);
                 setSelectedFormat(null);
-                close();
+                handleClose();
             }
         } catch (error: any) {
             setError(i18n['converter.error_convert_failed'] || 'Failed to convert file. Please try again.');
