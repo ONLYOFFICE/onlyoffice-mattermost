@@ -9,7 +9,7 @@
   bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  background-color: $backdrop_overlay !important;
   opacity: 0 !important;
   transition: opacity 0.3s ease-in-out !important;
   z-index: 999 !important;
@@ -70,6 +70,10 @@
     line-height: 17px;
     letter-spacing: 0%;
     vertical-align: middle;
+
+    @include dark-theme {
+      color: $modal_dark_text;
+    }
   }
 
   .close {
@@ -98,7 +102,7 @@
 }
 
 .onlyoffice-converter__conversion-info {
-  background-color: rgba(28, 88, 217, 0.08);
+  background-color: $converter_info_bg;
   border-radius: 8px;
   padding: 1.5rem;
 
@@ -115,7 +119,7 @@
     line-height: 17px;
     letter-spacing: 0%;
     vertical-align: middle;
-    color: #1c58d9;
+    color: $brand_accent_blue;
   }
 }
 
@@ -131,6 +135,10 @@
   line-height: 21px;
   letter-spacing: 0%;
   vertical-align: middle;
+
+  @include dark-theme {
+    color: $modal_dark_text;
+  }
 }
 
 .onlyoffice-converter__conversion-list {
@@ -147,20 +155,24 @@
       content: "→";
       position: absolute;
       left: 0;
-      color: #1c58d9;
+      color: $brand_accent_blue;
+    }
+
+    @include dark-theme {
+      color: $modal_dark_text;
     }
   }
 }
 
 .onlyoffice-converter__info-note {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: $converter_info_light_bg;
   border-radius: 4px;
   padding: 0.75rem;
   margin-top: 1rem;
-  border-left: 3px solid #1c58d9;
+  border-left: 3px solid $brand_accent_blue;
 
   @include dark-theme {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: $converter_info_dark_bg;
   }
 }
 
@@ -171,14 +183,18 @@
   line-height: 21px;
   letter-spacing: 0%;
   vertical-align: middle;
-  color: #000000;
+  color: $text_dark;
+
+  @include dark-theme {
+    color: $modal_dark_text;
+  }
 }
 
 .onlyoffice-converter__error {
-  color: #ff4d4f;
+  color: $brand_error_red;
   font-weight: 500;
   padding: 0.75rem;
-  background-color: rgba(255, 77, 79, 0.1);
+  background-color: $converter_error_bg;
   border-radius: 4px;
   margin-top: 1rem;
 }
@@ -256,36 +272,36 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
-    background-color: #f0f0f0;
-    color: #000000;
+    background-color: $converter_button_light_bg;
+    color: $text_dark;
 
     &:hover:not(.selected) {
         transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px $shadow_overlay;
     }
 
     &.document {
         &.selected {
-            background-color: #0066cc;
-            color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: $brand_blue;
+            color: $text_light;
+            box-shadow: 0 2px 4px $shadow_overlay;
         }
     }
 
     &.cell {
         &.selected {
-            background-color: #2eb85c;
-            color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: $brand_success_green;
+            color: $text_light;
+            box-shadow: 0 2px 4px $shadow_overlay;
         }
     }
 
     @include dark-theme {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background-color: $modal_border_dark;
+        color: $text_light;
 
         &:not(.selected):hover {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: $converter_button_hover_bg;
         }
     }
 }
