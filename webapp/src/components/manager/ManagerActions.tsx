@@ -39,14 +39,14 @@ export default function ManagerActions({
     return (
         <div className='onlyoffice-manager__actions'>
             <button
-                className='btn btn-secondary onlyoffice-manager__button onlyoffice-manager__cancel-button'
+                className='btn btn-tertiary'
                 onClick={onClose}
                 disabled={loading}
             >
                 {i18n['manager.cancel_button']}
             </button>
             <button
-                className='btn btn-primary onlyoffice-manager__button'
+                className='btn btn-primary'
                 onClick={onCreate}
                 disabled={loading}
             >

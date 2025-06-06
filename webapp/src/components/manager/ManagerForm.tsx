@@ -27,59 +27,67 @@ type Props = {
     fileType: string;
     fileName: string;
     loading: boolean;
+    error: string;
     onFileTypeChange: (fileType: string) => void;
     onFileNameChange: (fileName: string) => void;
 };
 
+type TranslationType = {
+    'manager.file_type.document': string;
+    'manager.file_type.spreadsheet': string;
+    'manager.file_type.presentation': string;
+    'manager.file_name_label': string;
+    [key: string]: string;
+};
+
 const types = [
-    {label: 'DOCX', value: 'docx'},
-    {label: 'XLSX', value: 'xlsx'},
-    {label: 'PPTX', value: 'pptx'},
+    {label: 'manager.file_type.document' as const, value: 'docx'},
+    {label: 'manager.file_type.spreadsheet' as const, value: 'xlsx'},
+    {label: 'manager.file_type.presentation' as const, value: 'pptx'},
 ];
 
 export default function ManagerForm({
     fileType,
     fileName,
     loading,
+    error,
     onFileTypeChange,
     onFileNameChange,
 }: Props) {
-    const i18n = getTranslations();
+    const i18n = getTranslations() as TranslationType;
 
     return (
         <>
             <div className='onlyoffice-manager__form-row'>
-                <label className='onlyoffice-manager__label'>
-                    {i18n['manager.file_type_label']}
-                </label>
-                <select
-                    value={fileType}
-                    onChange={(e) => onFileTypeChange(e.target.value)}
-                    disabled={loading}
-                    className='onlyoffice-manager__input onlyoffice-manager__select'
-                >
-                    {types.map((type) => (
-                        <option
-                            key={type.value}
-                            value={type.value}
-                        >
-                            {type.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className='onlyoffice-manager__form-row'>
-                <label className='onlyoffice-manager__label'>
-                    {i18n['manager.file_name_label']}
-                </label>
                 <input
                     type='text'
                     value={fileName}
                     onChange={(e) => onFileNameChange(e.target.value)}
                     disabled={loading}
                     className='onlyoffice-manager__input onlyoffice-manager__text-input'
+                    placeholder={i18n['manager.file_name_label']}
                 />
+                {error && !fileName.trim() && <div className='onlyoffice-manager__error'>{error}</div>}
+            </div>
+
+            <div className='onlyoffice-manager__form-row'>
+                <div className='onlyoffice-manager__select-container'>
+                    <select
+                        value={fileType}
+                        onChange={(e) => onFileTypeChange(e.target.value)}
+                        disabled={loading}
+                        className='onlyoffice-manager__select'
+                    >
+                        {types.map((type) => (
+                            <option
+                                key={type.value}
+                                value={type.value}
+                            >
+                                {i18n[type.label]}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </>
     );

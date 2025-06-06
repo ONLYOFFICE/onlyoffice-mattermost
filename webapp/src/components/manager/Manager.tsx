@@ -30,7 +30,6 @@ import type {Dispatch} from 'redux';
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels';
 
 import ManagerActions from 'components/manager/ManagerActions';
-import ManagerError from 'components/manager/ManagerError';
 import ManagerForm from 'components/manager/ManagerForm';
 import ManagerHeader from 'components/manager/ManagerHeader';
 
@@ -46,8 +45,8 @@ export default function Manager({visible, theme, close}: Props) {
     const i18n = getTranslations();
     const channelId = useSelector(getCurrentChannelId);
     const [fileType, setFileType] = useState<string>('docx');
-    const [fileName, setFileName] = useState<string>('');
-    const [error, setError] = useState<string>('');
+    const [fileName, setFileName] = useState<string>('New Document');
+    const [error, setError] = useState<string>(i18n['manager.error_empty_name']);
     const [loading, setLoading] = useState<boolean>(false);
 
     if (!visible) {
@@ -55,14 +54,13 @@ export default function Manager({visible, theme, close}: Props) {
     }
 
     const handleCreate = async (): Promise<void> => {
-        setError('');
-
         if (!fileName.trim()) {
             setError(i18n['manager.error_empty_name']);
             return;
         }
 
         setLoading(true);
+        setError('');
 
         try {
             const code = await get<string>(ONLYOFFICE_PLUGIN_GET_CODE);
@@ -81,6 +79,15 @@ export default function Manager({visible, theme, close}: Props) {
             setError(i18n['manager.error_create_failed']);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleFileNameChange = (value: string): void => {
+        setFileName(value);
+        if (value.trim()) {
+            setError('');
+        } else {
+            setError(i18n['manager.error_empty_name']);
         }
     };
 
@@ -111,11 +118,10 @@ export default function Manager({visible, theme, close}: Props) {
                         fileType={fileType}
                         fileName={fileName}
                         loading={loading}
+                        error={error}
                         onFileTypeChange={setFileType}
-                        onFileNameChange={setFileName}
+                        onFileNameChange={handleFileNameChange}
                     />
-
-                    <ManagerError error={error}/>
                 </div>
 
                 <ManagerActions
