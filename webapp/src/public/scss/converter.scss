@@ -30,6 +30,14 @@
   height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  
+  @media screen and (max-width: 768px) {
+    width: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+  }
   
   @include dark-theme {
     background-color: $modal_background_dark;
@@ -47,6 +55,14 @@
   display: flex;
   align-items: center;
 
+  @media screen and (max-width: 768px) {
+    padding: 1rem !important;
+
+    span {
+      font-size: 18px;
+    }
+  }
+
   span {
     font-family: 'Metropolis', 'Open Sans', sans-serif;
     font-weight: 500;
@@ -63,12 +79,16 @@
 
 .onlyoffice-converter-modal__body {
   padding: 2rem 2.5rem 1.5rem 2.5rem;
-  min-width: 500px;
+  min-width: auto;
   opacity: 1;
   visibility: visible;
   transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
   overflow-y: auto;
   flex: 1 1 auto;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .onlyoffice-converter__container {
@@ -81,6 +101,10 @@
   background-color: rgba(28, 88, 217, 0.08);
   border-radius: 8px;
   padding: 1.5rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .onlyoffice-converter__info-section {
@@ -164,38 +188,11 @@
   justify-content: flex-end;
   margin-top: 2rem;
   gap: 1rem;
-}
 
-.onlyoffice-converter__button {
-  min-width: 90px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.onlyoffice-converter__cancel-button {
-  @include dark-theme {
-    background-color: rgba(255, 255, 255, 0.1);
-    &:hover:not(:disabled) {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-  }
-
-  @include light-theme {
-    background-color: #f0f0f0;
-    &:hover:not(:disabled) {
-      background-color: #e0e0e0;
-    }
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
 }
 
@@ -244,6 +241,11 @@
     display: flex;
     justify-content: center;
     gap: 16px;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        gap: 8px;
+    }
 }
 
 .onlyoffice-converter__format-button {
