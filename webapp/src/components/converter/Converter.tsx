@@ -57,13 +57,23 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
         return null;
     }
 
+    const removeInAnimation = (): void => {
+        const modal = document.getElementById('onlyoffice-converter-modal');
+        const backdrop = modal?.previousElementSibling;
+        modal?.classList.remove('in');
+        backdrop?.classList.remove('in');
+    };
+
     const handleClose = (): void => {
-        setNeedsPassword(false);
-        setPassword('');
-        setError('');
-        setNeedsFormatSelection(false);
-        setSelectedFormat(null);
-        close();
+        removeInAnimation();
+        setTimeout(() => {
+            setNeedsPassword(false);
+            setPassword('');
+            setError('');
+            setNeedsFormatSelection(false);
+            setSelectedFormat(null);
+            close();
+        }, 300);
     };
 
     const handleConvert = async (): Promise<void> => {
@@ -111,6 +121,12 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
             role='dialog'
             id='onlyoffice-converter-modal'
             data-theme={theme}
+            onEntered={() => {
+                const modal = document.getElementById('onlyoffice-converter-modal');
+                const backdrop = modal?.previousElementSibling;
+                modal?.classList.add('in');
+                backdrop?.classList.add('in');
+            }}
         >
             <ConverterHeader
                 theme={theme}

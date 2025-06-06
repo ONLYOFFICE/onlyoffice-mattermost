@@ -1,18 +1,41 @@
 @import './colors';
 @import './mixins';
 
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease-in-out !important;
+  z-index: 999 !important;
+
+  &.in {
+    opacity: 0.5 !important;
+  }
+}
+
 #onlyoffice-converter-modal {
   font-family: 'Open sans';
   padding-left: 0px !important;
-
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  
   @include dark-theme {
     background-color: $modal_background_dark;
-    color: $text_light;
+    color: $modal_dark_text;
   }
 
   @include light-theme {
     background-color: $modal_background_light;
-    color: $text_dark;
+    color: $modal_light_text;
   }
 }
 
@@ -31,7 +54,7 @@
   min-width: 500px;
   opacity: 1;
   visibility: visible;
-  transition: visibility 0.1s linear, opacity 0.1s linear;
+  transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .onlyoffice-converter__container {
@@ -119,7 +142,11 @@
   padding: 8px 16px;
   border-radius: 4px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease-in-out;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
 
   &:disabled {
     opacity: 0.6;
@@ -159,11 +186,13 @@
     border-radius: 4px;
     background: var(--center-channel-bg);
     color: var(--center-channel-color);
+    transition: all 0.2s ease-in-out;
 
     &:focus {
         border-color: var(--button-bg);
         outline: none;
         box-shadow: 0 0 0 1px var(--button-bg);
+        transform: translateY(-1px);
     }
 
     &::placeholder {
@@ -195,12 +224,13 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
     background-color: #f0f0f0;
     color: #000000;
 
-    &:hover {
+    &:hover:not(.selected) {
         transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     &.document {

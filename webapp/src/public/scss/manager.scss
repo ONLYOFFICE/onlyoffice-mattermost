@@ -4,31 +4,20 @@
 #onlyoffice-manager-modal {
   font-family: 'Metropolis', 'Open Sans', sans-serif;
   padding-left: 0px !important;
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  border: none;
-  overflow: hidden;
-  min-width: 480px;
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  
-  &.in {
-    opacity: 1;
-  }
   
   @include dark-theme {
-    background-color: $modal_dark_bg;
+    background-color: $modal_background_dark;
     color: $modal_dark_text;
   }
 
   @include light-theme {
-    background: $text_light;
-    color: $text_dark;
+    background-color: $modal_background_light;
+    color: $modal_light_text;
   }
 }
 

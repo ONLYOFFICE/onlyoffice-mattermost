@@ -1,7 +1,7 @@
 $backdrop_light: #f5f5f5;
 $backdrop_dark: rgba(0, 0, 0, 0.25);
 $modal_background_light: #ffffff;
-$modal_background_dark: #1b1d22;
+$modal_background_dark: #1f1f1f;
 $text_light: #ffffff;
 $text_dark: #000000;
 
@@ -37,6 +37,10 @@ $modal_input_border: #D8D8D9;
 $modal_focus_border: #1C58D9;
 $modal_error_light: #ff4d4f;
 $modal_error_dark: #ff6b81;
+
+$modal_border_dark: rgba(255, 255, 255, 0.08);
+$modal_border_light: rgba(0, 0, 0, 0.08);
+$modal_shadow: rgba(0, 0, 0, 0.18);
 
 @mixin light-theme {
   [data-theme="light"] & {
