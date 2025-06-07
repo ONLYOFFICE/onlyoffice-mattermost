@@ -157,7 +157,7 @@
   @include dark-theme {
     .react-select__control {
       background-color: $modal_background_dark;
-      border-color: rgba(255, 255, 255, 0.1);
+      border-color: $modal_border_dark;
     }
 
     .react-select__menu {
@@ -168,7 +168,7 @@
       color: $text_light;
       
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: $modal_selected_option;
       }
     }
 
@@ -178,7 +178,7 @@
     }
 
     .react-select__multi-value {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: $modal_selected_option;
       
       .react-select__multi-value__label {
         color: $text_light;
