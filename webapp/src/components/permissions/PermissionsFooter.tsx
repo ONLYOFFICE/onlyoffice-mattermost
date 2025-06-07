@@ -40,26 +40,6 @@ type Props = {
     theme: string;
 };
 
-const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-    },
-    cancelButton: (theme: string) => ({
-        marginRight: '1rem',
-        border: 'none',
-        backgroundColor: theme === 'dark' ? '#1b1d22' : undefined,
-        color: theme === 'dark' ? '#ffffff' : undefined,
-    }),
-    cancelText: {
-        color: 'var(--button-bg)',
-    },
-    saveButton: (theme: string) => ({
-        backgroundColor: theme === 'dark' ? '#166de0' : undefined,
-        color: theme === 'dark' ? '#ffffff' : undefined,
-    }),
-};
-
 export const PermissionsFooter: React.FC<Props> = ({
     fileInfo,
     loading,
@@ -102,17 +82,15 @@ export const PermissionsFooter: React.FC<Props> = ({
 
     return (
         <div
-            className='filter-controls'
-            style={styles.container}
+            className='filter-controls onlyoffice-permissions__actions'
             data-theme={theme}
         >
             <Button
-                className='btn btn-md'
-                style={styles.cancelButton(theme)}
+                className='btn btn-md btn-tertiary'
                 disabled={loading}
                 onClick={onClose}
             >
-                <span style={styles.cancelText}>
+                <span>
                     {i18n['permissions.modal_button_cancel']}
                 </span>
             </Button>
@@ -120,7 +98,6 @@ export const PermissionsFooter: React.FC<Props> = ({
                 className='btn btn-md btn-primary'
                 onClick={handleSubmit}
                 disabled={loading}
-                style={styles.saveButton(theme)}
             >
                 {i18n['permissions.modal_button_save']}
             </Button>

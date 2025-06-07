@@ -56,30 +56,6 @@ export const PermissionsHeader: React.FC<Props> = ({
 }) => {
     const i18n = getTranslations();
     const styles = useMemo(() => ({
-        filterRow: {
-            marginBottom: channel ? '1rem' : undefined,
-            marginTop: channel ? '1rem' : undefined,
-            maxHeight: channel ? undefined : '10rem',
-        },
-        userColumn: {
-            marginBottom: '1rem',
-        },
-        userSelectContainer: {
-            display: 'flex',
-        },
-        asyncSelect: {
-            flexGrow: 1,
-            marginRight: '0.5rem',
-        },
-        bottomSection: {
-            marginTop: '2rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-        },
-        permissionSelect: {
-            marginLeft: '10px',
-        },
         selectStyles: {
             container: (provided: any) => ({...provided, height: '100%'}),
             control: (provided: any) => ({
@@ -222,20 +198,24 @@ export const PermissionsHeader: React.FC<Props> = ({
                 if (theme === 'dark') {
                     backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
                 } else {
-                    backgroundColor = state.isFocused ? '#1C58D914' : provided.backgroundColor;
+                    backgroundColor = state.isSelected ? '#1C58D9' : state.isFocused ? '#1C58D914' : provided.backgroundColor;
                 }
 
                 return {
                     ...provided,
                     backgroundColor,
-                    color: theme === 'dark' ? '#ffffff' : provided.color,
+                    color: theme === 'dark' ? '#ffffff' : (state.isSelected ? '#ffffff' : '#1C58D9'),
                     ':hover': {
-                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : (state.isSelected ? '#1C58D9' : '#1C58D914'),
+                        color: theme === 'dark' ? '#ffffff' : (state.isSelected ? '#ffffff' : '#1C58D9'),
+                    },
+                    ':active': {
+                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : (state.isSelected ? '#1C58D9' : '#1C58D914'),
                     },
                 };
             },
         },
-    }), [theme, channel]);
+    }), [theme]);
 
     const permissionsOptions = getFileAccess().map((entry: FileAccess) => ({
         value: entry.toString(),
@@ -267,16 +247,13 @@ export const PermissionsHeader: React.FC<Props> = ({
 
     return (
         <div
-            className='filter-row'
-            style={styles.filterRow}
+            className={`filter-row onlyoffice-permissions__filter-row${!channel ? ' onlyoffice-permissions__filter-row--compact' : ''}`}
+            data-theme={theme}
         >
             {channel && (
-                <div
-                    className='col-xs-12'
-                    style={styles.userColumn}
-                >
-                    <div style={styles.userSelectContainer}>
-                        <div style={styles.asyncSelect}>
+                <div className='col-xs-12 onlyoffice-permissions__user-column'>
+                    <div className='onlyoffice-permissions__user-select-container'>
+                        <div className='onlyoffice-permissions__async-select'>
                             <AsyncSelect
                                 id='onlyoffice-permissions-select'
                                 placeholder={i18n['permissions.modal_search_placeholder']}
@@ -307,14 +284,11 @@ export const PermissionsHeader: React.FC<Props> = ({
                     </div>
                 </div>
             )}
-            <div
-                className='col-sm-12'
-                style={styles.bottomSection}
-            >
+            <div className='col-sm-12 onlyoffice-permissions__bottom-section'>
                 <span className='member-count pull-left onlyoffice-permissions__access-header'>
                     <span>{accessHeader}</span>
                 </span>
-                <div style={styles.permissionSelect}>
+                <div className='onlyoffice-permissions__permission-select'>
                     <Select
                         isSearchable={false}
                         value={{

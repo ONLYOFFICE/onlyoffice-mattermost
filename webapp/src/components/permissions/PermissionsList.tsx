@@ -33,83 +33,48 @@ type Props = {
     theme: string;
 };
 
-const getStyles = (theme: string) => ({
-    actions: {
-        display: 'flex',
-        paddingRight: '0.3rem',
-        margin: 0,
-    },
-    selectContainer: {
-        width: 'auto',
-        minWidth: '113px',
-        maxWidth: '15rem',
-    },
-    removeButton: {
-        marginLeft: '1rem',
-    },
-    row: {
-        padding: 0,
-    },
-    list: {
-        padding: '0rem 1.5rem',
-    },
-    errorContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-    },
-    errorText: {
-        fontSize: '7',
-    },
-    name: {
-        display: 'block',
-    },
-    selectStyles: {
-        control: (provided: any) => ({
-            ...provided,
-            backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-            borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-        }),
-        menu: (provided: any) => ({
-            ...provided,
-            backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
-        }),
-        option: (provided: any, state: any) => {
-            let backgroundColor;
-            if (theme === 'dark') {
-                backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
-            } else {
-                backgroundColor = provided.backgroundColor;
-            }
+const getSelectStyles = (theme: string) => ({
+    control: (provided: any) => ({
+        ...provided,
+        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+    }),
+    menu: (provided: any) => ({
+        ...provided,
+        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+    }),
+    option: (provided: any, state: any) => {
+        let backgroundColor;
+        if (theme === 'dark') {
+            backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
+        } else {
+            backgroundColor = provided.backgroundColor;
+        }
 
-            return {
-                ...provided,
-                backgroundColor,
-                color: theme === 'dark' ? '#ffffff' : provided.color,
-            };
-        },
-        singleValue: (provided: any) => ({
+        return {
             ...provided,
+            backgroundColor,
             color: theme === 'dark' ? '#ffffff' : provided.color,
-        }),
+        };
     },
+    singleValue: (provided: any) => ({
+        ...provided,
+        color: theme === 'dark' ? '#ffffff' : provided.color,
+    }),
 });
 
 export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
-    const styles = getStyles(props.theme);
 
     return (
         <div
-            className='more-modal__list'
-            style={styles.list}
+            className='more-modal__list onlyoffice-permissions__list'
             data-theme={props.theme}
         >
             <div>
                 {props.error ? (
-                    <div style={styles.errorContainer}>
-                        <span style={styles.errorText}>{i18n['permissions.modal_fetch_error']}</span>
+                    <div className='onlyoffice-permissions__error-container'>
+                        <span className='onlyoffice-permissions__error-text'>{i18n['permissions.modal_fetch_error']}</span>
                     </div>
                 ) : (
                     <>
@@ -131,12 +96,9 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
 };
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
-    const styles = getStyles(props.theme);
-
     return (
         <div
-            className='more-modal__row'
-            style={styles.row}
+            className='more-modal__row onlyoffice-permissions__row'
             data-theme={props.theme}
         >
             <UserIcon {...props}/>
@@ -167,14 +129,9 @@ const UserIcon = ({user}: {user: MattermostUser}) => {
 };
 
 const UserDetails = ({user, theme}: {user: MattermostUser; theme: string}) => {
-    const styles = getStyles(theme);
-
     return (
         <div className='more-modal__details'>
-            <div
-                className='more-modal__name'
-                style={styles.name}
-            >
+            <div className='more-modal__name onlyoffice-permissions__name'>
                 {`@${user.label}`}
             </div>
             <div className='more-modal__description'>
@@ -186,8 +143,6 @@ const UserDetails = ({user, theme}: {user: MattermostUser; theme: string}) => {
 
 const UserActions = (props: Props & { user: MattermostUser }) => {
     const i18n = getTranslations();
-
-    const styles = getStyles(props.theme);
 
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {
@@ -204,11 +159,8 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
     };
 
     return (
-        <div
-            className='more-modal__actions'
-            style={styles.actions}
-        >
-            <div style={styles.selectContainer}>
+        <div className='more-modal__actions onlyoffice-permissions__actions'>
+            <div className='onlyoffice-permissions__select-container'>
                 <Select
                     isSearchable={false}
                     value={{
@@ -217,15 +169,14 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
-                    styles={styles.selectStyles}
+                    styles={getSelectStyles(props.theme)}
                 />
             </div>
             <button
                 type='button'
-                className='close'
+                className='close onlyoffice-permissions__remove-button'
                 aria-label='Close'
                 onClick={() => props.onRemoveUser(props.user.label)}
-                style={styles.removeButton}
             >
                 <span aria-hidden='true'>{'×'}</span>
             </button>

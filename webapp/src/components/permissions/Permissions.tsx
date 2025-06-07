@@ -55,19 +55,6 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
-const getStyles = (theme: string) => ({
-    headerText: {
-        fontWeight: 600,
-        color: theme === 'dark' ? '#ffffff' : undefined,
-    },
-    closeButton: {
-        color: theme === 'dark' ? '#ffffff' : undefined,
-    },
-    modalBody: (hasChannel: boolean) => ({
-        maxHeight: hasChannel ? undefined : '20rem',
-    }),
-});
-
 export default function OnlyofficeFilePermissions({visible, close, fileInfo, theme}: Props) {
     const i18n = getTranslations();
     const [loading, setLoading] = useState<boolean>(true);
@@ -75,8 +62,6 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
     const [channel, setChannel] = useState<Channel | null>(null);
     const [users, setUsers] = useState<MattermostUser[]>([]);
     const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
-
-    const styles = getStyles(theme);
 
     const fetchData = async (): Promise<void> => {
         setChannel(null);
@@ -150,22 +135,22 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                 className='onlyoffice-permissions-modal__header'
                 data-theme={theme}
             >
-                <span style={styles.headerText}>{`${i18n['permissions.modal_header']} ${fileInfo.name}`}</span>
+                <span className='onlyoffice-permissions-modal__header__text'>
+                    {`${i18n['permissions.modal_header']}`}
+                </span>
                 <button
                     type='button'
-                    className='close'
+                    className='close onlyoffice-permissions-modal__header__close'
                     aria-label='Close'
                     onClick={handleExit}
                     disabled={loading}
-                    style={styles.closeButton}
                 >
                     <span aria-hidden='true'>{'×'}</span>
                     <span className='sr-only'>{'Close'}</span>
                 </button>
             </Modal.Header>
             <div
-                className='onlyoffice-permissions-modal__body'
-                style={styles.modalBody(Boolean(channel))}
+                className={`onlyoffice-permissions-modal__body${!channel ? ' onlyoffice-permissions-modal__body--compact' : ''}`}
                 data-theme={theme}
             >
                 <div className='filtered-user-list'>
