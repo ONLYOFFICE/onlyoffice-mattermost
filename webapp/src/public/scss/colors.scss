@@ -11,21 +11,12 @@ $brand_error_red: #ff4d4f;
 
 $indigo_background: #1b1d22;
 $indigo_border: rgba(255, 255, 255, 0.08);
-$indigo_input_bg: #2c2f36;
-$indigo_input_border: #4f5660;
-
-$onyx_background: #23272f;
-$onyx_border: rgba(255, 255, 255, 0.08);
-$onyx_input_bg: #2c2f36;
-$onyx_input_border: #4f5660;
 
 $modal_background_light: #ffffff;
 $modal_background_dark: var(--center-channel-bg, #1b1d22);
-$modal_dark_bg: var(--center-channel-bg, #23272f);
 $modal_dark_text: #f4f6fa;
 $modal_light_text: #3F4350;
 $modal_dark_border: var(--center-channel-border, #2c2f36);
-$modal_dark_input_bg: var(--center-channel-bg, #2c2f36);
 $modal_dark_input_border: var(--center-channel-border, #4f5660);
 $modal_light_border: #f0f0f0;
 $modal_close_default: #888;
@@ -54,8 +45,6 @@ $preview_subtitle_light: #00000080;
 $preview_subtitle_dark: #FFFFFF80;
 
 $modal_border_dark: rgba(255, 255, 255, 0.08);
-$modal_border_light: rgba(0, 0, 0, 0.08);
-$modal_shadow: rgba(0, 0, 0, 0.18);
 $modal_selected_option: rgba(255, 255, 255, 0.1);
 
 $converter_info_bg: rgba(28, 88, 217, 0.08);
