@@ -96,24 +96,38 @@ export const PermissionsHeader: React.FC<Props> = ({
                 };
             },
             option: (provided: any, state: any) => {
-                let backgroundColor;
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
+
                 if (theme === 'dark') {
-                    if (state.isFocused) {
-                        backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    } else if (darkTheme === 'indigo') {
-                        backgroundColor = '#1b1d22';
-                    } else {
-                        backgroundColor = '#23272f';
-                    }
-                } else {
-                    backgroundColor = provided.backgroundColor;
+                    backgroundColor = 'var(--center-channel-bg)';
+                    color = '#ffffff';
                 }
+
+                if (state.isFocused) {
+                    backgroundColor = theme === 'dark' ? 
+                        (darkTheme === 'indigo' ? '#262B39' : 
+                         darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                        : '#F1F2F3';
+                }
+
                 return {
                     ...provided,
                     backgroundColor,
-                    color: theme === 'dark' ? '#ffffff' : provided.color,
-                    '&:hover': {
-                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : provided.backgroundColor,
+                    color,
+                    cursor: 'pointer',
+                    ':hover': {
+                        backgroundColor: theme === 'dark' ? 
+                            (darkTheme === 'indigo' ? '#262B39' : 
+                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
+                        color,
+                    },
+                    ':active': {
+                        backgroundColor: theme === 'dark' ? 
+                            (darkTheme === 'indigo' ? '#262B39' : 
+                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
                     },
                 };
             },
@@ -231,44 +245,38 @@ export const PermissionsHeader: React.FC<Props> = ({
                 borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
             }),
             option: (provided: any, state: any) => {
-                let backgroundColor = provided.backgroundColor;
-                let color = '#1C58D9';
-                let hoverBackgroundColor = provided.backgroundColor;
-                let activeBackgroundColor = provided.backgroundColor;
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
+
                 if (theme === 'dark') {
-                    if (state.isFocused) {
-                        backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                        hoverBackgroundColor = 'rgba(255, 255, 255, 0.1)';
-                        activeBackgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    } else {
-                        backgroundColor = 'var(--center-channel-bg)';
-                        hoverBackgroundColor = 'rgba(255, 255, 255, 0.1)';
-                        activeBackgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    }
+                    backgroundColor = 'var(--center-channel-bg)';
                     color = '#ffffff';
-                } else if (state.isSelected) {
-                    backgroundColor = '#1C58D9';
-                    color = '#ffffff';
-                    hoverBackgroundColor = '#1C58D9';
-                    activeBackgroundColor = '#1C58D9';
-                } else if (state.isFocused) {
-                    backgroundColor = '#1C58D914';
-                    hoverBackgroundColor = '#1C58D914';
-                    activeBackgroundColor = '#1C58D914';
-                } else {
-                    hoverBackgroundColor = '#1C58D914';
-                    activeBackgroundColor = '#1C58D914';
                 }
+
+                if (state.isFocused) {
+                    backgroundColor = theme === 'dark' ? 
+                        (darkTheme === 'indigo' ? '#262B39' : 
+                         darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                        : '#F1F2F3';
+                }
+
                 return {
                     ...provided,
                     backgroundColor,
                     color,
+                    cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: hoverBackgroundColor,
+                        backgroundColor: theme === 'dark' ? 
+                            (darkTheme === 'indigo' ? '#262B39' : 
+                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
                         color,
                     },
                     ':active': {
-                        backgroundColor: activeBackgroundColor,
+                        backgroundColor: theme === 'dark' ? 
+                            (darkTheme === 'indigo' ? '#262B39' : 
+                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
                     },
                 };
             },

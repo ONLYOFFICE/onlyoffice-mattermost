@@ -127,34 +127,44 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 boxShadow: props.theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
             }),
             option: (provided: any, state: any) => {
-                let backgroundColor = provided.backgroundColor;
-                let color = props.theme === 'dark' ? '#ffffff' : '#1C58D9';
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
 
                 if (props.theme === 'dark') {
-                    if (state.isFocused) {
-                        backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                    } else {
-                        backgroundColor = 'var(--center-channel-bg)';
-                    }
-                } else if (state.isSelected) {
-                    backgroundColor = '#1C58D9';
+                    backgroundColor = 'var(--center-channel-bg)';
                     color = '#ffffff';
-                } else if (state.isFocused) {
-                    backgroundColor = '#1C58D914';
+                }
+
+                if (state.isFocused) {
+                    backgroundColor = props.theme === 'dark' ? 
+                        (props.darkTheme === 'indigo' ? '#262B39' : 
+                         props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                        : '#F1F2F3';
                 }
 
                 return {
                     ...provided,
                     backgroundColor,
                     color,
-                    '&:hover': {
-                        backgroundColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                    cursor: 'pointer',
+                    ':hover': {
+                        backgroundColor: props.theme === 'dark' ? 
+                            (props.darkTheme === 'indigo' ? '#262B39' : 
+                             props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
+                        color,
+                    },
+                    ':active': {
+                        backgroundColor: props.theme === 'dark' ? 
+                            (props.darkTheme === 'indigo' ? '#262B39' : 
+                             props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
+                            : '#F1F2F3',
                     },
                 };
             },
             singleValue: (provided: any) => ({
                 ...provided,
-                color: props.theme === 'dark' ? '#ffffff' : '#1C58D9',
+                color: props.theme === 'dark' ? '#ffffff' : provided.color,
             }),
             input: (provided: any) => ({
                 ...provided,
