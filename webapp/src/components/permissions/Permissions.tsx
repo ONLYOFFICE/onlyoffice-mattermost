@@ -168,6 +168,8 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                         />
                         {channel && (
                             <PermissionsList
+                                theme={theme}
+                                darkTheme={darkTheme}
                                 users={users}
                                 error={error}
                                 onRemoveUser={handleRemoveUser}

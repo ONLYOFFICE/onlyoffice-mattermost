@@ -24,10 +24,12 @@ import {getFileAccess} from 'util/permission';
 import type {FileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
 
-import React from 'react';
+import React, {useMemo} from 'react';
 import Select from 'react-select';
 
 type Props = {
+    theme: string;
+    darkTheme: string;
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
 };
@@ -50,6 +52,8 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
                                 user={user}
                                 onRemoveUser={props.onRemoveUser}
                                 onChangeUserPermissions={props.onChangeUserPermissions}
+                                theme={props.theme}
+                                darkTheme={props.darkTheme}
                             />
                         ))}
                     </>
@@ -103,6 +107,62 @@ const UserDetails = ({user}: {user: MattermostUser}) => {
 const UserActions = (props: Props & { user: MattermostUser }) => {
     const i18n = getTranslations();
 
+    const styles = useMemo(() => ({
+        selectStyles: {
+            control: (provided: any) => {
+                return {
+                    ...provided,
+                    minHeight: '100%',
+                    backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+                    borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                    '&:hover': {
+                        borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
+                    },
+                };
+            },
+            menu: (provided: any) => ({
+                ...provided,
+                backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+                borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                boxShadow: props.theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
+            }),
+            option: (provided: any, state: any) => {
+                let backgroundColor = provided.backgroundColor;
+                let color = props.theme === 'dark' ? '#ffffff' : '#1C58D9';
+
+                if (props.theme === 'dark') {
+                    if (state.isFocused) {
+                        backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    } else {
+                        backgroundColor = 'var(--center-channel-bg)';
+                    }
+                } else if (state.isSelected) {
+                    backgroundColor = '#1C58D9';
+                    color = '#ffffff';
+                } else if (state.isFocused) {
+                    backgroundColor = '#1C58D914';
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color,
+                    '&:hover': {
+                        backgroundColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                    },
+                };
+            },
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: props.theme === 'dark' ? '#ffffff' : '#1C58D9',
+            }),
+            input: (provided: any) => ({
+                ...provided,
+                color: props.theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+        },
+    }), [props.theme]);
+
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {
             value: entry.toString(),
@@ -128,6 +188,10 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
+                    styles={styles.selectStyles}
+                    components={{
+                        IndicatorSeparator: () => null,
+                    }}
                 />
             </div>
             <button
@@ -135,6 +199,10 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 className='close onlyoffice-permissions__remove-button'
                 aria-label='Close'
                 onClick={() => props.onRemoveUser(props.user.label)}
+                style={{
+                    color: props.theme === 'dark' ? '#ffffff' : '#3d3c40',
+                    opacity: 0.7,
+                }}
             >
                 <span aria-hidden='true'>{'×'}</span>
             </button>
