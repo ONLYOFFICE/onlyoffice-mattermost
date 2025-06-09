@@ -9,14 +9,24 @@ $brand_accent_blue: #1c58d9;
 $brand_success_green: #2eb85c;
 $brand_error_red: #ff4d4f;
 
+$indigo_background: #1b1d22;
+$indigo_border: rgba(255, 255, 255, 0.08);
+$indigo_input_bg: #2c2f36;
+$indigo_input_border: #4f5660;
+
+$onyx_background: #23272f;
+$onyx_border: rgba(255, 255, 255, 0.08);
+$onyx_input_bg: #2c2f36;
+$onyx_input_border: #4f5660;
+
 $modal_background_light: #ffffff;
-$modal_background_dark: #1f1f1f;
-$modal_dark_bg: #23272f;
+$modal_background_dark: var(--center-channel-bg, #1b1d22);
+$modal_dark_bg: var(--center-channel-bg, #23272f);
 $modal_dark_text: #f4f6fa;
 $modal_light_text: #3F4350;
-$modal_dark_border: #2c2f36;
-$modal_dark_input_bg: #2c2f36;
-$modal_dark_input_border: #4f5660;
+$modal_dark_border: var(--center-channel-border, #2c2f36);
+$modal_dark_input_bg: var(--center-channel-bg, #2c2f36);
+$modal_dark_input_border: var(--center-channel-border, #4f5660);
 $modal_light_border: #f0f0f0;
 $modal_close_default: #888;
 $modal_close_hover: #333;
@@ -62,7 +72,10 @@ $converter_button_hover_bg: rgba(255, 255, 255, 0.15);
 }
 
 @mixin dark-theme {
-  [data-theme="dark"] & {
+  [data-theme="dark"][data-dark-theme="indigo"] & {
+    @content;
+  }
+  [data-theme="dark"][data-dark-theme="onyx"] & {
     @content;
   }
 }

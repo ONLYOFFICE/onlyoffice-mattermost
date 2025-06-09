@@ -28,6 +28,8 @@ type Props = {
     fileName: string;
     loading: boolean;
     error: string;
+    theme: string;
+    darkTheme: string | undefined;
     onFileTypeChange: (fileType: string) => void;
     onFileNameChange: (fileName: string) => void;
 };
@@ -51,6 +53,8 @@ export default function ManagerForm({
     fileName,
     loading,
     error,
+    theme,
+    darkTheme,
     onFileTypeChange,
     onFileNameChange,
 }: Props) {
@@ -66,6 +70,8 @@ export default function ManagerForm({
                     disabled={loading}
                     className='onlyoffice-manager__input onlyoffice-manager__text-input'
                     placeholder={i18n['manager.file_name_label']}
+                    data-theme={theme}
+                    data-dark-theme={darkTheme}
                 />
                 {error && !fileName.trim() && <div className='onlyoffice-manager__error'>{error}</div>}
             </div>
@@ -77,6 +83,8 @@ export default function ManagerForm({
                         onChange={(e) => onFileTypeChange(e.target.value)}
                         disabled={loading}
                         className='onlyoffice-manager__select'
+                        data-theme={theme}
+                        data-dark-theme={darkTheme}
                     >
                         {types.map((type) => (
                             <option

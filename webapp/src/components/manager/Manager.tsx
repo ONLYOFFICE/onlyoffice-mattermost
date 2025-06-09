@@ -38,6 +38,7 @@ import 'public/scss/manager.scss';
 type Props = {
     visible: boolean;
     theme: string;
+    darkTheme: string | undefined;
     close: () => (dispatch: Dispatch) => void;
 };
 
@@ -48,7 +49,7 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
-export default function Manager({visible, theme, close}: Props) {
+export default function Manager({visible, theme, darkTheme, close}: Props) {
     const i18n = getTranslations();
     const channelId = useSelector(getCurrentChannelId);
     const [fileType, setFileType] = useState<string>('docx');
@@ -111,6 +112,7 @@ export default function Manager({visible, theme, close}: Props) {
             role='dialog'
             id='onlyoffice-manager-modal'
             data-theme={theme}
+            data-dark-theme={darkTheme}
         >
             <ManagerHeader
                 theme={theme}
@@ -125,6 +127,8 @@ export default function Manager({visible, theme, close}: Props) {
                         fileName={fileName}
                         loading={loading}
                         error={error}
+                        theme={theme}
+                        darkTheme={darkTheme}
                         onFileTypeChange={setFileType}
                         onFileNameChange={handleFileNameChange}
                     />

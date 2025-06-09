@@ -50,7 +50,31 @@
     }
 }
 
-.file-details__container[data-theme="dark"] {
+.file-details__container[data-theme="dark"][data-dark-theme="indigo"] {
+    background: var(--center-channel-bg, $indigo_background) !important;
+    color: $text_light !important;
+    display: flex;
+
+    .file-details__preview {
+        border: none !important;
+        border-right: 1px solid $indigo_border !important;
+        background: var(--center-channel-bg, $indigo_background) !important;
+    }
+
+    .file-details__name {
+        color: $text_light !important;
+    }
+
+    .file-details__info {
+        color: rgba(255, 255, 255, 0.64) !important;
+    }
+
+    .file-details {
+        background: var(--center-channel-bg, $indigo_background) !important;
+    }
+}
+
+.file-details__container[data-theme="dark"][data-dark-theme="onyx"] {
     background: $preview_background_dark !important;
     color: $preview_title_dark !important;
     display: flex;

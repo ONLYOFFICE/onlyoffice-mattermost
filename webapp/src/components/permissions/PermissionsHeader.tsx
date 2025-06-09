@@ -42,6 +42,7 @@ type Props = {
     onSetWildcardAccess: (value: any) => void;
     onAppendUsers: (newUsers: MattermostUser[]) => void;
     theme: string;
+    darkTheme: string | undefined;
 };
 
 export const PermissionsHeader: React.FC<Props> = ({
@@ -53,6 +54,7 @@ export const PermissionsHeader: React.FC<Props> = ({
     onSetWildcardAccess,
     onAppendUsers,
     theme,
+    darkTheme,
 }) => {
     const i18n = getTranslations();
     const styles = useMemo(() => ({
@@ -61,17 +63,22 @@ export const PermissionsHeader: React.FC<Props> = ({
             control: (provided: any) => ({
                 ...provided,
                 minHeight: '100%',
-                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                backgroundColor: theme === 'dark' ? (darkTheme === 'indigo' ? '#1b1d22' : '#23272f') : provided.backgroundColor,
                 borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                '&:hover': {
+                    borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
+                },
             }),
             menu: (provided: any) => ({
                 ...provided,
-                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                backgroundColor: theme === 'dark' ? (darkTheme === 'indigo' ? '#1b1d22' : '#23272f') : provided.backgroundColor,
+                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                boxShadow: theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
             }),
             option: (provided: any, state: any) => {
                 let backgroundColor;
                 if (theme === 'dark') {
-                    backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
+                    backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : (darkTheme === 'indigo' ? '#1b1d22' : '#23272f');
                 } else {
                     backgroundColor = provided.backgroundColor;
                 }
@@ -80,6 +87,9 @@ export const PermissionsHeader: React.FC<Props> = ({
                     ...provided,
                     backgroundColor,
                     color: theme === 'dark' ? '#ffffff' : provided.color,
+                    '&:hover': {
+                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : provided.backgroundColor,
+                    },
                 };
             },
             singleValue: (provided: any) => ({
@@ -124,16 +134,16 @@ export const PermissionsHeader: React.FC<Props> = ({
                 margin: 0,
                 padding: 0,
                 fontSize: '0.8rem',
-                lineHeight: 1,
-                border: '1px solid #ababad',
-                backgroundColor: '#ababad',
-                color: '#f0f0f0',
+                border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid #ababad',
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : '#ababad',
+                color: theme === 'dark' ? '#ffffff' : '#f0f0f0',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 ':hover': {
-                    backgroundColor: '#9c9c9e',
+                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : '#9c9c9e',
+                    border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.4)' : '1px solid #9c9c9e',
                 },
             }),
         },
@@ -145,7 +155,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                 border: 'none',
                 borderRadius: '4px',
                 boxShadow: 'none',
-                backgroundColor: theme === 'dark' ? '#1b1d22' : 'transparent',
+                backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : 'transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 justifyContent: 'flex-end',
@@ -190,20 +200,15 @@ export const PermissionsHeader: React.FC<Props> = ({
             }),
             menu: (provided: any) => ({
                 ...provided,
-                backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+                backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
                 borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
             }),
             option: (provided: any, state: any) => {
-                let backgroundColor;
-                if (theme === 'dark') {
-                    backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
-                } else {
-                    backgroundColor = state.isSelected ? '#1C58D9' : state.isFocused ? '#1C58D914' : provided.backgroundColor;
-                }
-
                 return {
                     ...provided,
-                    backgroundColor,
+                    backgroundColor: theme === 'dark' 
+                        ? (state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'var(--center-channel-bg)')
+                        : (state.isSelected ? '#1C58D9' : state.isFocused ? '#1C58D914' : provided.backgroundColor),
                     color: theme === 'dark' ? '#ffffff' : (state.isSelected ? '#ffffff' : '#1C58D9'),
                     ':hover': {
                         backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : (state.isSelected ? '#1C58D9' : '#1C58D914'),

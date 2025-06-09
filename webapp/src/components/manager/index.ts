@@ -23,7 +23,7 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeManager} from 'redux/actions';
-import {getCurrentTheme, managerModalVisible} from 'redux/selectors';
+import {getCurrentDarkTheme, getCurrentTheme, managerModalVisible} from 'redux/selectors';
 
 import type {GlobalState} from 'mattermost-redux/types/store';
 
@@ -32,6 +32,7 @@ import Manager from 'components/manager/Manager';
 const mapStateToProps = (state: GlobalState) => ({
     visible: managerModalVisible(state),
     theme: getCurrentTheme(state),
+    darkTheme: getCurrentDarkTheme(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({

@@ -11,7 +11,7 @@
   margin: 0 !important;
   
   @include dark-theme {
-    background-color: $modal_background_dark;
+    background-color: var(--center-channel-bg);
     color: $modal_dark_text;
   }
 
@@ -116,9 +116,13 @@
   font-size: 14px;
 
   @include dark-theme {
-    background: $modal_dark_input_bg;
-    border-color: $modal_dark_input_border;
+    background: var(--center-channel-bg);
+    border-color: var(--center-channel-border);
     color: $modal_dark_text;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
   }
 
   &:focus {
@@ -167,10 +171,15 @@
   padding-right: 40px;
 
   @include dark-theme {
-    background-color: $modal_dark_input_bg;
-    border-color: $modal_dark_input_border;
+    background-color: var(--center-channel-bg);
+    border-color: var(--center-channel-border);
     color: $modal_dark_text;
     background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23f4f6fa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+    option {
+      background-color: var(--center-channel-bg);
+      color: $modal_dark_text;
+    }
   }
 
   &:focus {

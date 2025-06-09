@@ -41,10 +41,11 @@ type Props = {
     visible: boolean;
     fileInfo: FileInfo;
     theme: string;
+    darkTheme: string | undefined;
     close: () => (dispatch: Dispatch) => void;
 };
 
-export default function Converter({visible, fileInfo, theme, close}: Props) {
+export default function Converter({visible, fileInfo, theme, darkTheme, close}: Props) {
     const i18n = getTranslations() as any;
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -144,6 +145,8 @@ export default function Converter({visible, fileInfo, theme, close}: Props) {
                     {needsFormatSelection && (
                         <ConverterFormatSelection
                             selectedFormat={selectedFormat}
+                            theme={theme}
+                            darkTheme={darkTheme}
                             onFormatSelect={setSelectedFormat}
                         />
                     )}

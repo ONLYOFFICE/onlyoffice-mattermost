@@ -279,20 +279,16 @@
         box-shadow: 0 2px 4px $shadow_overlay;
     }
 
-    &.document {
-        &.selected {
-            background-color: $brand_blue;
-            color: $text_light;
-            box-shadow: 0 2px 4px $shadow_overlay;
-        }
+    &.document.selected {
+        background-color: $brand_blue !important;
+        color: $text_light !important;
+        box-shadow: 0 2px 4px $shadow_overlay;
     }
 
-    &.cell {
-        &.selected {
-            background-color: $brand_success_green;
-            color: $text_light;
-            box-shadow: 0 2px 4px $shadow_overlay;
-        }
+    &.cell.selected {
+        background-color: $brand_success_green !important;
+        color: $text_light !important;
+        box-shadow: 0 2px 4px $shadow_overlay;
     }
 
     @include dark-theme {

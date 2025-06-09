@@ -152,16 +152,15 @@
   max-width: 40rem;
 }
 
-// Dark theme styles for react-select components
 .react-select-container {
   @include dark-theme {
     .react-select__control {
-      background-color: $modal_background_dark;
+      background-color: var(--center-channel-bg);
       border-color: $modal_border_dark;
     }
 
     .react-select__menu {
-      background-color: $modal_background_dark;
+      background-color: var(--center-channel-bg);
     }
 
     .react-select__option {

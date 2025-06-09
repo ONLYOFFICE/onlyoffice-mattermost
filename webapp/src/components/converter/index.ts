@@ -23,7 +23,7 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeConverter} from 'redux/actions';
-import {getCurrentTheme, converterModalVisible, converterModalFileInfo} from 'redux/selectors';
+import {getCurrentTheme, converterModalVisible, converterModalFileInfo, getCurrentDarkTheme} from 'redux/selectors';
 
 import type {GlobalState} from 'mattermost-redux/types/store';
 
@@ -33,6 +33,7 @@ const mapStateToProps = (state: GlobalState) => ({
     visible: converterModalVisible(state),
     fileInfo: converterModalFileInfo(state),
     theme: getCurrentTheme(state),
+    darkTheme: getCurrentDarkTheme(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({

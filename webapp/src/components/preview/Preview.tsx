@@ -35,6 +35,7 @@ import 'public/scss/preview.scss';
 type Props = {
     fileInfo: FileInfo;
     theme: string;
+    darkTheme: string | undefined;
 }
 
 export default function OnlyofficeFilePreview(props: Props) {
@@ -44,7 +45,7 @@ export default function OnlyofficeFilePreview(props: Props) {
     const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo);
 
     return (
-        <div className='file-details__container' data-theme={props.theme}>
+        <div className='file-details__container' data-theme={props.theme} data-dark-theme={props.darkTheme}>
             <a
                 className='file-details__preview'
                 onClick={(e) => e.preventDefault()}
@@ -66,6 +67,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                 <div
                     className='file-details__onlyoffice'
                     data-theme={props.theme}
+                    data-dark-theme={props.darkTheme}
                 >
                     {
                         showPermissions &&
@@ -76,6 +78,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                                     onClick={() => openPermissions(props.fileInfo)(dispatch)}
                                     src={permissions}
                                     data-theme={props.theme}
+                                    data-dark-theme={props.darkTheme}
                                 />
                             )
                     }
@@ -85,6 +88,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                         onClick={() => openEditor(props.fileInfo)(dispatch)}
                         src={editor}
                         data-theme={props.theme}
+                        data-dark-theme={props.darkTheme}
                     />
                 </div>
             </div>

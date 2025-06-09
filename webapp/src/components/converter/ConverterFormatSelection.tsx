@@ -25,14 +25,20 @@ import React from 'react';
 
 type Props = {
     selectedFormat: 'docx' | 'xlsx' | null;
+    theme: string;
+    darkTheme: string | undefined;
     onFormatSelect: (format: 'docx' | 'xlsx') => void;
 };
 
-export default function ConverterFormatSelection({selectedFormat, onFormatSelect}: Props) {
+export default function ConverterFormatSelection({selectedFormat, theme, darkTheme, onFormatSelect}: Props) {
     const i18n = getTranslations();
 
     return (
-        <div className='onlyoffice-converter__format-section'>
+        <div 
+            className='onlyoffice-converter__format-section'
+            data-theme={theme}
+            data-dark-theme={darkTheme}
+        >
             <div className='onlyoffice-converter__format-title'>
                 {i18n['converter.select_format'] || 'Select output format:'}
             </div>

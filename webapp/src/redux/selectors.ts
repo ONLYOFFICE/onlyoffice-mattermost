@@ -43,3 +43,8 @@ export const getCurrentTheme = (state: GlobalState) => {
     const dark = theme.type === 'indigo' || theme.type === 'onyx';
     return dark ? 'dark' : 'light';
 };
+
+export const getCurrentDarkTheme = (state: GlobalState) => {
+    const theme = getTheme(state);
+    return theme.type === 'indigo' || theme.type === 'onyx' ? theme.type : undefined;
+};

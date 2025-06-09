@@ -31,30 +31,34 @@ type Props = {
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
     theme: string;
+    darkTheme: string | undefined;
 };
 
-const getSelectStyles = (theme: string) => ({
+const getSelectStyles = (theme: string, darkTheme: string | undefined) => ({
     control: (provided: any) => ({
         ...provided,
-        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+        backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
         borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+        ':hover': {
+            borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
+        },
     }),
     menu: (provided: any) => ({
         ...provided,
-        backgroundColor: theme === 'dark' ? '#1b1d22' : provided.backgroundColor,
+        backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+        boxShadow: theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
     }),
     option: (provided: any, state: any) => {
-        let backgroundColor;
-        if (theme === 'dark') {
-            backgroundColor = state.isFocused ? 'rgba(255, 255, 255, 0.1)' : '#1b1d22';
-        } else {
-            backgroundColor = provided.backgroundColor;
-        }
-
         return {
             ...provided,
-            backgroundColor,
+            backgroundColor: theme === 'dark' 
+                ? (state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'var(--center-channel-bg)')
+                : provided.backgroundColor,
             color: theme === 'dark' ? '#ffffff' : provided.color,
+            ':hover': {
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : provided.backgroundColor,
+            },
         };
     },
     singleValue: (provided: any) => ({
@@ -63,7 +67,7 @@ const getSelectStyles = (theme: string) => ({
     }),
 });
 
-export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
+export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[]; darkTheme: string | undefined }) => {
     const i18n = getTranslations();
 
     return (
@@ -85,6 +89,7 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
                                 onRemoveUser={props.onRemoveUser}
                                 onChangeUserPermissions={props.onChangeUserPermissions}
                                 theme={props.theme}
+                                darkTheme={props.darkTheme}
                             />
                         ))}
                     </>
@@ -169,7 +174,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
-                    styles={getSelectStyles(props.theme)}
+                    styles={getSelectStyles(props.theme, props.darkTheme)}
                 />
             </div>
             <button

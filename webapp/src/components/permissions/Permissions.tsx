@@ -46,6 +46,7 @@ type Props = {
     close: () => (dispatch: Dispatch) => void;
     fileInfo: FileInfo;
     theme: string;
+    darkTheme?: string;
 };
 
 const removeInAnimation = (): void => {
@@ -55,7 +56,7 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
-export default function OnlyofficeFilePermissions({visible, close, fileInfo, theme}: Props) {
+export default function OnlyofficeFilePermissions({visible, close, fileInfo, theme, darkTheme}: Props) {
     const i18n = getTranslations();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false);
@@ -130,10 +131,12 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
             role='dialog'
             id='onlyoffice-permissions-modal'
             data-theme={theme}
+            data-dark-theme={darkTheme}
         >
             <Modal.Header
                 className='onlyoffice-permissions-modal__header'
                 data-theme={theme}
+                data-dark-theme={darkTheme}
             >
                 <span className='onlyoffice-permissions-modal__header__text'>
                     {`${i18n['permissions.modal_header']}`}
@@ -152,6 +155,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
             <div
                 className={`onlyoffice-permissions-modal__body${!channel ? ' onlyoffice-permissions-modal__body--compact' : ''}`}
                 data-theme={theme}
+                data-dark-theme={darkTheme}
             >
                 <div className='filtered-user-list'>
                     <PermissionsHeader
@@ -163,6 +167,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                         onAppendUsers={handleAppendUsers}
                         onSetWildcardAccess={setWildcardAccess}
                         theme={theme}
+                        darkTheme={darkTheme}
                     />
                     {channel && (
                         <PermissionsList
@@ -171,6 +176,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                             onRemoveUser={handleRemoveUser}
                             onChangeUserPermissions={handleChangeUserPermissions}
                             theme={theme}
+                            darkTheme={darkTheme}
                         />
                     )}
                     <PermissionsFooter
@@ -180,6 +186,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                         loading={loading || error}
                         wildcardAccess={wildcardAccess}
                         theme={theme}
+                        darkTheme={darkTheme}
                     />
                 </div>
             </div>

@@ -38,6 +38,7 @@ type Props = {
     wildcardAccess: string;
     onClose: () => void;
     theme: string;
+    darkTheme: string | undefined;
 };
 
 export const PermissionsFooter: React.FC<Props> = ({
@@ -47,6 +48,7 @@ export const PermissionsFooter: React.FC<Props> = ({
     wildcardAccess,
     onClose,
     theme,
+    darkTheme,
 }) => {
     const i18n = getTranslations();
 
@@ -84,6 +86,7 @@ export const PermissionsFooter: React.FC<Props> = ({
         <div
             className='filter-controls onlyoffice-permissions__actions'
             data-theme={theme}
+            data-dark-theme={darkTheme}
         >
             <Button
                 className='btn btn-md btn-tertiary'
