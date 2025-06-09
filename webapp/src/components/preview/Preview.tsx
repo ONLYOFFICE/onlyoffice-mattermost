@@ -23,7 +23,9 @@ import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import editor from 'public/images/editor.svg';
+import editorDark from 'public/images/editor_dark.svg';
 import permissions from 'public/images/permissions.svg';
+import permissionsDark from 'public/images/permissions_dark.svg';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {openEditor, openPermissions} from 'redux/actions';
@@ -80,7 +82,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                                     className='onlyoffice_preview__btn'
                                     alt={'permissions button'}
                                     onClick={() => openPermissions(props.fileInfo)(dispatch)}
-                                    src={permissions}
+                                    src={props.theme === 'dark' ? permissionsDark : permissions}
                                     data-theme={props.theme}
                                     data-dark-theme={props.darkTheme}
                                 />
@@ -90,7 +92,7 @@ export default function OnlyofficeFilePreview(props: Props) {
                         className='onlyoffice_preview__btn'
                         alt={'open editor'}
                         onClick={() => openEditor(props.fileInfo)(dispatch)}
-                        src={editor}
+                        src={props.theme === 'dark' ? editorDark : editor}
                         data-theme={props.theme}
                         data-dark-theme={props.darkTheme}
                     />
