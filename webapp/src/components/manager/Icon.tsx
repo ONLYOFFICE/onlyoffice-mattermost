@@ -19,15 +19,19 @@
  *
  */
 
+import { GlobalState } from 'mattermost-redux/types/store';
 import managerDark from 'public/images/manager_dark.svg';
 import managerLight from 'public/images/manager_light.svg';
 import React from 'react';
+import { Action, Store } from 'redux';
+import { getCurrentTheme } from 'redux/selectors';
 
 type Props = {
-    theme: string;
+    store: Store<GlobalState, Action<Record<string, unknown>>>;
 };
 
-export function ManagerIcon({theme}: Props) {
+export function ManagerIcon({store}: Props) {
+    const theme = getCurrentTheme(store.getState());
     const icon = theme === 'dark' ? managerDark : managerLight;
     return (
         <img
