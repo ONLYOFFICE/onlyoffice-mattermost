@@ -34,7 +34,7 @@ export default function ConverterFormatSelection({selectedFormat, theme, darkThe
     const i18n = getTranslations();
 
     return (
-        <div 
+        <div
             className='onlyoffice-converter__format-section'
             data-theme={theme}
             data-dark-theme={darkTheme}

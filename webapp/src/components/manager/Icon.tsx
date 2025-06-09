@@ -19,10 +19,9 @@
  *
  */
 
-import React from 'react';
-
 import managerDark from 'public/images/manager_dark.svg';
 import managerLight from 'public/images/manager_light.svg';
+import React from 'react';
 
 type Props = {
     theme: string;

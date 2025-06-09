@@ -45,7 +45,11 @@ export default function OnlyofficeFilePreview(props: Props) {
     const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo);
 
     return (
-        <div className='file-details__container' data-theme={props.theme} data-dark-theme={props.darkTheme}>
+        <div
+            className='file-details__container'
+            data-theme={props.theme}
+            data-dark-theme={props.darkTheme}
+        >
             <a
                 className='file-details__preview'
                 onClick={(e) => e.preventDefault()}

@@ -30,51 +30,13 @@ import Select from 'react-select';
 type Props = {
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
-    theme: string;
-    darkTheme: string | undefined;
 };
 
-const getSelectStyles = (theme: string, darkTheme: string | undefined) => ({
-    control: (provided: any) => ({
-        ...provided,
-        backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
-        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-        ':hover': {
-            borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
-        },
-    }),
-    menu: (provided: any) => ({
-        ...provided,
-        backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
-        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
-        boxShadow: theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
-    }),
-    option: (provided: any, state: any) => {
-        return {
-            ...provided,
-            backgroundColor: theme === 'dark' 
-                ? (state.isFocused ? 'rgba(255, 255, 255, 0.1)' : 'var(--center-channel-bg)')
-                : provided.backgroundColor,
-            color: theme === 'dark' ? '#ffffff' : provided.color,
-            ':hover': {
-                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.15)' : provided.backgroundColor,
-            },
-        };
-    },
-    singleValue: (provided: any) => ({
-        ...provided,
-        color: theme === 'dark' ? '#ffffff' : provided.color,
-    }),
-});
-
-export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[]; darkTheme: string | undefined }) => {
+export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
 
     return (
-        <div
-            className='more-modal__list onlyoffice-permissions__list'
-            data-theme={props.theme}
-        >
+        <div className='more-modal__list onlyoffice-permissions__list'>
             <div>
                 {props.error ? (
                     <div className='onlyoffice-permissions__error-container'>
@@ -88,8 +50,6 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
                                 user={user}
                                 onRemoveUser={props.onRemoveUser}
                                 onChangeUserPermissions={props.onChangeUserPermissions}
-                                theme={props.theme}
-                                darkTheme={props.darkTheme}
                             />
                         ))}
                     </>
@@ -102,15 +62,9 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
     return (
-        <div
-            className='more-modal__row onlyoffice-permissions__row'
-            data-theme={props.theme}
-        >
+        <div className='more-modal__row onlyoffice-permissions__row'>
             <UserIcon {...props}/>
-            <UserDetails
-                user={props.user}
-                theme={props.theme}
-            />
+            <UserDetails user={props.user}/>
             <UserActions {...props}/>
         </div>
     );
@@ -133,7 +87,7 @@ const UserIcon = ({user}: {user: MattermostUser}) => {
     );
 };
 
-const UserDetails = ({user, theme}: {user: MattermostUser; theme: string}) => {
+const UserDetails = ({user}: {user: MattermostUser}) => {
     return (
         <div className='more-modal__details'>
             <div className='more-modal__name onlyoffice-permissions__name'>
@@ -174,7 +128,6 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
-                    styles={getSelectStyles(props.theme, props.darkTheme)}
                 />
             </div>
             <button

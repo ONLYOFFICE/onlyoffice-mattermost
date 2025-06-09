@@ -20,13 +20,13 @@
  */
 
 import docx from 'public/images/docx.svg';
-import pptx from 'public/images/pptx.svg';
-import xlsx from 'public/images/xlsx.svg';
-import pdf from 'public/images/pdf.svg';
-import html from 'public/images/html.svg';
-import txt from 'public/images/txt.svg';
 import form from 'public/images/form.svg';
+import html from 'public/images/html.svg';
 import neutral from 'public/images/neutral.svg';
+import pdf from 'public/images/pdf.svg';
+import pptx from 'public/images/pptx.svg';
+import txt from 'public/images/txt.svg';
+import xlsx from 'public/images/xlsx.svg';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 
