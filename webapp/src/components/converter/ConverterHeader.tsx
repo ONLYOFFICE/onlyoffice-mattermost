@@ -37,12 +37,12 @@ export default function ConverterHeader({theme, onClose}: Props) {
             className='onlyoffice-converter-modal__header'
             data-theme={theme}
         >
-            <span style={{fontWeight: 600}}>
+            <span className='onlyoffice-converter-modal__header__text' style={{fontWeight: 600}}>
                 {i18n['converter.modal_header'] || 'Convert File'}
             </span>
             <button
                 type='button'
-                className='close'
+                className='close onlyoffice-converter-modal__header__close'
                 aria-label='Close'
                 onClick={onClose}
             >
