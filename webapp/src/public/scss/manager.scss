@@ -22,37 +22,22 @@
 }
 
 .onlyoffice-manager-modal__header {
-  padding: 2rem 2.5rem 1rem 2.5rem !important;
+  padding-left: 2rem !important;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid $modal_light_border;
-  font-family: 'Metropolis', 'Open Sans', sans-serif;
-  font-weight: 500;
-  font-size: 22px;
-  line-height: 100%;
-  letter-spacing: 0;
-  vertical-align: middle;
-  background: transparent;
 
-  @include dark-theme {
-    border-bottom: 1px solid $modal_dark_border;
-    color: $modal_dark_text;
+  &__text {
+    font-size: 22px;
+    font-weight: 600;
+    
+    @include dark-theme {
+      color: $text_light;
+    }
   }
 
-  @include light-theme {
-    color: $modal_light_text;
-    background: transparent;
-    border-bottom: 1px solid $modal_light_border;
-  }
-
-  .close {
-    margin-left: auto;
-    font-size: 1.5rem;
-    color: $modal_close_default;
-    opacity: 1;
-    transition: color 0.2s;
-    &:hover {
-      color: $modal_close_hover;
+  &__close {
+    @include dark-theme {
+      color: $text_light;
     }
   }
 }

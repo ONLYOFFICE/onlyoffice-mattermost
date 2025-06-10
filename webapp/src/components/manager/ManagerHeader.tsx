@@ -38,12 +38,12 @@ export default function ManagerHeader({theme, loading, onClose}: Props) {
             className='onlyoffice-manager-modal__header'
             data-theme={theme}
         >
-            <span style={{fontWeight: 600}}>
+            <span className='onlyoffice-manager-modal__header__text'>
                 {i18n['manager.modal_header']}
             </span>
             <button
                 type='button'
-                className='close'
+                className='close onlyoffice-manager-modal__header__close'
                 aria-label='Close'
                 onClick={onClose}
                 disabled={loading}
