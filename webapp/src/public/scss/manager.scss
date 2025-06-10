@@ -114,6 +114,14 @@
     border-color: $modal_focus_border;
     outline: none;
   }
+
+  [data-theme="dark"][data-dark-theme="indigo"] & {
+    border-color: #323845
+  }
+
+  [data-theme="dark"][data-dark-theme="onyx"] & {
+    border-color: #3A3B3F
+  }
 }
 
 .onlyoffice-manager__select-container {
@@ -170,6 +178,14 @@
   &:focus {
     border-color: $modal_focus_border;
     outline: none;
+  }
+
+  [data-theme="dark"][data-dark-theme="indigo"] & {
+    border-color: #323845;
+  }
+
+  [data-theme="dark"][data-dark-theme="onyx"] & {
+    border-color: #3A3B3F;
   }
 }
 
