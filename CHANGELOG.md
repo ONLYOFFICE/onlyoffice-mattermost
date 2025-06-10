@@ -1,5 +1,27 @@
 # Change Log
 
+## 2.0.0
+## Added
+- support for new document formats
+- conversion to OOXML format
+- manual XML conversion to document/spreadsheet
+- conversion of protected documents
+- document creation via new upload option
+- demo server support
+- onyx and Indigo theme support (including editor support)
+
+## Changed
+- refactored server to use fx modules
+- replaced formats service with formats submodule
+- added empty document templates submodule
+- updated document icons
+- improved shard key generation for document editors
+- enhanced configuration validation
+- updated permissions window styles
+
+## Fixed
+- general optimization and bug fixes
+
 ## 1.2.0
 ## Added
 - support mattermost v9 and v10
