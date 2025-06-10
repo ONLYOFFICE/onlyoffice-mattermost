@@ -85,7 +85,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
                 credentials: 'include',
             });
 
-            setFileName('');
+            setFileName('New Document');
             setFileType('docx');
             handleExit();
         } catch (error) {
