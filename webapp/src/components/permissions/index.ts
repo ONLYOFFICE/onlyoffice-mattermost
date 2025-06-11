@@ -23,15 +23,17 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closePermissions} from 'redux/actions';
-import {permissionsModalVisible, permissionsModalFileInfo} from 'redux/selectors';
+import {permissionsModalVisible, permissionsModalFileInfo, getCurrentTheme, getCurrentDarkTheme} from 'redux/selectors';
 
 import type {GlobalState} from 'mattermost-redux/types/store';
 
-import OnlyofficeFilePermissions from './Permissions';
+import OnlyofficeFilePermissions from 'components/permissions/Permissions';
 
 const mapStateToProps = (state: GlobalState) => ({
     visible: permissionsModalVisible(state),
     fileInfo: permissionsModalFileInfo(state),
+    theme: getCurrentTheme(state),
+    darkTheme: getCurrentDarkTheme(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({

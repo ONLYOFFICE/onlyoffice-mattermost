@@ -23,15 +23,16 @@ import {connect} from 'react-redux';
 import type {Dispatch} from 'redux';
 import {bindActionCreators} from 'redux';
 import {closeEditor} from 'redux/actions';
-import {editorModalVisible, editorModalFileInfo} from 'redux/selectors';
+import {editorModalVisible, editorModalFileInfo, getCurrentTheme} from 'redux/selectors';
 
 import type {GlobalState} from 'mattermost-redux/types/store';
 
-import Editor from './Editor';
+import Editor from 'components/editor/Editor';
 
 const mapStateToProps = (state: GlobalState) => ({
     visible: editorModalVisible(state),
     fileInfo: editorModalFileInfo(state),
+    theme: getCurrentTheme(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({

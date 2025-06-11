@@ -1,3 +1,67 @@
-$backdrop_color: rgba(0,0,0,0.25);
-$modal_color: rgb(0, 0, 0);
-$modal_background_color: rgb(255,255,255);
+$text_light: #ffffff;
+$text_dark: #000000;
+
+$brand_blue: #166de0;
+$brand_light_blue: #5DC0E8;
+$brand_orange: #FF6F3D;
+$brand_green: #95C038;
+$brand_accent_blue: #1c58d9;
+$brand_success_green: #2eb85c;
+$brand_error_red: #ff4d4f;
+
+$indigo_background: #1b1d22;
+$indigo_border: rgba(255, 255, 255, 0.08);
+
+$modal_background_light: #ffffff;
+$modal_background_dark: var(--center-channel-bg, #1b1d22);
+$modal_dark_text: #f4f6fa;
+$modal_light_text: #3F4350;
+$modal_dark_border: var(--center-channel-border, #2c2f36);
+$modal_dark_input_border: var(--center-channel-border, #4f5660);
+$modal_light_border: #f0f0f0;
+$modal_close_default: #888;
+$modal_close_hover: #333;
+$modal_label_light: #444;
+$modal_input_border: #D8D8D9;
+$modal_focus_border: #1C58D9;
+$modal_error_light: #ff4d4f;
+$modal_error_dark: #ff6b81;
+
+$backdrop_light: #f5f5f5;
+$backdrop_dark: var(--center-channel-bg, #191919);
+$backdrop_overlay: rgba(0, 0, 0, 0.5);
+
+$shadow_light: #cfcfcf;
+$shadow_dark: rgba(33, 33, 33, 0.2);
+$shadow_overlay: rgba(0, 0, 0, 0.1);
+
+$preview_background_light: #FFFFFF;
+$preview_background_dark: #191A20;
+$preview_border_light: #DEDEDE;
+$preview_border_dark: #37393E;
+$preview_title_light: #000000E6;
+$preview_title_dark: #FFFFFFE6;
+$preview_subtitle_light: #00000080;
+$preview_subtitle_dark: #FFFFFF80;
+
+$modal_border_dark: rgba(255, 255, 255, 0.08);
+$modal_selected_option: rgba(255, 255, 255, 0.1);
+
+$converter_info_bg: rgba(28, 88, 217, 0.08);
+$converter_info_light_bg: rgba(255, 255, 255, 0.5);
+$converter_info_dark_bg: rgba(255, 255, 255, 0.05);
+$converter_error_bg: rgba(255, 77, 79, 0.1);
+$converter_button_light_bg: #f0f0f0;
+$converter_button_hover_bg: rgba(255, 255, 255, 0.15);
+
+@mixin light-theme {
+  [data-theme="light"] & {
+    @content;
+  }
+}
+
+@mixin dark-theme {
+  [data-theme="dark"] & {
+    @content;
+  }
+}

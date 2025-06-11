@@ -1,0 +1,10 @@
+[submodule "public/template"]
+	path = public/template
+	url = https://github.com/ONLYOFFICE/document-templates.git
+	branch = main/new
+[submodule "webapp/src/public/formats"]
+	path = webapp/src/public/formats
+	url = https://github.com/ONLYOFFICE/document-formats.git
+[submodule "public/formats"]
+	path = public/formats
+	url = https://github.com/ONLYOFFICE/document-formats.git

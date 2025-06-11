@@ -11,9 +11,16 @@
   top: 0;
   z-index: 2000;
   overflow: hidden;
-  background-color: #f5f5f5;
   animation-name: fadeIn;
   animation-duration: 0.3s;
+
+  @include light-theme {
+    background-color: $backdrop_light;
+  }
+
+  @include dark-theme {
+    background-color: $backdrop_dark;
+  }
 }
 
 .onlyoffice-modal__backdrop_hide {
@@ -26,19 +33,36 @@
   padding: 0;
   overflow: hidden;
   border: none;
-  color: $modal_color;
-  background-color: $modal_background_color;
   animation-name: fadeIn;
   animation-duration: 0.3s;
+
+  @include light-theme {
+    color: $text_dark;
+    background-color: $modal_background_light;
+  }
+
+  @include dark-theme {
+    color: $text_light;
+    background-color: $modal_background_dark;
+  }
 }
 
 .onlyoffice-editor__loader-container {
   position: absolute;
   width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  @include light-theme {
+    background-color: $modal_background_light;
+  }
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+  }
 }
 
 .onlyoffice-editor__loader-container_hidden {
@@ -64,7 +88,7 @@
   height: 12px;
   opacity: .5;
   animation: loaderOne 4s ease-in-out infinite;
-  background: #5DC0E8;
+  background: $brand_light_blue;
 }
 
 .onlyoffice-editor__loader-icon div:nth-child(2) {
@@ -74,7 +98,7 @@
   height: 32px;
   opacity: 1;
   animation: loaderTwo 4s ease-in-out infinite;
-  background: #FF6F3D;
+  background: $brand_orange;
 }
 
 .onlyoffice-editor__loader-icon div:nth-child(3) {
@@ -84,7 +108,7 @@
   height: 12px;
   opacity: .5;
   animation: loaderThree 4s ease-in-out infinite;
-  background: #95C038;
+  background: $brand_green;
 }
 
 @keyframes loaderOne {
@@ -201,7 +225,14 @@
   display: flex;
   align-items: center;
   text-align: center;
-  color: #000000;
+
+  @include light-theme {
+    color: $text_dark;
+  }
+
+  @include dark-theme {
+    color: $text_light;
+  }
 }
 
 .onlyoffice-editor__loader-btn {
@@ -213,8 +244,8 @@
   order: 0;
   flex-grow: 0;
   font-family: sans-serif;
-  background: #166de0;
-  color: #ffffff;
+  background: $brand_blue;
+  color: $text_light;
   border: none;
   padding: 7px 12px;
   gap: 12px;
@@ -222,8 +253,17 @@
   height: 48px;
   border-radius: 2px;
   transition: all 0.5s ease-in-out;
-}
+  cursor: pointer;
 
-.onlyoffice-editor__loader-btn:hover {
-  box-shadow: 3px 7px #cfcfcf;
+  [data-theme="light"] & {
+    &:hover {
+      box-shadow: 3px 7px $shadow_dark;
+    }
+  }
+
+  [data-theme="dark"] & {
+    &:hover {
+      box-shadow: 3px 7px $shadow_light;
+    }
+  }
 }

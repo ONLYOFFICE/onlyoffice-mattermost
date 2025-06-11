@@ -19,19 +19,23 @@
  *
  */
 
-import {isExtensionSupported, isFileAuthor} from 'util/file';
+import {isConvertSupported, isExtensionSupported, isFileAuthor} from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import manifest from 'manifest';
+import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
-import {openEditor, openPermissions} from 'redux/actions';
+import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 import type {GlobalState} from 'mattermost-redux/types/store';
 
+import OnlyofficeFileConverter from 'components/converter';
 import OnlyofficeEditor from 'components/editor';
+import OnlyofficeManager from 'components/manager';
+import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
 
@@ -44,6 +48,8 @@ export default class Plugin {
         registry.registerReducer(Reducer);
         registry.registerRootComponent(OnlyofficeEditor);
         registry.registerRootComponent(OnlyofficeFilePermissions);
+        registry.registerRootComponent(OnlyofficeManager);
+        registry.registerRootComponent(OnlyofficeFileConverter);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerFileDropdownMenuAction) {
@@ -57,6 +63,11 @@ export default class Plugin {
                 () => getTranslations()['plugin.access_button'],
                 (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
             );
+            registry.registerFileDropdownMenuAction(
+                (fileInfo: FileInfo) => isConvertSupported(fileInfo.extension) && isFileAuthor(fileInfo),
+                () => getTranslations()['plugin.convert_button'],
+                (fileInfo: FileInfo) => dispatch(openConverter(fileInfo)),
+            );
         }
 
         registry.registerFilePreviewComponent(
@@ -64,6 +75,12 @@ export default class Plugin {
                 return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
             },
             OnlyofficeFilePreview,
+        );
+
+        registry.registerFileUploadMethod(
+            <ManagerIcon store={store}/>,
+            () => dispatch(openManager()),
+            'ONLYOFFICE',
         );
     }
 }

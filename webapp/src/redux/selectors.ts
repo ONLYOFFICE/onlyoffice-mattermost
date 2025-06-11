@@ -19,6 +19,7 @@
  *
  */
 
+import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
 import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {id as pluginId} from '../manifest';
@@ -26,8 +27,24 @@ import {id as pluginId} from '../manifest';
 //@ts-expect-error: Suppressing error because state['plugins-' + pluginId] might be undefined
 const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
 
+export const converterModalVisible = (state: GlobalState) => getPluginState(state).converterModal.isVisible;
+export const converterModalFileInfo = (state: GlobalState) => getPluginState(state).converterModal.fileInfo;
+
 export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
 export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModal.fileInfo;
 
 export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
 export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;
+
+export const managerModalVisible = (state: GlobalState) => getPluginState(state).managerModal.isVisible;
+
+export const getCurrentTheme = (state: GlobalState) => {
+    const theme = getTheme(state);
+    const dark = theme.type === 'indigo' || theme.type === 'onyx';
+    return dark ? 'dark' : 'light';
+};
+
+export const getCurrentDarkTheme = (state: GlobalState) => {
+    const theme = getTheme(state);
+    return theme.type === 'indigo' || theme.type === 'onyx' ? theme.type : undefined;
+};

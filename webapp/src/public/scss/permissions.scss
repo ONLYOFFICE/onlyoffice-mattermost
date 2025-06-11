@@ -1,31 +1,189 @@
+@import './colors';
+@import './mixins';
+
 #onlyoffice-permissions-modal {
   font-family: 'Open sans';
   padding-left: 0px !important;
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+    color: $text_light;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+    color: $text_dark;
+  }
 }
 
 .onlyoffice-permissions-modal__header {
   padding-left: 2rem !important;
   display: flex;
   align-items: center;
+
+  &__text {
+    font-size: 22px;
+    font-weight: 600;
+    
+    @include dark-theme {
+      color: $text_light;
+    }
+  }
+
+  &__close {
+    @include dark-theme {
+      color: $text_light;
+    }
+  }
 }
 
 .onlyoffice-permissions-modal__body {
   opacity: 1;
   visibility: visible;
   transition: visibility 0.1s linear, opacity 0.1s linear;
+
+  &--compact {
+    max-height: 20rem;
+  }
 }
 
 .onlyoffice-permissions__access-header {
   max-width: 60%;
+
+  @include dark-theme {
+    color: $text_light;
+  }
+
+  @include light-theme {
+    color: $text_dark;
+  }
+}
+
+.onlyoffice-permissions {
+  &__filter-row {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+
+    &--compact {
+      margin: 0;
+      max-height: 10rem;
+    }
+  }
+
+  &__user-column {
+    margin-bottom: 1rem;
+  }
+
+  &__user-select-container {
+    display: flex;
+  }
+
+  &__async-select {
+    flex-grow: 1;
+    margin-right: 8px;
+  }
+
+  &__bottom-section {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__permission-select {
+    margin-left: 10px;
+  }
+
+  &__list {
+    padding: 0 1.5rem;
+  }
+
+  &__error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  &__error-text {
+    font-size: 7px;
+  }
+
+  &__name {
+    display: block;
+  }
+
+  &__actions {
+    display: flex;
+    padding-right: 0.3rem;
+    margin: 0;
+    justify-content: flex-end;
+  }
+
+  &__select-container {
+    width: auto;
+    min-width: 113px;
+    max-width: 15rem;
+  }
+
+  &__remove-button {
+    margin-left: 8px;
+  }
+
+  &__row {
+    padding: 0;
+  }
 }
 
 .filtered-user-list {
   scrollbar-width: none;
   min-height: 400px;
+
+  @include dark-theme {
+    background-color: $modal_background_dark;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+  }
 }
 
 .react-select__value-container {
   max-width: 40rem;
+}
+
+.react-select-container {
+  @include dark-theme {
+    .react-select__control {
+      background-color: var(--center-channel-bg);
+      border-color: $modal_border_dark;
+    }
+
+    .react-select__menu {
+      background-color: var(--center-channel-bg);
+    }
+
+    .react-select__option {
+      color: $text_light;
+      
+      &:hover {
+        background-color: $modal_selected_option;
+      }
+    }
+
+    .react-select__single-value,
+    .react-select__input {
+      color: $text_light;
+    }
+
+    .react-select__multi-value {
+      background-color: $modal_selected_option;
+      
+      .react-select__multi-value__label {
+        color: $text_light;
+      }
+    }
+  }
 }
 
 @media all and (max-width: 497px) {

@@ -9,11 +9,13 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/mattermost/mattermost-plugin-starter-template/build v0.0.0-20230331081206-b874f4747e3b
 	github.com/mattermost/mattermost/server/public v0.1.13
-	github.com/mattermost/mattermost/server/v8 v8.0.0-20250519214222-5021fc72c683
+	github.com/mattermost/mattermost/server/v8 v8.0.0-20250528110533-6fc60583eb78
 	github.com/mileusna/useragent v1.3.5
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
+	go.uber.org/fx v1.24.0
+	golang.org/x/sync v0.14.0
 	sigs.k8s.io/yaml v1.4.0
 )
 
@@ -21,7 +23,7 @@ require (
 	dario.cat/mergo v1.0.2 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/ProtonMail/go-crypto v1.2.0 // indirect
+	github.com/ProtonMail/go-crypto v1.3.0 // indirect
 	github.com/beevik/etree v1.5.1 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
@@ -54,6 +56,9 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
+	go.uber.org/dig v1.19.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.26.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
@@ -92,9 +97,9 @@ require (
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/text v0.25.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250519155744-55703ea1f237 // indirect
-	google.golang.org/grpc v1.72.1 // indirect
+	google.golang.org/grpc v1.72.2 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
