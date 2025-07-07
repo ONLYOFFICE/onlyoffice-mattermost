@@ -72,7 +72,7 @@ export default class Plugin {
 
         registry.registerFilePreviewComponent(
             (fileInfo: FileInfo) => {
-                return isExtensionSupported(fileInfo.extension) && fileInfo.extension !== 'pdf';
+                return isExtensionSupported(fileInfo.extension);
             },
             OnlyofficeFilePreview,
         );
