@@ -4,6 +4,8 @@
 #onlyoffice-permissions-modal {
   font-family: 'Open sans';
   padding-left: 0px !important;
+  border-radius: 8px;
+  overflow: hidden;
 
   @include dark-theme {
     background-color: $modal_background_dark;
@@ -138,6 +140,8 @@
 .filtered-user-list {
   scrollbar-width: none;
   min-height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
 
   @include dark-theme {
     background-color: $modal_background_dark;
