@@ -22,7 +22,7 @@
 import {getTranslations} from 'util/lang';
 
 import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 import type {Dispatch} from 'redux';
@@ -49,13 +49,36 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
+const getDefaultFileName = (type: string, i18n: Record<string, string>): string => {
+    switch (type) {
+        case 'pptx':
+            return i18n['manager.default_name.presentation'];
+        case 'xlsx':
+            return i18n['manager.default_name.spreadsheet'];
+        default:
+            return i18n['manager.default_name.document'];
+    }
+};
+
 export default function Manager({visible, theme, darkTheme, close}: Props) {
     const i18n = getTranslations();
     const channelId = useSelector(getCurrentChannelId);
     const [fileType, setFileType] = useState<string>('docx');
-    const [fileName, setFileName] = useState<string>('New Document');
+    const [fileName, setFileName] = useState<string>(getDefaultFileName('docx', i18n));
     const [error, setError] = useState<string>(i18n['manager.error_empty_name']);
     const [loading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        const currentDefaultName = getDefaultFileName(fileType, i18n);
+        const otherDefaultNames = [
+            i18n['manager.default_name.document'],
+            i18n['manager.default_name.presentation'],
+            i18n['manager.default_name.spreadsheet'],
+        ];
+
+        if (otherDefaultNames.includes(fileName))
+            setFileName(currentDefaultName);
+    }, [fileType, i18n]);
 
     if (!visible) {
         return null;
@@ -85,7 +108,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
                 credentials: 'include',
             });
 
-            setFileName('New Document');
+            setFileName(getDefaultFileName('docx', i18n));
             setFileType('docx');
             handleExit();
         } catch (error) {
