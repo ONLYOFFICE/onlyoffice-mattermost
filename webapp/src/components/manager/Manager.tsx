@@ -65,7 +65,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
     const channelId = useSelector(getCurrentChannelId);
     const [fileType, setFileType] = useState<string>('docx');
     const [fileName, setFileName] = useState<string>(getDefaultFileName('docx', i18n));
-    const [error, setError] = useState<string>(i18n['manager.error_empty_name']);
+    const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -95,6 +95,11 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
             return;
         }
 
+        if (fileName.length > 250) {
+            setError(i18n['manager.error_name_too_long']);
+            return;
+        }
+
         setLoading(true);
         setError('');
 
@@ -120,10 +125,12 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
 
     const handleFileNameChange = (value: string): void => {
         setFileName(value);
-        if (value.trim()) {
-            setError('');
-        } else {
+        if (!value.trim()) {
             setError(i18n['manager.error_empty_name']);
+        } else if (value.length > 250) {
+            setError(i18n['manager.error_name_too_long']);
+        } else {
+            setError('');
         }
     };
 
@@ -159,6 +166,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
 
                 <ManagerActions
                     loading={loading}
+                    error={error}
                     onClose={handleExit}
                     onCreate={handleCreate}
                 />

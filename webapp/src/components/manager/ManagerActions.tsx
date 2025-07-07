@@ -25,12 +25,14 @@ import React from 'react';
 
 type Props = {
     loading: boolean;
+    error: string;
     onClose: () => void;
     onCreate: () => void;
 };
 
 export default function ManagerActions({
     loading,
+    error,
     onClose,
     onCreate,
 }: Props) {
@@ -48,7 +50,7 @@ export default function ManagerActions({
             <button
                 className='btn btn-primary'
                 onClick={onCreate}
-                disabled={loading}
+                disabled={loading || Boolean(error)}
             >
                 {loading ? 'Creating...' : i18n['manager.create_button']}
             </button>

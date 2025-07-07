@@ -33,6 +33,7 @@
     "manager.error_empty_name": "File name cannot be empty.",
     "manager.error_invalid_name": "Invalid file name.",
     "manager.error_create_failed": "Failed to create file. Please try again.",
+    "manager.error_name_too_long": "File name cannot be longer than 250 characters.",
     "converter.modal_header": "File conversion",
     "converter.convert_button": "Convert",
     "converter.cancel_button": "Cancel",
