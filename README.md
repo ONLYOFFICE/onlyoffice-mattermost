@@ -5,14 +5,23 @@ This app enables users to edit office documents from [Mattermost](https://matter
 
 The app allows to:
 
-* Edit text documents, spreadsheets, and presentations.
+* Open text documents, spreadsheets, presentations, pdf, and diagram.
 * Share files with basic permission types - viewing/editing.
 * Co-edit documents in real-time.
 
 Supported formats:
 
-* For editing: DOCX, XLSX, PPTX.
-* For viewing: XLS, XLSX, CSV, XLSM, XLT, XLTM, ODS, FODS, OTS, PPS, PPSX, PPSM, PPT, PPTX, PPTM, POT, POTX, POTM, ODP, FODP, OTP, DOC, DOCX, DOCM, DOT, DOTX, DOTM, ODT, FODT, OTT, RTF.
+**For viewing:**
+* **WORD**: DOC, DOCM, DOCX, DOT, DOTM, DOTX, EPUB, FB2, FODT, HTM, HTML, HWP, HWPX, MHT, MHTML, ODT, OTT, PAGES, RTF, STW, SXW, TXT, WPS, WPT, XML
+* **CELL**: CSV, ET, ETT, FODS, NUMBERS, ODS, OTS, SXC, XLS, XLSM, XLSX, XLT, XLTM, XLTX
+* **SLIDE**: DPS, DPT, FODP, KEY, ODG, ODP, OTP, POT, POTM, POTX, PPS, PPSM, PPSX, PPT, PPTM, PPTX, SXI
+* **PDF**: DJVU, DOCXF, OFORM, OXPS, XPS
+* **DIAGRAM**: VSDM, VSDX, VSSM, VSSX, VSTM, VSTX
+
+**For editing:**
+* **WORD**: DOCM, DOCX, DOTM, DOTX
+* **CELL**: XLSB, XLSM, XLSX, XLTM, XLTX
+* **SLIDE**: POTM, POTX, PPSM, PPSX, PPTM, PPTX
 
 ## Installing ONLYOFFICE Docs
 
