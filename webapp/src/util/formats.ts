@@ -118,6 +118,8 @@ export const formatHelpers = {
             return 'xlsx';
         case 'slide':
             return 'pptx';
+        case 'diagram':
+            return 'vsdx';
         default:
             return 'docx';
         }

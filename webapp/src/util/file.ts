@@ -49,6 +49,12 @@ const ExtensionIcons = new Map([
     ['word', neutral],
     ['cell', neutral],
     ['slide', neutral],
+    ['vsdx', neutral],
+    ['vsdm', neutral],
+    ['vssm', neutral],
+    ['vssx', neutral],
+    ['vstm', neutral],
+    ['vstx', neutral],
 ]);
 
 export function getIconByExt(fileExt: string): string {

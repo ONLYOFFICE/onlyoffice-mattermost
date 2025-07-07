@@ -109,6 +109,8 @@ endif
 submodules:
 	@echo Initializing and updating git submodules...
 	@git submodule update --init --recursive
+	@echo Pulling latest changes from submodules...
+	@git submodule update --remote --merge
 
 ## Generates a tar bundle of the plugin for install.
 .PHONY: bundle
