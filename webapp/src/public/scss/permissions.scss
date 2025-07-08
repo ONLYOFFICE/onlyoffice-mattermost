@@ -46,6 +46,19 @@
 
   &--compact {
     max-height: 20rem;
+    display: flex;
+    flex-direction: column;
+
+    .filtered-user-list {
+      min-height: unset;
+      height: auto;
+      flex: 0 1 auto;
+      margin-top: 1rem;
+    }
+
+    .filter-row {
+      height: 10rem;
+    }
   }
 }
 
