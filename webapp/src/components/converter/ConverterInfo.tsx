@@ -39,7 +39,7 @@ export default function ConverterInfo() {
                     </ul>
                     <div className='onlyoffice-converter__info-note'>
                         <span className='onlyoffice-converter__note-text'>
-                            {i18n['converter.conversion_note'] || 'The converted file will be saved as a new attachment in this channel.'}
+                            {i18n['converter.conversion_note'] || 'The converted file will be saved as a new attachment in this thread.'}
                         </span>
                     </div>
                 </div>

@@ -20,12 +20,9 @@
  */
 
 import docx from 'public/images/docx.svg';
-import form from 'public/images/form.svg';
-import html from 'public/images/html.svg';
 import neutral from 'public/images/neutral.svg';
 import pdf from 'public/images/pdf.svg';
 import pptx from 'public/images/pptx.svg';
-import txt from 'public/images/txt.svg';
 import xlsx from 'public/images/xlsx.svg';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
@@ -33,37 +30,27 @@ import type {FileInfo} from 'mattermost-redux/types/files';
 import {getCookie} from './cookie';
 import {formatManager, formatHelpers} from './formats';
 
-const ExtensionIcons = new Map([
-    ['xlsx', xlsx],
-    ['pptx', pptx],
-    ['docx', docx],
-    ['doc', docx],
-    ['ppt', pptx],
-    ['xls', xlsx],
-    ['csv', xlsx],
-    ['pdf', pdf],
-    ['xml', html],
-    ['html', html],
-    ['txt', txt],
-    ['oform', form],
-    ['word', neutral],
-    ['cell', neutral],
-    ['slide', neutral],
-    ['vsdx', neutral],
-    ['vsdm', neutral],
-    ['vssm', neutral],
-    ['vssx', neutral],
-    ['vstm', neutral],
-    ['vstx', neutral],
-]);
-
 export function getIconByExt(fileExt: string): string {
     const sanitized = fileExt.replaceAll('.', '');
-    if (ExtensionIcons.has(sanitized)) {
-        return ExtensionIcons.get(sanitized)!;
-    }
     const format = formatManager.getFormatByName(sanitized);
-    return format ? ExtensionIcons.get(format.type)! : '';
+    if (format) {
+        switch (format.type) {
+            case 'word':
+                return docx;
+            case 'slide':
+                return pptx;
+            case 'cell':
+                return xlsx;
+            case 'pdf':
+                return pdf;
+            case 'diagram':
+                return neutral;
+            default:
+                break;
+        }
+    }
+
+    return neutral;
 }
 
 export function getFileTypeByExt(fileExt: string): string {

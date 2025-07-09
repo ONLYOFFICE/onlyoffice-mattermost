@@ -4,6 +4,8 @@
 #onlyoffice-permissions-modal {
   font-family: 'Open sans';
   padding-left: 0px !important;
+  border-radius: 8px;
+  overflow: hidden;
 
   @include dark-theme {
     background-color: $modal_background_dark;
@@ -44,6 +46,19 @@
 
   &--compact {
     max-height: 20rem;
+    display: flex;
+    flex-direction: column;
+
+    .filtered-user-list {
+      min-height: unset;
+      height: auto;
+      flex: 0 1 auto;
+      margin-top: 1rem;
+    }
+
+    .filter-row {
+      height: 10rem;
+    }
   }
 }
 
@@ -138,6 +153,8 @@
 .filtered-user-list {
   scrollbar-width: none;
   min-height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
 
   @include dark-theme {
     background-color: $modal_background_dark;

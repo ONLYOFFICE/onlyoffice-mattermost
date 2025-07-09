@@ -73,7 +73,6 @@ export default function ManagerForm({
                     data-theme={theme}
                     data-dark-theme={darkTheme}
                 />
-                {error && !fileName.trim() && <div className='onlyoffice-manager__error'>{error}</div>}
             </div>
 
             <div className='onlyoffice-manager__form-row'>
@@ -97,6 +96,8 @@ export default function ManagerForm({
                     </select>
                 </div>
             </div>
+
+            {error && <div className='onlyoffice-manager__error'>{error}</div>}
         </>
     );
 }

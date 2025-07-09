@@ -113,6 +113,9 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 return {
                     ...provided,
                     minHeight: '100%',
+                    minWidth: '113px',
+                    maxWidth: '250px',
+                    width: 'fit-content',
                     backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
                     borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
                     '&:hover': {
@@ -125,6 +128,13 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
                 borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
                 boxShadow: props.theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
+                minWidth: '100%',
+                width: 'fit-content',
+            }),
+            menuList: (provided: any) => ({
+                ...provided,
+                width: 'fit-content',
+                minWidth: '100%',
             }),
             option: (provided: any, state: any) => {
                 let backgroundColor = 'white';
@@ -147,6 +157,9 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     backgroundColor,
                     color,
                     cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    padding: '8px 12px',
+                    width: '100%',
                     ':hover': {
                         backgroundColor: props.theme === 'dark' ? 
                             (props.darkTheme === 'indigo' ? '#262B39' : 
@@ -165,6 +178,13 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
             singleValue: (provided: any) => ({
                 ...provided,
                 color: props.theme === 'dark' ? '#ffffff' : provided.color,
+                marginRight: '8px',
+                marginLeft: '4px',
+            }),
+            valueContainer: (provided: any) => ({
+                ...provided,
+                padding: '2px 0',
+                width: 'fit-content',
             }),
             input: (provided: any) => ({
                 ...provided,

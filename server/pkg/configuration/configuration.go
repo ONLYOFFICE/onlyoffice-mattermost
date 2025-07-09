@@ -110,49 +110,33 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 		return
 	}
 
-	hasUserCredentials := c.DESAddress != "" &&
-		c.DESJwt != "" &&
-		c.DESJwtHeader != "" &&
-		c.DESJwtPrefix != "" &&
-		(c.DESAddress != c.DemoAddress ||
-			c.DESJwt != c.DemoSecret ||
-			c.DESJwtHeader != c.DemoHeader ||
-			c.DESJwtPrefix != c.DemoPrefix)
-
-	if hasUserCredentials {
-		return
-	}
-
 	now := time.Now().UnixMilli()
-
 	start, kvErr := api.KVGet(DemoKey)
 	if kvErr != nil || len(start) == 0 {
 		if err := api.KVSet(DemoKey, []byte(strconv.FormatInt(now, 10))); err == nil {
 			c.DemoExpires = now + _DemoPeriodMillis
-			c.DESAddress = c.DemoAddress
-			c.DESJwt = c.DemoSecret
-			c.DESJwtHeader = c.DemoHeader
-			c.DESJwtPrefix = c.DemoPrefix
 		}
-		return
+
+		start = []byte(strconv.FormatInt(now, 10))
 	}
 
 	startTime, parseErr := strconv.ParseInt(string(start), 10, 64)
 	if parseErr != nil {
 		if err := api.KVSet(DemoKey, []byte(strconv.FormatInt(now, 10))); err == nil {
 			c.DemoExpires = now + _DemoPeriodMillis
-			c.DESAddress = c.DemoAddress
-			c.DESJwt = c.DemoSecret
-			c.DESJwtHeader = c.DemoHeader
-			c.DESJwtPrefix = c.DemoPrefix
 		}
-		return
+
+		startTime = now
 	}
 
 	expirationTime := startTime + _DemoPeriodMillis
-	if now > expirationTime {
-		c.DemoEnabled = false
-		c.DemoExpires = expirationTime
+	c.DemoExpires = expirationTime
+	if now <= expirationTime {
+		c.DESAddress = c.DemoAddress
+		c.DESJwt = c.DemoSecret
+		c.DESJwtHeader = c.DemoHeader
+		c.DESJwtPrefix = c.DemoPrefix
+	} else {
 		if c.DESAddress == c.DemoAddress {
 			c.DESAddress = ""
 		}
@@ -165,14 +149,6 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 		if c.DESJwtPrefix == c.DemoPrefix {
 			c.DESJwtPrefix = ""
 		}
-	} else {
-		c.DemoExpires = expirationTime
-		if !hasUserCredentials {
-			c.DESAddress = c.DemoAddress
-			c.DESJwt = c.DemoSecret
-			c.DESJwtHeader = c.DemoHeader
-			c.DESJwtPrefix = c.DemoPrefix
-		}
 	}
 }
 
@@ -180,20 +156,23 @@ func (c *Configuration) IsValid() error {
 	demoActive := c.DemoEnabled && c.DemoExpires > time.Now().UnixMilli()
 	hasCredentials := c.DESAddress != "" && c.DESJwt != "" && c.DESJwtHeader != "" && c.DESJwtPrefix != ""
 
-	if !demoActive && !hasCredentials {
-		return &common.BadConfigurationError{
-			Property: "Document Server Configuration",
-			Reason:   "No valid credentials provided and demo mode is not active",
-		}
-	}
-
 	if demoActive {
 		return nil
 	}
 
-	if c.DESAddress == "" {
-		return &common.InvalidDocumentServerAddressError{
-			Reason: "Document server address is empty",
+	if c.DemoEnabled {
+		if !hasCredentials {
+			return &common.BadConfigurationError{
+				Property: "Document Server Configuration",
+				Reason:   "Demo mode has expired and no valid credentials provided",
+			}
+		}
+	}
+
+	if !hasCredentials {
+		return &common.BadConfigurationError{
+			Property: "Document Server Configuration",
+			Reason:   "No valid credentials provided and demo mode is not active",
 		}
 	}
 

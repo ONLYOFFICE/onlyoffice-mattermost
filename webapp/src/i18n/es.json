@@ -27,9 +27,13 @@
     "manager.file_name_label": "File name",
     "manager.create_button": "Create",
     "manager.cancel_button": "Cancel",
+    "manager.default_name.document": "New Document",
+    "manager.default_name.spreadsheet": "New Spreadsheet",
+    "manager.default_name.presentation": "New Presentation",
     "manager.error_empty_name": "File name cannot be empty.",
     "manager.error_invalid_name": "Invalid file name.",
     "manager.error_create_failed": "Failed to create file. Please try again.",
+    "manager.error_name_too_long": "File name cannot be longer than 250 characters.",
     "converter.modal_header": "File conversion",
     "converter.convert_button": "Convert",
     "converter.cancel_button": "Cancel",
@@ -46,5 +50,5 @@
     "converter.word_conversion": "Word documents (.doc, .odt, .rtf, etc.) → DOCX",
     "converter.excel_conversion": "Spreadsheets (.xls, .ods, .csv, etc.) → XLSX",
     "converter.powerpoint_conversion": "Presentations (.ppt, .odp, etc.) → PPTX",
-    "converter.conversion_note": "The converted file will be saved as a new attachment in this channel."
+    "converter.conversion_note": "The converted file will be saved as a new attachment in this thread."
 }
