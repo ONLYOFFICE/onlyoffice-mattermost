@@ -19,12 +19,13 @@
  *
  */
 
-import { GlobalState } from 'mattermost-redux/types/store';
 import managerDark from 'public/images/manager_dark.svg';
 import managerLight from 'public/images/manager_light.svg';
 import React from 'react';
-import { Action, Store } from 'redux';
-import { getCurrentTheme } from 'redux/selectors';
+import type {Action, Store} from 'redux';
+import {getCurrentTheme} from 'redux/selectors';
+
+import type {GlobalState} from 'mattermost-redux/types/store';
 
 type Props = {
     store: Store<GlobalState, Action<Record<string, unknown>>>;

@@ -146,10 +146,17 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 }
 
                 if (state.isFocused) {
-                    backgroundColor = props.theme === 'dark' ? 
-                        (props.darkTheme === 'indigo' ? '#262B39' : 
-                         props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                        : '#F1F2F3';
+                    if (props.theme === 'dark') {
+                        if (props.darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (props.darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
                 }
 
                 return {
@@ -161,17 +168,31 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     padding: '8px 12px',
                     width: '100%',
                     ':hover': {
-                        backgroundColor: props.theme === 'dark' ? 
-                            (props.darkTheme === 'indigo' ? '#262B39' : 
-                             props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (props.theme === 'dark') {
+                                if (props.darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (props.darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                         color,
                     },
                     ':active': {
-                        backgroundColor: props.theme === 'dark' ? 
-                            (props.darkTheme === 'indigo' ? '#262B39' : 
-                             props.darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (props.theme === 'dark') {
+                                if (props.darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (props.darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                     },
                 };
             },

@@ -105,10 +105,17 @@ export const PermissionsHeader: React.FC<Props> = ({
                 }
 
                 if (state.isFocused) {
-                    backgroundColor = theme === 'dark' ? 
-                        (darkTheme === 'indigo' ? '#262B39' : 
-                         darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                        : '#F1F2F3';
+                    if (theme === 'dark') {
+                        if (darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
                 }
 
                 return {
@@ -117,17 +124,31 @@ export const PermissionsHeader: React.FC<Props> = ({
                     color,
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: theme === 'dark' ? 
-                            (darkTheme === 'indigo' ? '#262B39' : 
-                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                         color,
                     },
                     ':active': {
-                        backgroundColor: theme === 'dark' ? 
-                            (darkTheme === 'indigo' ? '#262B39' : 
-                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                     },
                 };
             },
@@ -254,10 +275,17 @@ export const PermissionsHeader: React.FC<Props> = ({
                 }
 
                 if (state.isFocused) {
-                    backgroundColor = theme === 'dark' ? 
-                        (darkTheme === 'indigo' ? '#262B39' : 
-                         darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                        : '#F1F2F3';
+                    if (theme === 'dark') {
+                        if (darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
                 }
 
                 return {
@@ -266,17 +294,31 @@ export const PermissionsHeader: React.FC<Props> = ({
                     color,
                     cursor: 'pointer',
                     ':hover': {
-                        backgroundColor: theme === 'dark' ? 
-                            (darkTheme === 'indigo' ? '#262B39' : 
-                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                         color,
                     },
                     ':active': {
-                        backgroundColor: theme === 'dark' ? 
-                            (darkTheme === 'indigo' ? '#262B39' : 
-                             darkTheme === 'onyx' ? '#2D2E33' : 'rgba(255, 255, 255, 0.1)') 
-                            : '#F1F2F3',
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
                     },
                 };
             },

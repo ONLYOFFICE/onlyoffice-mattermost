@@ -51,12 +51,12 @@ const removeInAnimation = (): void => {
 
 const getDefaultFileName = (type: string, i18n: Record<string, string>): string => {
     switch (type) {
-        case 'pptx':
-            return i18n['manager.default_name.presentation'];
-        case 'xlsx':
-            return i18n['manager.default_name.spreadsheet'];
-        default:
-            return i18n['manager.default_name.document'];
+    case 'pptx':
+        return i18n['manager.default_name.presentation'];
+    case 'xlsx':
+        return i18n['manager.default_name.spreadsheet'];
+    default:
+        return i18n['manager.default_name.document'];
     }
 };
 
@@ -76,8 +76,9 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
             i18n['manager.default_name.spreadsheet'],
         ];
 
-        if (otherDefaultNames.includes(fileName))
+        if (otherDefaultNames.includes(fileName)) {
             setFileName(currentDefaultName);
+        }
     }, [fileType, i18n]);
 
     if (!visible) {

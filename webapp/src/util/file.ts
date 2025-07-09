@@ -35,18 +35,18 @@ export function getIconByExt(fileExt: string): string {
     const format = formatManager.getFormatByName(sanitized);
     if (format) {
         switch (format.type) {
-            case 'word':
-                return docx;
-            case 'slide':
-                return pptx;
-            case 'cell':
-                return xlsx;
-            case 'pdf':
-                return pdf;
-            case 'diagram':
-                return neutral;
-            default:
-                break;
+        case 'word':
+            return docx;
+        case 'slide':
+            return pptx;
+        case 'cell':
+            return xlsx;
+        case 'pdf':
+            return pdf;
+        case 'diagram':
+            return neutral;
+        default:
+            break;
         }
     }
 
