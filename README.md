@@ -1,21 +1,22 @@
 ﻿# ONLYOFFICE app for Mattermost
-This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using ONLYOFFICE Docs packaged as Document Server - [Community or Enterprise Edition](#onlyoffice-docs-editions).
+
+This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using ONLYOFFICE Docs packaged as Document Server.
 
 ## Features
 
 The app allows to:
 
-* Open text documents, spreadsheets, presentations, pdf, and diagram.
+* Open office files sent in personal and group Mattermost chats for viewing and real-time co-editing.
 * Share files with basic permission types - viewing/editing.
-* Co-edit documents in real-time.
+* Create files in chats.
 
-Supported formats:
+### Supported formats
 
 **For viewing:**
 * **WORD**: DOC, DOCM, DOCX, DOT, DOTM, DOTX, EPUB, FB2, FODT, HTM, HTML, HWP, HWPX, MD, MHT, MHTML, ODT, OTT, PAGES, RTF, STW, SXW, TXT, WPS, WPT, XML
 * **CELL**: CSV, ET, ETT, FODS, NUMBERS, ODS, OTS, SXC, XLS, XLSM, XLSX, XLT, XLTM, XLTX
 * **SLIDE**: DPS, DPT, FODP, KEY, ODG, ODP, OTP, POT, POTM, POTX, PPS, PPSM, PPSX, PPT, PPTM, PPTX, SXI
-* **PDF**: DJVU, DOCXF, OFORM, OXPS, PDF, XPS
+* **PDF**: DJVU, OXPS, PDF, XPS
 * **DIAGRAM**: VSDM, VSDX, VSSM, VSSX, VSTM, VSTX
 
 **For editing:**
@@ -26,17 +27,25 @@ Supported formats:
 
 ## Installing ONLYOFFICE Docs
 
+**Self-hosted editors**
+
 You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Mattermost and any end clients. ONLYOFFICE Document Server must also be able to POST to Mattermost directly.
 
-Document Server and Mattermost can be installed either on different computers or on the same machine. In case you choose the latter option, you need to set up a custom port for Document Server. 
+ONLYOFFICE Document Server and Mattermost can be installed either on different computers or on the same machine. In case you choose the latter option, you need to set up a custom port for Document Server. 
 
-You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition with pro features.
+You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition.
 
-To install free Community version, use [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or follow [these instructions](https://helpcenter.onlyoffice.com/installation/docs-community-install-ubuntu.aspx) for Debian, Ubuntu, or derivatives.
+To install free Community version, use [Docker](https://github.com/onlyoffice/Docker-DocumentServer) (recommended) or follow [these instructions](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-ubuntu.aspx) for Debian, Ubuntu, or derivatives.
 
-To install Enterprise Edition, follow the instructions [here](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx).
+To install Enterprise Edition, follow the instructions [here](https://helpcenter.onlyoffice.com/docs/installation/enterprise).
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
+
+**ONLYOFFICE Docs Cloud**
+
+You can also opt for ONLYOFFICE Docs Cloud which doesn't require downloading and installation.
+
+To get ONLYOFFICE Docs Cloud, get started [here](https://www.onlyoffice.com/docs-registration.aspx).
 
 ## Installing ONLYOFFICE app for Mattermost
 
@@ -58,14 +67,16 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
     make
     ```
 
-## Plugin settings
+## App settings
 
 ![Settings](assets/screen_settings.png)
 
-- **Document Editing Service address**:
-  The URL and port of the installed ONLYOFFICE Document Server.
+As a Mattermost administrator, configure the app via the System Console. App Marketplace -> find ONLYOFFICE app -> click the Configure button.
 
-- **Secret key**:
+- **ONLYOFFICE Docs address**:
+  The URL of the installed ONLYOFFICE Docs (Document Server).
+
+- **Document Server JWT Secret**:
    Starting from version 7.2, JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. Specify your own secret key in the Mattermost plugin configuration. In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/), specify the same secret key and enable the validation.
 
 - **JWT Header**:
@@ -74,9 +85,11 @@ Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffi
 - **JWT Prefix**:
   Used to specify the ONLYOFFICE Docs prefix.
 
+You can also connect to the public test server of ONLYOFFICE Docs for one month by checking the corresponding box.
+
 ## Using ONLYOFFICE app for Mattermost
 
-Users are able to open files sent in personal and group Mattermost chats for viewing and co-editing.
+**Context menu**
 
 When files are sent in the chat message, the following actions are available in the file context menu by clicking the ⋮ symbol: 
 
@@ -85,17 +98,41 @@ When files are sent in the chat message, the following actions are available in 
 
 ![Settings](assets/screen_actions.png)
 
+**Creating a new file**
+
+Users can create new files directly in the chat:  click on the paperclip icon in the message input field and click ONLYOFFICE. Next, specify the file name, select the file format (Document, Spreadsheet, Presentation), and click the Create button.  A message with the created file will be sent to the chat.
+
+**Opening the editors**
+
+Clicking on the file name opens a preview of the file with the Open button. 
+
 When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFFICE editor opens in the same window.
 
 ![Settings](assets/screen_editor.png)
 
-The author of the message with attached documents is able to change access rights to the file via the context menu using the **Change access rights** option. This action is available both in personal and group chats.
+You can also open the file via the file context menu in the message (not available for the minimum  Mattermost version 5.37.2).
+
+**Setting file access rights**
 
 ![Settings](assets/screen_share.png)
+
+By default, the sender of a message has full editing access to the file, while all recipients are granted read-only access. Only the sender can modify user access rights through the context menu by selecting the *Change access rights* option.
+
+**In personal chats:** Access rights can be adjusted using a drop-down menu. When the access level is changed, the ONLYOFFICE bot will send a notification to the chat.
+
+**In group chats:** A *Default access rights* option is available for quickly setting permissions for all participants. To grant specific access rights to an individual, simply type their name in the search bar and click Add.
+
+The user will then appear in a list where you can assign their desired access level. To remove a user, click the cross icon next to their name. Their access will revert to the permissions set under *Default access rights*.
+
+Whenever access levels are updated, the ONLYOFFICE bot will notify the chat. For individual changes, the bot will send a personal notification to the affected participant.
+
+**Tracking changes**
 
 ONLYOFFICE bot sends notifications about changes in the document specifying the name of the user who made those changes.
 
 ![Settings](assets/screen_bot.png)
+
+All change notifications can be found within the message's discussion thread. Simply click the arrow on the right edge of the message to open a panel on the right, where the full history of the message's discussion is displayed.
 
 ## ONLYOFFICE Docs editions
 
