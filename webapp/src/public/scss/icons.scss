@@ -71,6 +71,6 @@ $pdf-exts: djvu, docxf, oform, oxps, pdf, xps;
 $diagram-exts: vsdx, vsdm, vssm, vssx, vstm, vstx;
 @each $ext in $diagram-exts {
   a[aria-label$='.#{$ext}'] .file-icon.diagram, a[aria-label$='.#{$ext}'] .file-icon.generic {
-    background-image: url("../images/neutral_icon.svg") !important;
+    background-image: url("../images/diagram_icon.svg") !important;
   }
 }

@@ -19,6 +19,7 @@
  *
  */
 
+import diagram from 'public/images/diagram.svg';
 import docx from 'public/images/docx.svg';
 import neutral from 'public/images/neutral.svg';
 import pdf from 'public/images/pdf.svg';
@@ -44,7 +45,7 @@ export function getIconByExt(fileExt: string): string {
         case 'pdf':
             return pdf;
         case 'diagram':
-            return neutral;
+            return diagram;
         default:
             break;
         }
