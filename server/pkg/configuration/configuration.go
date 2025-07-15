@@ -81,16 +81,10 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DemoSecret = "sn2puSUF7muF5Jas"
 
 	if !c.DemoEnabled || c.DemoExpires <= time.Now().UnixMilli() {
-		if c.DESAddress == c.DemoAddress {
+		if strings.EqualFold(c.DESAddress, c.DemoAddress) {
 			c.DESAddress = ""
-		}
-		if c.DESJwt == c.DemoSecret {
 			c.DESJwt = ""
-		}
-		if c.DESJwtHeader == c.DemoHeader {
 			c.DESJwtHeader = ""
-		}
-		if c.DESJwtPrefix == c.DemoPrefix {
 			c.DESJwtPrefix = ""
 		}
 	}
@@ -137,16 +131,10 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 		c.DESJwtHeader = c.DemoHeader
 		c.DESJwtPrefix = c.DemoPrefix
 	} else {
-		if c.DESAddress == c.DemoAddress {
+		if strings.EqualFold(c.DESAddress, c.DemoAddress) {
 			c.DESAddress = ""
-		}
-		if c.DESJwt == c.DemoSecret {
 			c.DESJwt = ""
-		}
-		if c.DESJwtHeader == c.DemoHeader {
 			c.DESJwtHeader = ""
-		}
-		if c.DESJwtPrefix == c.DemoPrefix {
 			c.DESJwtPrefix = ""
 		}
 	}
