@@ -112,7 +112,7 @@ When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFF
 
 ![Settings](assets/screen_editor.png)
 
-You can also open the file via the file context menu in the message (not available for the minimum  Mattermost version 5.37.2).
+You can also open the file via the file context menu in the message.
 
 **Setting file access rights**
 
