@@ -29,7 +29,7 @@ import Select from 'react-select';
 
 type Props = {
     theme: string;
-    darkTheme: string;
+    darkTheme: string | undefined;
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
 };

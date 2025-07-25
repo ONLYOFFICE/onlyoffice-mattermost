@@ -264,6 +264,13 @@ export const PermissionsHeader: React.FC<Props> = ({
                 ...provided,
                 backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
                 borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                width: 'max-content',
+                minWidth: '100%',
+            }),
+            menuList: (provided: any) => ({
+                ...provided,
+                width: 'max-content',
+                minWidth: '100%',
             }),
             option: (provided: any, state: any) => {
                 let backgroundColor = 'white';
@@ -412,7 +419,14 @@ export const PermissionsHeader: React.FC<Props> = ({
                         components={{
                             IndicatorSeparator: () => null,
                         }}
-                        styles={styles.permissionSelectStyles}
+                        styles={{
+                            ...styles.permissionSelectStyles,
+                            menuPortal: (base: any) => ({
+                                ...base,
+                                zIndex: 9999,
+                            }),
+                        }}
+                        menuPortalTarget={typeof window === 'undefined' ? undefined : document.body}
                     />
                 </div>
             </div>
