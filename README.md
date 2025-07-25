@@ -102,6 +102,8 @@ When files are sent in the chat message, the following actions are available in 
 
 Users can create new files directly in the chat:  click on the paperclip icon in the message input field and click ONLYOFFICE. Next, specify the file name, select the file format (Document, Spreadsheet, Presentation), and click the Create button.  A message with the created file will be sent to the chat.
 
+![Settings](assets/screen_create.png)
+
 **Opening the editors**
 
 Clicking on the file name opens a preview of the file with the Open button. 
@@ -129,8 +131,6 @@ Whenever access levels are updated, the ONLYOFFICE bot will notify the chat. For
 **Tracking changes**
 
 ONLYOFFICE bot sends notifications about changes in the document specifying the name of the user who made those changes.
-
-![Settings](assets/screen_bot.png)
 
 All change notifications can be found within the message's discussion thread. Simply click the arrow on the right edge of the message to open a panel on the right, where the full history of the message's discussion is displayed.
 
