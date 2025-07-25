@@ -46,7 +46,7 @@ type Props = {
     close: () => (dispatch: Dispatch) => void;
     fileInfo: FileInfo;
     theme: string;
-    darkTheme: string;
+    darkTheme: string | undefined;
 };
 
 const removeInAnimation = (): void => {
