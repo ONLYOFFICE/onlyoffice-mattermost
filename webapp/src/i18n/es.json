@@ -29,7 +29,7 @@
     "manager.cancel_button": "Cancelar",
     "manager.default_name.document": "Nuevo documento",
     "manager.default_name.spreadsheet": "Nueva hoja de cálculo",
-    "manager.default_name.presentation": "Nueva presentación.",
+    "manager.default_name.presentation": "Nueva presentación",
     "manager.error_empty_name": "El nombre del archivo no puede estar vacío.",
     "manager.error_invalid_name": "Nombre de archivo inválido.",
     "manager.error_create_failed": "Error al crear el archivo. Por favor, inténtalo de nuevo.",
