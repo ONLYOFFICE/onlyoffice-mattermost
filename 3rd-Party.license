@@ -24,6 +24,10 @@ ESLint        - ESLint is a tool for identifying and reporting on patterns found
 License:        MIT
 License File:   eslint.license
 
+FX            - A dependency injection based application framework for Go. (https://github.com/uber-go/fx)
+License:        MIT
+License File:   fx.license
+
 Gorilla/mux   - Package gorilla/mux implements a request router and dispatcher for matching incoming requests to their respective handler. (https://github.com/gorilla/mux)
 License:        BSD-3-Clause License
 License File:   mux.license

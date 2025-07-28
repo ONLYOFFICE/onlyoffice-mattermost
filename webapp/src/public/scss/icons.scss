@@ -3,189 +3,74 @@
 }
 
 .ppt{
-  background-image: url("../images/generic_slide_icon.svg") !important;
+  background-image: url("../images/pptx_icon.svg") !important;
 }
 
 .excel{
   background-image: url("../images/xlsx_icon.svg") !important;
 }
 
-a[aria-label $= '.doc']{
-  .word{
-    background-image: url("../images/generic_word_icon.svg") !important;
+$word-exts: doc, docm, docx, dot, dotm, dotx, epub, fb2, fodt, htm, html, hwp, hwpx, md, mht, mhtml, odt, ott, pages, rtf, stw, sxw, txt, wps, wpt, xml;
+@each $ext in $word-exts {
+  a[aria-label$='.#{$ext}'] .file-icon.word, a[aria-label$='.#{$ext}'] .file-icon.generic {
+    background-image: url("../images/docx_icon.svg") !important;
+  }
+
+  @if $ext == xml {
+    a[aria-label$='.xml'] .file-icon.code {
+      background-image: url("../images/docx_icon.svg") !important;
+    }
+  }
+
+  @if $ext == md {
+    a[aria-label$='.md'] .file-icon.code {
+      background-image: url("../images/docx_icon.svg") !important;
+    }
+  }
+
+  @if $ext == html {
+    a[aria-label$='.html'] .file-icon.code {
+      background-image: url("../images/docx_icon.svg") !important;
+    }
+  }
+
+  @if $ext == txt {
+    a[aria-label$='.txt'] .file-icon.text {
+      background-image: url("../images/docx_icon.svg") !important;
+    }
+  }
+
+  @if $ext == rtf {
+    a[aria-label$='.rtf'] .file-icon.text {
+      background-image: url("../images/docx_icon.svg") !important;
+    }
   }
 }
 
-a[aria-label $= '.pptx']{
-  .ppt{
+$cell-exts: csv, et, ett, fods, numbers, ods, ots, sxc, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx;
+@each $ext in $cell-exts {
+  a[aria-label$='.#{$ext}'] .file-icon.excel, a[aria-label$='.#{$ext}'] .file-icon.generic {
+    background-image: url("../images/xlsx_icon.svg") !important;
+  }
+}
+
+$slide-exts: dps, dpt, fodp, key, odg, odp, otp, pot, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, sxi;
+@each $ext in $slide-exts {
+  a[aria-label$='.#{$ext}'] .file-icon.ppt, a[aria-label$='.#{$ext}'] .file-icon.generic {
     background-image: url("../images/pptx_icon.svg") !important;
   }
 }
 
-a[aria-label $= '.xls']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
+$pdf-exts: djvu, docxf, oform, oxps, pdf, xps;
+@each $ext in $pdf-exts {
+  a[aria-label$='.#{$ext}'] .file-icon.pdf, a[aria-label$='.#{$ext}'] .file-icon.generic {
+    background-image: url("../images/pdf_icon.svg") !important;
   }
 }
 
-a[aria-label $= '.csv']{
-  .excel{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.odt']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.docm']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.dot']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.dotx']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.dotm']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.fodt']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.ott']{
-  .generic{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.rtf']{
-  .text{
-    background-image: url("../images/generic_word_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.ods']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.fods']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.ots']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.odp']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.fodp']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.otp']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.pps']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.ppsx']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.ppsm']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.pptm']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.pot']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.potx']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.potm']{
-  .generic{
-    background-image: url("../images/generic_slide_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.xlsm']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.xlt']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.xltx']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.xltm']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
-  }
-}
-
-a[aria-label $= '.xlmt']{
-  .generic{
-    background-image: url("../images/generic_cell_icon.svg") !important;
+$diagram-exts: vsdx, vsdm, vssm, vssx, vstm, vstx;
+@each $ext in $diagram-exts {
+  a[aria-label$='.#{$ext}'] .file-icon.diagram, a[aria-label$='.#{$ext}'] .file-icon.generic {
+    background-image: url("../images/diagram_icon.svg") !important;
   }
 }

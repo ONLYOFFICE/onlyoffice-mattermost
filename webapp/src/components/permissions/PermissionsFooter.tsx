@@ -21,8 +21,8 @@
 
 import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {getTranslations} from 'util/lang';
-import type {SubmitPermissionsRequest} from 'util/permission';
 import {getFilePermissions} from 'util/permission';
+import type {SubmitPermissionsRequest} from 'util/permission';
 import type {MattermostUser} from 'util/user';
 
 import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
@@ -37,6 +37,8 @@ type Props = {
     users: MattermostUser[];
     wildcardAccess: string;
     onClose: () => void;
+    theme: string;
+    darkTheme: string | undefined;
 };
 
 export const PermissionsFooter: React.FC<Props> = ({
@@ -45,6 +47,8 @@ export const PermissionsFooter: React.FC<Props> = ({
     users,
     wildcardAccess,
     onClose,
+    theme,
+    darkTheme,
 }) => {
     const i18n = getTranslations();
 
@@ -80,16 +84,16 @@ export const PermissionsFooter: React.FC<Props> = ({
 
     return (
         <div
-            className='filter-controls'
-            style={{display: 'flex', justifyContent: 'flex-end'}}
+            className='filter-controls onlyoffice-permissions__actions'
+            data-theme={theme}
+            data-dark-theme={darkTheme}
         >
             <Button
-                className='btn btn-md'
-                style={{marginRight: '1rem', border: 'none'}}
+                className='btn btn-md btn-tertiary'
                 disabled={loading}
                 onClick={onClose}
             >
-                <span style={{color: 'var(--button-bg)'}}>
+                <span>
                     {i18n['permissions.modal_button_cancel']}
                 </span>
             </Button>

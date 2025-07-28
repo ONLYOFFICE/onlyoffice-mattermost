@@ -21,10 +21,14 @@
 
 import {combineReducers} from 'redux';
 
+import {converterModal} from './converter';
 import {editorModal} from './editor';
+import {managerModal} from './manager';
 import {permissionsModal} from './permissions';
 
 export default combineReducers({
     permissionsModal,
     editorModal,
+    managerModal,
+    converterModal,
 });

@@ -1,0 +1,292 @@
+@import './colors';
+@import './mixins';
+
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: $backdrop_overlay !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease-in-out !important;
+  z-index: 999 !important;
+
+  &.in {
+    opacity: 0.5 !important;
+  }
+}
+
+#onlyoffice-converter-modal {
+  font-family: 'Open sans';
+  padding-left: 0px !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: 600px !important;
+  
+  @media screen and (max-width: 768px) {
+    width: 100% !important;
+    left: 0 !important;
+    transform: none !important;
+  }
+  
+  @include dark-theme {
+    background-color: $modal_background_dark;
+    color: $modal_dark_text;
+  }
+
+  @include light-theme {
+    background-color: $modal_background_light;
+    color: $modal_light_text;
+  }
+}
+
+.onlyoffice-converter-modal__header {
+  padding-left: 2rem !important;
+  display: flex;
+  align-items: center;
+
+  &__text {
+    font-size: 22px;
+    font-weight: 600;
+    
+    @include dark-theme {
+      color: $text_light;
+    }
+  }
+
+  &__close {
+    @include dark-theme {
+      color: $text_light;
+    }
+  }
+}
+
+.onlyoffice-converter-modal__body {
+  padding: 2rem 2.5rem 1.5rem 2.5rem;
+  min-width: auto;
+  opacity: 1;
+  visibility: visible;
+  transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  overflow-y: auto;
+  flex: 1 1 auto;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.onlyoffice-converter__container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.onlyoffice-converter__conversion-info {
+  background-color: $converter_info_bg;
+  border-radius: 8px;
+  padding: 1.5rem;
+
+  @media screen and (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.onlyoffice-converter__info-section {
+  h4 {
+    font-family: Open Sans;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    letter-spacing: 0%;
+    vertical-align: middle;
+    color: $brand_accent_blue;
+  }
+}
+
+.onlyoffice-converter__info-description {
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  font-family: Open Sans;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+
+  @include dark-theme {
+    color: $modal_dark_text;
+  }
+}
+
+.onlyoffice-converter__conversion-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+
+  li {
+    margin-bottom: 0.5rem;
+    padding-left: 24px;
+    position: relative;
+
+    &:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: $brand_accent_blue;
+    }
+
+    @include dark-theme {
+      color: $modal_dark_text;
+    }
+  }
+}
+
+.onlyoffice-converter__info-note {
+  background-color: $converter_info_light_bg;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border-left: 3px solid $brand_accent_blue;
+
+  @include dark-theme {
+    background-color: $converter_info_dark_bg;
+  }
+}
+
+.onlyoffice-converter__note-text {
+  font-family: Open Sans;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 21px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: $text_dark;
+
+  @include dark-theme {
+    color: $modal_dark_text;
+  }
+}
+
+.onlyoffice-converter__error {
+  color: $brand_error_red;
+  font-weight: 500;
+  padding: 0.75rem;
+  background-color: $converter_error_bg;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.onlyoffice-converter__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+}
+
+.onlyoffice-converter__password-section {
+    margin: 20px 0;
+    padding: 0 20px;
+}
+
+.onlyoffice-converter__password-input-container {
+    width: 100%;
+}
+
+.onlyoffice-converter__password-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 4px;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    transition: all 0.2s ease-in-out;
+
+    &:focus {
+        border-color: var(--button-bg);
+        outline: none;
+        box-shadow: 0 0 0 1px var(--button-bg);
+        transform: translateY(-1px);
+    }
+
+    &::placeholder {
+        color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+}
+
+.onlyoffice-converter__format-section {
+    margin: 20px 0;
+    padding: 0 20px;
+}
+
+.onlyoffice-converter__format-title {
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: var(--center-channel-color);
+}
+
+.onlyoffice-converter__format-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+.onlyoffice-converter__format-button {
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    background-color: $converter_button_light_bg;
+    color: $text_dark;
+
+    &:hover:not(.selected) {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px $shadow_overlay;
+    }
+
+    &.document.selected {
+        background-color: $brand_blue !important;
+        color: $text_light !important;
+        box-shadow: 0 2px 4px $shadow_overlay;
+    }
+
+    &.cell.selected {
+        background-color: $brand_success_green !important;
+        color: $text_light !important;
+        box-shadow: 0 2px 4px $shadow_overlay;
+    }
+
+    @include dark-theme {
+        background-color: $modal_border_dark;
+        color: $text_light;
+
+        &:not(.selected):hover {
+            background-color: $converter_button_hover_bg;
+        }
+    }
+}

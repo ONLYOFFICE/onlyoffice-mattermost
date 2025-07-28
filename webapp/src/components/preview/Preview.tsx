@@ -23,16 +23,21 @@ import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import editor from 'public/images/editor.svg';
+import editorDark from 'public/images/editor_dark.svg';
 import permissions from 'public/images/permissions.svg';
+import permissionsDark from 'public/images/permissions_dark.svg';
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {openEditor, openPermissions} from 'redux/actions';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
+
 import 'public/scss/preview.scss';
 
 type Props = {
     fileInfo: FileInfo;
+    theme: string;
+    darkTheme: string | undefined;
 }
 
 export default function OnlyofficeFilePreview(props: Props) {
@@ -42,7 +47,11 @@ export default function OnlyofficeFilePreview(props: Props) {
     const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo);
 
     return (
-        <div className='file-details__container'>
+        <div
+            className='file-details__container'
+            data-theme={props.theme}
+            data-dark-theme={props.darkTheme}
+        >
             <a
                 className='file-details__preview'
                 onClick={(e) => e.preventDefault()}
@@ -61,7 +70,11 @@ export default function OnlyofficeFilePreview(props: Props) {
                 <div className='file-details__info'>
                     {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}
                 </div>
-                <div className='file-details__onlyoffice'>
+                <div
+                    className='file-details__onlyoffice'
+                    data-theme={props.theme}
+                    data-dark-theme={props.darkTheme}
+                >
                     {
                         showPermissions &&
                             (
@@ -69,7 +82,9 @@ export default function OnlyofficeFilePreview(props: Props) {
                                     className='onlyoffice_preview__btn'
                                     alt={'permissions button'}
                                     onClick={() => openPermissions(props.fileInfo)(dispatch)}
-                                    src={permissions}
+                                    src={props.theme === 'dark' ? permissionsDark : permissions}
+                                    data-theme={props.theme}
+                                    data-dark-theme={props.darkTheme}
                                 />
                             )
                     }
@@ -77,7 +92,9 @@ export default function OnlyofficeFilePreview(props: Props) {
                         className='onlyoffice_preview__btn'
                         alt={'open editor'}
                         onClick={() => openEditor(props.fileInfo)(dispatch)}
-                        src={editor}
+                        src={props.theme === 'dark' ? editorDark : editor}
+                        data-theme={props.theme}
+                        data-dark-theme={props.darkTheme}
                     />
                 </div>
             </div>

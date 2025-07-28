@@ -27,5 +27,9 @@ export async function http<T>(path: string, config: RequestInit): Promise<T> {
         throw new Error(response.statusText);
     }
 
-    return response.json().catch();
+    try {
+        return await response.json();
+    } catch (error) {
+        return undefined as T;
+    }
 }

@@ -104,6 +104,14 @@ else
 endif
 endif
 
+## Initializes and updates all git submodules.
+.PHONY: submodules
+submodules:
+	@echo Initializing and updating git submodules...
+	@git submodule update --init --recursive
+	@echo Pulling latest changes from submodules...
+	@git submodule update --remote --merge
+
 ## Generates a tar bundle of the plugin for install.
 .PHONY: bundle
 bundle:
@@ -130,7 +138,7 @@ endif
 
 ## Builds and bundles the plugin.
 .PHONY: dist
-dist:	server webapp bundle
+dist:	submodules server webapp bundle
 
 ## Builds and installs the plugin to a server.
 .PHONY: deploy

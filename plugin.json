@@ -6,7 +6,7 @@
     "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
     "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
     "icon_path": "assets/logo.svg",
-    "version": "1.2.0",
+    "version": "2.0.0",
     "min_server_version": "9.11.0",
     "server": {
         "executables": {
@@ -26,17 +26,16 @@
         "settings": [
             {
                 "key": "DESAddress",
-                "display_name": "Document Editing Service address: ",
+                "display_name": "ONLYOFFICE Docs address: ",
                 "type": "text",
-                "help_text": "ONLYOFFICE Document Service Location specifies the address of the server with the document services installed. Please change the '<documentserver>' for the server address in the below line.",
+                "help_text": "This field specifies the address of the server with ONLYOFFICE Docs installed. Please change the '<documentserver>' for the server address in the above line.",
                 "placeholder": "https://<documentserver>:<port>/",
                 "default": "https://<documentserver>:<port>/"
             },
             {
                 "key": "DESJwt",
-                "display_name": "Secret key: ",
+                "display_name": "Document Server JWT Secret: ",
                 "type": "text",
-                "help_text": "Document server JWT secret.",
                 "placeholder": "Enter your secret key",
                 "default": ""
             },
@@ -53,6 +52,12 @@
                 "type": "text",
                 "placeholder": "Enter your JWT header prefix",
                 "default": "Bearer "
+            },
+            {
+                "key": "DemoEnabled",
+                "display_name": "Connection to demo ONLYOFFICE Docs server enabled: ",
+                "type": "bool",
+                "default": false
             }
         ]
     }

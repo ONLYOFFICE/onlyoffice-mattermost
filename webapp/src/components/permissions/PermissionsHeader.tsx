@@ -21,11 +21,11 @@
 
 import {debounceUsersLoad} from 'util/func';
 import {getTranslations} from 'util/lang';
-import type {FileAccess} from 'util/permission';
 import {getFileAccess} from 'util/permission';
+import type {FileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
 
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Button} from 'react-bootstrap';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
@@ -39,6 +39,8 @@ type Props = {
     fileInfo: FileInfo;
     wildcardAccess: string;
     users: MattermostUser[];
+    theme: string;
+    darkTheme: string | undefined;
     onSetWildcardAccess: (value: any) => void;
     onAppendUsers: (newUsers: MattermostUser[]) => void;
 };
@@ -51,8 +53,285 @@ export const PermissionsHeader: React.FC<Props> = ({
     users,
     onSetWildcardAccess,
     onAppendUsers,
+    theme,
+    darkTheme,
 }) => {
     const i18n = getTranslations();
+    const styles = useMemo(() => ({
+        selectStyles: {
+            container: (provided: any) => ({...provided, height: '100%'}),
+            control: (provided: any) => {
+                let backgroundColor = provided.backgroundColor;
+                if (theme === 'dark') {
+                    if (darkTheme === 'indigo') {
+                        backgroundColor = '#1b1d22';
+                    } else {
+                        backgroundColor = '#23272f';
+                    }
+                }
+                return {
+                    ...provided,
+                    minHeight: '100%',
+                    backgroundColor,
+                    borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                    '&:hover': {
+                        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
+                    },
+                };
+            },
+            menu: (provided: any) => {
+                let backgroundColor = provided.backgroundColor;
+                if (theme === 'dark') {
+                    if (darkTheme === 'indigo') {
+                        backgroundColor = '#1b1d22';
+                    } else {
+                        backgroundColor = '#23272f';
+                    }
+                }
+                return {
+                    ...provided,
+                    backgroundColor,
+                    borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                    boxShadow: theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
+                };
+            },
+            option: (provided: any, state: any) => {
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
+
+                if (theme === 'dark') {
+                    backgroundColor = 'var(--center-channel-bg)';
+                    color = '#ffffff';
+                }
+
+                if (state.isFocused) {
+                    if (theme === 'dark') {
+                        if (darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color,
+                    cursor: 'pointer',
+                    ':hover': {
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                        color,
+                    },
+                    ':active': {
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                    },
+                };
+            },
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+            input: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+            placeholder: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? 'rgba(255, 255, 255, 0.5)' : provided.color,
+            }),
+            multiValue: (provided: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0',
+                borderRadius: '49px',
+                margin: '2px 4px',
+                padding: '2px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+            }),
+            multiValueLabel: (provided: any) => ({
+                ...provided,
+                textAlign: 'center',
+                color: theme === 'dark' ? '#ffffff' : '#3d3c40',
+                fontSize: '12px',
+                fontWeight: 400,
+                lineHeight: '16px',
+                padding: 0,
+            }),
+            multiValueRemove: (provided: any) => ({
+                ...provided,
+                width: '10px',
+                height: '10px',
+                minWidth: '10px',
+                minHeight: '10px',
+                borderRadius: '50%',
+                margin: 0,
+                padding: 0,
+                fontSize: '0.8rem',
+                border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid #ababad',
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : '#ababad',
+                color: theme === 'dark' ? '#ffffff' : '#f0f0f0',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ':hover': {
+                    backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.3)' : '#9c9c9e',
+                    border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.4)' : '1px solid #9c9c9e',
+                },
+            }),
+        },
+        permissionSelectStyles: {
+            control: (provided: any) => {
+                return {
+                    ...provided,
+                    width: 'auto',
+                    height: '32px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    boxShadow: 'none',
+                    backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : 'transparent',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    padding: '4px 10px 5px 12px',
+                    ':hover': {
+                        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#1C58D914',
+                    },
+                };
+            },
+            valueContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+            }),
+            indicatorsContainer: (provided: any) => ({
+                ...provided,
+                padding: 0,
+                display: 'flex',
+                justifyContent: 'flex-end',
+            }),
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                marginRight: '6px',
+            }),
+            dropdownIndicator: (provided: any) => ({
+                ...provided,
+                color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                padding: 0,
+                marginRight: '0px',
+                ':hover': {
+                    color: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                },
+                svg: {
+                    width: '14px',
+                    height: '14px',
+                    fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                    ':hover': {
+                        fill: theme === 'dark' ? '#ffffff' : '#1C58D9',
+                    },
+                },
+            }),
+            menu: (provided: any) => ({
+                ...provided,
+                backgroundColor: theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+                borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                width: 'max-content',
+                minWidth: '100%',
+            }),
+            menuList: (provided: any) => ({
+                ...provided,
+                width: 'max-content',
+                minWidth: '100%',
+            }),
+            option: (provided: any, state: any) => {
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
+
+                if (theme === 'dark') {
+                    backgroundColor = 'var(--center-channel-bg)';
+                    color = '#ffffff';
+                }
+
+                if (state.isFocused) {
+                    if (theme === 'dark') {
+                        if (darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color,
+                    cursor: 'pointer',
+                    ':hover': {
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                        color,
+                    },
+                    ':active': {
+                        backgroundColor: (() => {
+                            if (theme === 'dark') {
+                                if (darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                    },
+                };
+            },
+        },
+    }), [theme]);
+
     const permissionsOptions = getFileAccess().map((entry: FileAccess) => ({
         value: entry.toString(),
         label:
@@ -81,18 +360,17 @@ export const PermissionsHeader: React.FC<Props> = ({
         }
     };
 
+    const filterRowClass = `filter-row onlyoffice-permissions__filter-row${channel ? '' : ' onlyoffice-permissions__filter-row--compact'}`;
+
     return (
         <div
-            className='filter-row'
-            style={channel ? {marginBottom: '1rem', marginTop: '1rem'} : {maxHeight: '10rem'}}
+            className={filterRowClass}
+            data-theme={theme}
         >
             {channel && (
-                <div
-                    className='col-xs-12'
-                    style={{marginBottom: '1rem'}}
-                >
-                    <div style={{display: 'flex'}}>
-                        <div style={{flexGrow: 1, marginRight: '0.5rem'}}>
+                <div className='col-xs-12 onlyoffice-permissions__user-column'>
+                    <div className='onlyoffice-permissions__user-select-container'>
+                        <div className='onlyoffice-permissions__async-select'>
                             <AsyncSelect
                                 id='onlyoffice-permissions-select'
                                 placeholder={i18n['permissions.modal_search_placeholder']}
@@ -110,52 +388,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                                     DropdownIndicator: () => null,
                                     IndicatorSeparator: () => null,
                                 }}
-                                styles={{
-                                    container: (provided: any) => ({...provided, height: '100%'}),
-                                    control: (provided: any) => ({...provided, minHeight: '100%'}),
-                                    multiValue: (provided: any) => ({
-                                        ...provided,
-                                        backgroundColor: '#f0f0f0',
-                                        borderRadius: '49px',
-                                        margin: '2px 4px',
-                                        padding: '2px 4px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '6px',
-                                    }),
-                                    multiValueLabel: (provided: any) => ({
-                                        ...provided,
-                                        textAlign: 'center',
-                                        color: '#3d3c40',
-                                        fontSize: '12px',
-                                        fontWeight: 400,
-                                        lineHeight: '16px',
-                                        padding: 0,
-                                    }),
-                                    multiValueRemove: (provided: any) => ({
-                                        ...provided,
-                                        width: '10px',
-                                        height: '10px',
-                                        minWidth: '10px',
-                                        minHeight: '10px',
-                                        borderRadius: '50%',
-                                        margin: 0,
-                                        padding: 0,
-                                        fontSize: '0.8rem',
-                                        lineHeight: 1,
-                                        border: '1px solid #ababad',
-                                        backgroundColor: '#ababad',
-                                        color: '#f0f0f0',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        ':hover': {
-                                            backgroundColor: '#9c9c9e',
-                                        },
-                                    }),
-                                }}
+                                styles={styles.selectStyles}
                             />
                         </div>
                         <Button
@@ -168,26 +401,17 @@ export const PermissionsHeader: React.FC<Props> = ({
                     </div>
                 </div>
             )}
-            <div
-                className='col-sm-12'
-                style={{
-                    marginTop: '2rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                }}
-            >
+            <div className='col-sm-12 onlyoffice-permissions__bottom-section'>
                 <span className='member-count pull-left onlyoffice-permissions__access-header'>
                     <span>{accessHeader}</span>
                 </span>
-                <div style={{marginLeft: '10px'}}>
+                <div className='onlyoffice-permissions__permission-select'>
                     <Select
                         isSearchable={false}
                         value={{
                             value: wildcardAccess,
                             label:
-                i18n[`types.permissions.${wildcardAccess.toLowerCase() as 'edit' | 'read'}`] ||
-                wildcardAccess,
+                                i18n[`types.permissions.${String(wildcardAccess).toLowerCase() as 'edit' | 'read'}`] || wildcardAccess,
                         }}
                         options={permissionsOptions}
                         onChange={(selected) => onSetWildcardAccess(selected?.value)}
@@ -196,57 +420,13 @@ export const PermissionsHeader: React.FC<Props> = ({
                             IndicatorSeparator: () => null,
                         }}
                         styles={{
-                            control: (provided: any) => ({
-                                ...provided,
-                                width: 'auto',
-                                height: '32px',
-                                border: 'none',
-                                borderRadius: '4px',
-                                boxShadow: 'none',
-                                backgroundColor: 'transparent',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                padding: '4px 10px 5px 12px',
-                                ':hover': {
-                                    backgroundColor: '#1C58D914',
-                                },
-                            }),
-                            valueContainer: (provided: any) => ({
-                                ...provided,
-                                padding: 0,
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                            }),
-                            indicatorsContainer: (provided: any) => ({
-                                ...provided,
-                                padding: 0,
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                            }),
-                            singleValue: (provided: any) => ({
-                                ...provided,
-                                color: '#1C58D9',
-                                marginRight: '6px',
-                            }),
-                            dropdownIndicator: (provided: any) => ({
-                                ...provided,
-                                color: '#1C58D9',
-                                padding: 0,
-                                marginRight: '0px',
-                                ':hover': {
-                                    color: '#1C58D9',
-                                },
-                                svg: {
-                                    width: '14px',
-                                    height: '14px',
-                                    fill: '#1C58D9',
-                                    ':hover': {
-                                        fill: '#1C58D9',
-                                    },
-                                },
+                            ...styles.permissionSelectStyles,
+                            menuPortal: (base: any) => ({
+                                ...base,
+                                zIndex: 9999,
                             }),
                         }}
+                        menuPortalTarget={typeof window === 'undefined' ? undefined : document.body}
                     />
                 </div>
             </div>

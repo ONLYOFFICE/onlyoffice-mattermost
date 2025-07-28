@@ -26,6 +26,8 @@ import {http} from './http';
 const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/api`;
 export const ONLYOFFICE_PLUGIN_PERMISSIONS = `${ONLYOFFICE_PLUGIN_API}/permissions`;
 export const ONLYOFFICE_PLUGIN_GET_CODE = `${ONLYOFFICE_PLUGIN_API}/code`;
+export const ONLYOFFICE_PLUGIN_CREATE = `${ONLYOFFICE_PLUGIN_API}/create`;
+export const ONLYOFFICE_PLUGIN_CONVERT = `${ONLYOFFICE_PLUGIN_API}/convert`;
 
 export async function get<T>(path: string, config?: RequestInit): Promise<T> {
     const init = {method: 'GET', ...config};

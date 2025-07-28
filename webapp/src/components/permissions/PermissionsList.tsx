@@ -20,29 +20,29 @@
  */
 
 import {getTranslations} from 'util/lang';
-import type {FileAccess} from 'util/permission';
 import {getFileAccess} from 'util/permission';
+import type {FileAccess} from 'util/permission';
 import type {MattermostUser} from 'util/user';
 
-import React from 'react';
+import React, {useMemo} from 'react';
 import Select from 'react-select';
 
 type Props = {
+    theme: string;
+    darkTheme: string | undefined;
     onRemoveUser: (username: string) => void;
     onChangeUserPermissions: (username: string, newPermission: string) => void;
 };
 
 export const PermissionsList = (props: Props & { error: boolean; users: MattermostUser[] }) => {
     const i18n = getTranslations();
+
     return (
-        <div
-            className='more-modal__list'
-            style={{padding: '0rem 1.5rem'}}
-        >
+        <div className='more-modal__list onlyoffice-permissions__list'>
             <div>
                 {props.error ? (
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-                        <span style={{fontSize: '7'}}>{i18n['permissions.modal_fetch_error']}</span>
+                    <div className='onlyoffice-permissions__error-container'>
+                        <span className='onlyoffice-permissions__error-text'>{i18n['permissions.modal_fetch_error']}</span>
                     </div>
                 ) : (
                     <>
@@ -52,6 +52,8 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
                                 user={user}
                                 onRemoveUser={props.onRemoveUser}
                                 onChangeUserPermissions={props.onChangeUserPermissions}
+                                theme={props.theme}
+                                darkTheme={props.darkTheme}
                             />
                         ))}
                     </>
@@ -64,12 +66,9 @@ export const PermissionsList = (props: Props & { error: boolean; users: Mattermo
 
 const PermissionsRow = (props: Props & { user: MattermostUser }) => {
     return (
-        <div
-            className='more-modal__row'
-            style={{padding: 0}}
-        >
+        <div className='more-modal__row onlyoffice-permissions__row'>
             <UserIcon {...props}/>
-            <UserDetails {...props}/>
+            <UserDetails user={props.user}/>
             <UserActions {...props}/>
         </div>
     );
@@ -95,10 +94,7 @@ const UserIcon = ({user}: {user: MattermostUser}) => {
 const UserDetails = ({user}: {user: MattermostUser}) => {
     return (
         <div className='more-modal__details'>
-            <div
-                className='more-modal__name'
-                style={{display: 'block'}}
-            >
+            <div className='more-modal__name onlyoffice-permissions__name'>
                 {`@${user.label}`}
             </div>
             <div className='more-modal__description'>
@@ -110,12 +106,121 @@ const UserDetails = ({user}: {user: MattermostUser}) => {
 
 const UserActions = (props: Props & { user: MattermostUser }) => {
     const i18n = getTranslations();
+
+    const styles = useMemo(() => ({
+        selectStyles: {
+            control: (provided: any) => {
+                return {
+                    ...provided,
+                    minHeight: '100%',
+                    minWidth: '113px',
+                    maxWidth: '250px',
+                    width: 'fit-content',
+                    backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+                    borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                    '&:hover': {
+                        borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : provided.borderColor,
+                    },
+                };
+            },
+            menu: (provided: any) => ({
+                ...provided,
+                backgroundColor: props.theme === 'dark' ? 'var(--center-channel-bg)' : provided.backgroundColor,
+                borderColor: props.theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : provided.borderColor,
+                boxShadow: props.theme === 'dark' ? '0 2px 4px rgba(0, 0, 0, 0.5)' : provided.boxShadow,
+                minWidth: '100%',
+                width: 'fit-content',
+            }),
+            menuList: (provided: any) => ({
+                ...provided,
+                width: 'fit-content',
+                minWidth: '100%',
+            }),
+            option: (provided: any, state: any) => {
+                let backgroundColor = 'white';
+                let color = '#3d3c40';
+
+                if (props.theme === 'dark') {
+                    backgroundColor = 'var(--center-channel-bg)';
+                    color = '#ffffff';
+                }
+
+                if (state.isFocused) {
+                    if (props.theme === 'dark') {
+                        if (props.darkTheme === 'indigo') {
+                            backgroundColor = '#262B39';
+                        } else if (props.darkTheme === 'onyx') {
+                            backgroundColor = '#2D2E33';
+                        } else {
+                            backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    } else {
+                        backgroundColor = '#F1F2F3';
+                    }
+                }
+
+                return {
+                    ...provided,
+                    backgroundColor,
+                    color,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    padding: '8px 12px',
+                    width: '100%',
+                    ':hover': {
+                        backgroundColor: (() => {
+                            if (props.theme === 'dark') {
+                                if (props.darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (props.darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                        color,
+                    },
+                    ':active': {
+                        backgroundColor: (() => {
+                            if (props.theme === 'dark') {
+                                if (props.darkTheme === 'indigo') {
+                                    return '#262B39';
+                                } else if (props.darkTheme === 'onyx') {
+                                    return '#2D2E33';
+                                }
+                                return 'rgba(255, 255, 255, 0.1)';
+                            }
+                            return '#F1F2F3';
+                        })(),
+                    },
+                };
+            },
+            singleValue: (provided: any) => ({
+                ...provided,
+                color: props.theme === 'dark' ? '#ffffff' : provided.color,
+                marginRight: '8px',
+                marginLeft: '4px',
+            }),
+            valueContainer: (provided: any) => ({
+                ...provided,
+                padding: '2px 0',
+                width: 'fit-content',
+            }),
+            input: (provided: any) => ({
+                ...provided,
+                color: props.theme === 'dark' ? '#ffffff' : provided.color,
+            }),
+        },
+    }), [props.theme]);
+
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {
             value: entry.toString(),
             label: i18n[`types.permissions.${entry.toString().toLowerCase() as 'edit' | 'read'}`] || entry.toString(),
         };
     });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChange = (value: any) => {
         if (value.value) {
@@ -124,11 +229,8 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
     };
 
     return (
-        <div
-            className='more-modal__actions'
-            style={{display: 'flex', paddingRight: '0.3rem', margin: 0}}
-        >
-            <div style={{width: 'auto', minWidth: '113px', maxWidth: '15rem'}}>
+        <div className='more-modal__actions onlyoffice-permissions__actions'>
+            <div className='onlyoffice-permissions__select-container'>
                 <Select
                     isSearchable={false}
                     value={{
@@ -137,14 +239,21 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                     }}
                     options={permissionsMap}
                     onChange={onChange}
+                    styles={styles.selectStyles}
+                    components={{
+                        IndicatorSeparator: () => null,
+                    }}
                 />
             </div>
             <button
                 type='button'
-                className='close'
+                className='close onlyoffice-permissions__remove-button'
                 aria-label='Close'
                 onClick={() => props.onRemoveUser(props.user.label)}
-                style={{marginLeft: '1rem'}}
+                style={{
+                    color: props.theme === 'dark' ? '#ffffff' : '#3d3c40',
+                    opacity: 0.7,
+                }}
             >
                 <span aria-hidden='true'>{'×'}</span>
             </button>

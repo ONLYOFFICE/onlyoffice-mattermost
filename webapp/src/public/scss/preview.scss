@@ -1,3 +1,5 @@
+@import "./colors.scss";
+
 .onlyoffice_preview__btn{
     transition: box-shadow .3s;
     margin-right: .5rem;
@@ -5,7 +7,13 @@
 }
 
 .onlyoffice_preview__btn:hover{
-    box-shadow: 0 0 11px rgba(33,33,33,.2);
+    @include light-theme {
+        box-shadow: 0 0 11px $shadow_dark;
+    }
+
+    @include dark-theme {
+        box-shadow: 0 0 11px $shadow_light;
+    }
 }
 
 .file-details__onlyoffice {
@@ -18,5 +26,71 @@
 @media all and (max-width: 768px) {
     .onlyoffice_preview__btn {
         margin-top: .5rem;
+    }
+}
+
+.file-details__container[data-theme="light"] {
+    background: $preview_background_light !important;
+    color: $preview_title_light !important;
+    display: flex;
+
+    .file-details__preview {
+        border: none !important;
+        border-right: 1px solid $preview_border_light !important;
+        background: $preview_background_light !important;
+    }
+    .file-details__name {
+        color: $preview_title_light !important;
+    }
+    .file-details__info {
+        color: $preview_subtitle_light !important;
+    }
+    .file-details {
+        background: $preview_background_light !important;
+    }
+}
+
+.file-details__container[data-theme="dark"][data-dark-theme="indigo"] {
+    background: var(--center-channel-bg, $indigo_background) !important;
+    color: $text_light !important;
+    display: flex;
+
+    .file-details__preview {
+        border: none !important;
+        border-right: 1px solid $indigo_border !important;
+        background: var(--center-channel-bg, $indigo_background) !important;
+    }
+
+    .file-details__name {
+        color: $text_light !important;
+    }
+
+    .file-details__info {
+        color: rgba(255, 255, 255, 0.64) !important;
+    }
+
+    .file-details {
+        background: var(--center-channel-bg, $indigo_background) !important;
+    }
+}
+
+.file-details__container[data-theme="dark"][data-dark-theme="onyx"] {
+    background: $preview_background_dark !important;
+    color: $preview_title_dark !important;
+    display: flex;
+
+    .file-details__preview {
+        border: none !important;
+        border-right: 1px solid $preview_border_dark !important;
+        background: $preview_background_dark !important;
+    }
+    .file-details__name {
+        color: $preview_title_dark !important;
+    }
+    .file-details__info {
+        color: $preview_subtitle_dark !important;
+    }
+    .file-details {
+        background: $preview_background_dark !important;
     }
 }

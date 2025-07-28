@@ -25,34 +25,51 @@ import {getTranslations} from 'util/lang';
 import errorIcon from 'public/images/error.svg';
 import React, {useEffect, useState} from 'react';
 
-export default function EditorLoader() {
+type Props = {
+    theme: string;
+};
+
+export default function EditorLoader({theme}: Props) {
     const [error, setError] = useState(false);
-    const i18n = getTranslations();
+    const [isVisible, setIsVisible] = useState(true);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const i18n = getTranslations() as {[key: string]: string};
 
     const disableLoading = () => {
-        const container = document.getElementsByClassName('onlyoffice-editor__loader-container').item(0);
-        if (container) {
-            container.classList.add('onlyoffice-editor__loader-container_hidden');
-        }
+        setIsVisible(false);
     };
 
     const requestClose = () => {
         window.dispatchEvent(new Event(ONLYOFFICE_CLOSE_EVENT));
     };
 
-    const trackError = () => setError(true);
+    const trackError = (event: CustomEvent) => {
+        setError(true);
+        if (event.detail?.messageKey) {
+            setErrorMessage(i18n[event.detail.messageKey] || event.detail.fallbackText || i18n['editor.events.error']);
+        } else {
+            setErrorMessage(i18n['editor.events.error']);
+        }
+    };
 
     useEffect(() => {
         window.addEventListener(ONLYOFFICE_READY_EVENT, disableLoading);
-        window.addEventListener(ONLYOFFICE_ERROR_EVENT, trackError);
+        window.addEventListener(ONLYOFFICE_ERROR_EVENT, trackError as EventListener);
         return () => {
             window.removeEventListener(ONLYOFFICE_READY_EVENT, disableLoading);
-            window.removeEventListener(ONLYOFFICE_ERROR_EVENT, trackError);
+            window.removeEventListener(ONLYOFFICE_ERROR_EVENT, trackError as EventListener);
         };
     }, []);
 
+    if (!isVisible) {
+        return null;
+    }
+
     return (
-        <div className='onlyoffice-editor__loader-container'>
+        <div
+            className='onlyoffice-editor__loader-container'
+            data-theme={theme}
+        >
             {!error && <div className='onlyoffice-editor__loader-icon'><div/><div/><div/></div>}
             {error && (
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
@@ -60,7 +77,9 @@ export default function EditorLoader() {
                         style={{width: '41px', height: '41px', marginBottom: '2rem'}}
                         src={errorIcon}
                     />
-                    <span className='onlyoffice-editor__loader_error'>{i18n['editor.events.error']}</span>
+                    <span className='onlyoffice-editor__loader_error'>
+                        {errorMessage}
+                    </span>
                 </div>
             )}
             <button

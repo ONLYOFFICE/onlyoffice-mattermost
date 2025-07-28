@@ -19,7 +19,7 @@
  *
  */
 
-import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API} from 'util/const';
+import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
 
 import React, {useCallback, useEffect} from 'react';
 import ReactDOM from 'react-dom';
@@ -27,15 +27,16 @@ import type {Dispatch} from 'redux';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
 
-import EditorLoader from './EditorLoader';
+import EditorLoader from 'components/editor/EditorLoader';
 
 type Props = {
     visible: boolean;
     fileInfo?: FileInfo;
+    theme: string;
     close: () => (dispatch: Dispatch) => void;
 };
 
-export default function Editor({visible, close, fileInfo}: Props) {
+export default function Editor({visible, close, fileInfo, theme}: Props) {
     const lang = localStorage.getItem('onlyoffice_locale') || 'en';
 
     const handleClose = useCallback(() => {
@@ -48,6 +49,27 @@ export default function Editor({visible, close, fileInfo}: Props) {
         }
         setTimeout(() => close(), 280);
     }, [close, visible]);
+
+    const onEditorLoaded = useCallback((event: React.SyntheticEvent<HTMLIFrameElement>) => {
+        const iframe = event.target as HTMLIFrameElement;
+        try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+            if (!iframeDoc?.body.textContent?.trim()) {
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT, {
+                        detail: {
+                            messageKey: 'editor.events.unauthorized',
+                            fallbackText: 'Unauthorized. Please check your permissions.',
+                        },
+                    }));
+                }, 1000);
+            }
+        } catch (error) {
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT));
+            }, 1000);
+        }
+    }, []);
 
     useEffect(() => {
         window.addEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
@@ -62,13 +84,16 @@ export default function Editor({visible, close, fileInfo}: Props) {
     return ReactDOM.createPortal(
         <div
             id='editor-backdrop'
+            data-theme={theme}
             className='onlyoffice-modal__backdrop'
         >
-            <EditorLoader/>
+            <EditorLoader theme={theme}/>
             <iframe
-                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}`}
+                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
                 className='onlyoffice-modal__frame'
                 name='iframeEditor'
+                data-theme={theme}
+                onLoad={onEditorLoaded}
             />
         </div>,
         document.body,
