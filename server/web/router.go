@@ -108,11 +108,13 @@ func NewRouter(
 	crh := controller.NewCreateHandler(api, configuration)
 	cvh := controller.NewConvertHandler(api, configuration, formatManager, jwtManager, commandClient)
 	cdh := controller.NewCodeHandler(api, fileHelper)
+	cfh := controller.NewConfigHandler(api, configuration, formatManager)
 
 	subrouter := router.PathPrefix("/api").Subrouter()
 	subrouter.HandleFunc("/callback", ch.Handle).Methods(http.MethodPost)
 	subrouter.HandleFunc("/download", dh.Handle).Methods(http.MethodGet)
 	subrouter.HandleFunc("/image", ih.Handle).Methods(http.MethodGet)
+	subrouter.HandleFunc("/config", cfh.Handle).Methods(http.MethodGet)
 
 	authMiddleware := middleware.NewAuthorizationMiddleware(api)
 

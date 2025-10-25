@@ -18,10 +18,12 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/mattermost/mattermost/server/public/plugin"
@@ -49,6 +51,8 @@ type Configuration struct {
 	DemoHeader   string
 	DemoPrefix   string
 	DemoSecret   string
+	ViewFormats  string
+	EditFormats  string
 	Error        error
 }
 
@@ -66,6 +70,8 @@ func (c *Configuration) Clone() *Configuration {
 		DemoHeader:   c.DemoHeader,
 		DemoPrefix:   c.DemoPrefix,
 		DemoSecret:   c.DemoSecret,
+		ViewFormats:  c.ViewFormats,
+		EditFormats:  c.EditFormats,
 	}
 }
 
@@ -74,6 +80,8 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
+	c.ViewFormats = strings.TrimSpace(c.ViewFormats)
+	c.EditFormats = strings.TrimSpace(c.EditFormats)
 
 	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
 	c.DemoHeader = "AuthorizationJWT"
@@ -140,6 +148,87 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 	}
 }
 
+func (c *Configuration) validateFormats() error {
+	if c.ViewFormats == "" && c.EditFormats == "" {
+		return nil
+	}
+
+	formatManager, err := public.NewMapFormatManager()
+	if err != nil {
+		return &common.BadConfigurationError{
+			Property: "Format Configuration",
+			Reason:   "Failed to load formats: " + err.Error(),
+		}
+	}
+
+	allFormats := formatManager.GetAllFormats()
+	if c.ViewFormats != "" {
+		for _, name := range strings.Split(c.ViewFormats, ",") {
+			formatName := strings.TrimSpace(strings.ToLower(name))
+			if formatName == "" {
+				continue
+			}
+
+			format, exists := allFormats[formatName]
+			if !exists || (!format.IsViewable() && !format.IsLossyEditable() && !format.IsAutoConvertable()) {
+				return &common.BadConfigurationError{
+					Property: "Formats allowed for viewing",
+					Reason:   fmt.Sprintf("Invalid or non-viewable format: %s", formatName),
+				}
+			}
+		}
+	}
+
+	if c.EditFormats != "" {
+		for _, name := range strings.Split(c.EditFormats, ",") {
+			formatName := strings.TrimSpace(strings.ToLower(name))
+			if formatName == "" {
+				continue
+			}
+
+			format, exists := allFormats[formatName]
+			if !exists || (!format.IsEditable() && !format.IsLossyEditable()) {
+				return &common.BadConfigurationError{
+					Property: "Formats allowed for editing",
+					Reason:   fmt.Sprintf("Invalid or non-editable format: %s", formatName),
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *Configuration) IsFormatAllowedForViewing(format string) bool {
+	if c.ViewFormats == "" {
+		return true
+	}
+
+	formatLower := strings.ToLower(strings.TrimSpace(format))
+	for _, name := range strings.Split(c.ViewFormats, ",") {
+		if strings.ToLower(strings.TrimSpace(name)) == formatLower {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (c *Configuration) IsFormatAllowedForEditing(format string) bool {
+	if c.EditFormats == "" {
+		return true
+	}
+
+	formatLower := strings.ToLower(strings.TrimSpace(format))
+	for _, name := range strings.Split(c.EditFormats, ",") {
+		if strings.ToLower(strings.TrimSpace(name)) == formatLower {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (c *Configuration) IsValid() error {
 	demoActive := c.DemoEnabled && c.DemoExpires > time.Now().UnixMilli()
 	hasCredentials := c.DESAddress != "" && c.DESJwt != "" && c.DESJwtHeader != "" && c.DESJwtPrefix != ""
@@ -189,6 +278,10 @@ func (c *Configuration) IsValid() error {
 			Property: "Document Server Header",
 			Reason:   "Please specify document server header (Note: do not use 'Authorization' header)",
 		}
+	}
+
+	if err := c.validateFormats(); err != nil {
+		return err
 	}
 
 	return nil

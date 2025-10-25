@@ -1,0 +1,93 @@
+.onlyoffice-format-table {
+    &__container {
+        border: 1px solid rgba(61, 60, 64, 0.16);
+        border-radius: 4px;
+        padding: 16px;
+        background: #fff;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    &__header {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(61, 60, 64, 0.08);
+    }
+
+    &__select-all {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+
+        input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        span {
+            font-size: 14px;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px 16px;
+    }
+
+    &__option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+        padding: 4px;
+        border-radius: 4px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: rgba(61, 60, 64, 0.04);
+        }
+
+        input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+    }
+
+    &__option-label {
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        color: #3d3c40;
+    }
+}
+
+[data-theme="dark"] {
+    .onlyoffice-format-table {
+        &__container {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        &__header {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        &__option {
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        &__option-label {
+            color: rgba(255, 255, 255, 0.88);
+        }
+    }
+}

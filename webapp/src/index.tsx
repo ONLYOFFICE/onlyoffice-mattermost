@@ -19,9 +19,10 @@
  *
  */
 
-import {isConvertSupported, isExtensionSupported, isFileAuthor} from 'util/file';
+import {isConvertSupported, isExtensionSupported, isFileAuthor, setPluginConfig} from 'util/file';
 import {getTranslations} from 'util/lang';
 
+import {getPluginConfig} from 'api';
 import manifest from 'manifest';
 import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
@@ -38,12 +39,20 @@ import OnlyofficeManager from 'components/manager';
 import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
+import {ViewFormats, EditFormats} from 'components/settings';
 
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
 
 export default class Plugin {
     public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
+        try {
+            const config = await getPluginConfig();
+            setPluginConfig(config);
+        } catch (error) {
+            console.error('Failed to fetch ONLYOFFICE plugin configuration:', error);
+        }
+
         registry.registerTranslations(getTranslations);
         registry.registerReducer(Reducer);
         registry.registerRootComponent(OnlyofficeEditor);
@@ -51,6 +60,11 @@ export default class Plugin {
         registry.registerRootComponent(OnlyofficeManager);
         registry.registerRootComponent(OnlyofficeFileConverter);
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
+
+        if (registry.registerAdminConsoleCustomSetting) {
+            registry.registerAdminConsoleCustomSetting('ViewFormats', ViewFormats);
+            registry.registerAdminConsoleCustomSetting('EditFormats', EditFormats);
+        }
 
         if (registry.registerFileDropdownMenuAction) {
             registry.registerFileDropdownMenuAction(
