@@ -30,6 +30,7 @@ import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {getCookie} from './cookie';
 import {formatManager, formatHelpers} from './formats';
+
 import type {PluginConfig} from '../api';
 
 let pluginConfig: PluginConfig | null = null;
@@ -42,7 +43,6 @@ function isFormatAllowed(extension: string, allowedFormats: string[]): boolean {
     const sanitized = extension.replaceAll('.', '').toLowerCase();
     return allowedFormats.includes(sanitized);
 }
-
 
 export function setPluginConfig(config: PluginConfig): void {
     pluginConfig = config;
@@ -92,13 +92,15 @@ export function isExtensionSupported(fileExt: string, editOnly?: boolean): boole
     }
 
     if (editOnly) {
-        if (!formatHelpers.isEditable(format))
+        if (!formatHelpers.isEditable(format)) {
             return false;
+        }
         return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.edit_formats) : false;
     }
 
-    if (!formatHelpers.isViewable(format))
+    if (!formatHelpers.isViewable(format)) {
         return false;
+    }
 
     return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.view_formats) : false;
 }

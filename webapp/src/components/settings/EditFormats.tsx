@@ -19,12 +19,11 @@
  *
  */
 
+import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 import React, {useMemo} from 'react';
 
 import FormatMultiSelectTable from './FormatMultiSelectTable';
 import type {FormatOption} from './FormatMultiSelectTable';
-
-import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 
 interface Props {
     id: string;
@@ -56,7 +55,7 @@ export default function EditFormats({
                 }
             }
         });
-        
+
         return formats.sort((a, b) => a.label.localeCompare(b.label));
     }, []);
 
@@ -69,7 +68,7 @@ export default function EditFormats({
             onChange={onChange}
             setSaveNeeded={setSaveNeeded}
             options={editFormats}
-            helpText="Select file formats that are allowed for editing in ONLYOFFICE. All formats are enabled by default. Uncheck formats to disable them."
+            helpText='Select file formats that are allowed for editing in ONLYOFFICE. All formats are enabled by default. Uncheck formats to disable them.'
         />
     );
 }

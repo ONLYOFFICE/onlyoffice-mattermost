@@ -19,12 +19,11 @@
  *
  */
 
+import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 import React, {useMemo} from 'react';
 
 import FormatMultiSelectTable from './FormatMultiSelectTable';
 import type {FormatOption} from './FormatMultiSelectTable';
-
-import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 
 interface Props {
     id: string;
@@ -47,12 +46,12 @@ export default function ViewFormats({
         const formats: FormatOption[] = [];
         formatsData.forEach((format: any) => {
             if (format.actions && format.actions.length > 0) {
-                const hasViewAction = format.actions.some((action: string) => 
-                    action === 'view' || 
-                    action === 'lossy-edit' || 
-                    action === 'auto-convert'
+                const hasViewAction = format.actions.some((action: string) =>
+                    action === 'view' ||
+                    action === 'lossy-edit' ||
+                    action === 'auto-convert',
                 );
-                
+
                 if (hasViewAction && format.name) {
                     formats.push({
                         label: format.name.toUpperCase(),
@@ -61,7 +60,7 @@ export default function ViewFormats({
                 }
             }
         });
-        
+
         return formats.sort((a, b) => a.label.localeCompare(b.label));
     }, []);
 
@@ -74,7 +73,7 @@ export default function ViewFormats({
             onChange={onChange}
             setSaveNeeded={setSaveNeeded}
             options={viewFormats}
-            helpText="Select file formats that are allowed for viewing in ONLYOFFICE. All formats are enabled by default. Uncheck formats to disable them."
+            helpText='Select file formats that are allowed for viewing in ONLYOFFICE. All formats are enabled by default. Uncheck formats to disable them.'
         />
     );
 }

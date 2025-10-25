@@ -50,7 +50,7 @@ export default class Plugin {
             const config = await getPluginConfig();
             setPluginConfig(config);
         } catch (error) {
-            console.error('Failed to fetch ONLYOFFICE plugin configuration:', error);
+            // TODO: Handle error gracefully
         }
 
         registry.registerTranslations(getTranslations);

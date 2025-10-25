@@ -163,9 +163,9 @@ export default function FormatMultiSelectTable({
 
         setSelectedFormats((prevFormats) => {
             const isSelected = prevFormats.includes(format);
-            const newFormats = isSelected
-                ? prevFormats.filter((f) => f !== format)
-                : [...prevFormats, format];
+            const newFormats = isSelected ?
+                prevFormats.filter((f) => f !== format) :
+                [...prevFormats, format];
 
             const isAllSelected = newFormats.length === options.length;
             setSelectAll(isAllSelected);
