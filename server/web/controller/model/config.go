@@ -54,6 +54,12 @@ type User struct {
 type Customization struct {
 	Goback  Goback `json:"goback"`
 	UiTheme string `json:"uiTheme,omitempty"`
+	Close   Close  `json:"close,omitempty"`
+}
+
+type Close struct {
+	Visible bool   `json:"visible"`
+	Text    string `json:"text,omitempty"`
 }
 
 type Goback struct {

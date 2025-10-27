@@ -182,6 +182,9 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 					RequestClose: true,
 				},
 				UiTheme: theme,
+				Close: oomodel.Close{
+					Visible: true,
+				},
 			},
 			Lang: payload.Lang,
 		},
@@ -204,7 +207,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js",
+		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
 		"config": string(encodedConfig),
 		"dark":   query.Get("dark"),
 	}
