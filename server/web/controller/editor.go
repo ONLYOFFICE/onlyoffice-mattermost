@@ -182,6 +182,9 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 					RequestClose: true,
 				},
 				UiTheme: theme,
+				Close: oomodel.Close{
+					Visible: true,
+				},
 			},
 			Lang: payload.Lang,
 		},
