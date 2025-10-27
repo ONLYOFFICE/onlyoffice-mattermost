@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.1.0
+### Added
+- selectable file extensions for opening documents in the editor
+
+### Fixed
+- fixed `shardkey` query parameter in API.js
+
 ## 2.0.0
 ## Added
 - support for new document formats
