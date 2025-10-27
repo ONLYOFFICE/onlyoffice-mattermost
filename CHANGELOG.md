@@ -4,6 +4,9 @@
 ### Added
 - selectable file extensions for opening documents in the editor
 
+## Changed
+- replace `open file location` with `close`
+
 ### Fixed
 - fixed `shardkey` query parameter in API.js
 
