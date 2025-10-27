@@ -6,7 +6,7 @@
     "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
     "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
     "icon_path": "assets/logo.svg",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "min_server_version": "9.11.0",
     "server": {
         "executables": {
@@ -58,6 +58,18 @@
                 "display_name": "Connection to demo ONLYOFFICE Docs server enabled: ",
                 "type": "bool",
                 "default": false
+            },
+            {
+                "key": "ViewFormats",
+                "display_name": "Formats allowed for viewing: ",
+                "type": "custom",
+                "default": ""
+            },
+            {
+                "key": "EditFormats",
+                "display_name": "Formats allowed for editing: ",
+                "type": "custom",
+                "default": ""
             }
         ]
     }

@@ -31,6 +31,23 @@ import type {FileInfo} from 'mattermost-redux/types/files';
 import {getCookie} from './cookie';
 import {formatManager, formatHelpers} from './formats';
 
+import type {PluginConfig} from '../api';
+
+let pluginConfig: PluginConfig | null = null;
+
+function isFormatAllowed(extension: string, allowedFormats: string[]): boolean {
+    if (!allowedFormats || allowedFormats.length === 0) {
+        return false;
+    }
+
+    const sanitized = extension.replaceAll('.', '').toLowerCase();
+    return allowedFormats.includes(sanitized);
+}
+
+export function setPluginConfig(config: PluginConfig): void {
+    pluginConfig = config;
+}
+
 export function getIconByExt(fileExt: string): string {
     const sanitized = fileExt.replaceAll('.', '');
     const format = formatManager.getFormatByName(sanitized);
@@ -75,10 +92,17 @@ export function isExtensionSupported(fileExt: string, editOnly?: boolean): boole
     }
 
     if (editOnly) {
-        return formatHelpers.isEditable(format);
+        if (!formatHelpers.isEditable(format)) {
+            return false;
+        }
+        return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.edit_formats) : false;
     }
 
-    return formatHelpers.isViewable(format);
+    if (!formatHelpers.isViewable(format)) {
+        return false;
+    }
+
+    return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.view_formats) : false;
 }
 
 export function isFileAuthor(fileInfo: FileInfo): boolean {
