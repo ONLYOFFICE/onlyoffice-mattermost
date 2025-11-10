@@ -41,8 +41,7 @@ export async function post<T, U>(path: string, body: T, config?: RequestInit): P
 }
 
 export interface PluginConfig {
-    view_formats: string[];
-    edit_formats: string[];
+    formats: string[];
 }
 
 export async function getPluginConfig(): Promise<PluginConfig> {

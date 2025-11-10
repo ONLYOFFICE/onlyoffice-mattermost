@@ -61,14 +61,8 @@
                 "default": false
             },
             {
-                "key": "ViewFormats",
-                "display_name": "Formats allowed for viewing: ",
-                "type": "custom",
-                "default": ""
-            },
-            {
-                "key": "EditFormats",
-                "display_name": "Formats allowed for editing: ",
+                "key": "Formats",
+                "display_name": "Formats: ",
                 "type": "custom",
                 "default": ""
             }

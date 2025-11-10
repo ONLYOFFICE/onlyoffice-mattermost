@@ -39,7 +39,7 @@ import OnlyofficeManager from 'components/manager';
 import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
-import {ViewFormats, EditFormats} from 'components/settings';
+import {Formats} from 'components/settings';
 
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
@@ -62,8 +62,7 @@ export default class Plugin {
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerAdminConsoleCustomSetting) {
-            registry.registerAdminConsoleCustomSetting('ViewFormats', ViewFormats);
-            registry.registerAdminConsoleCustomSetting('EditFormats', EditFormats);
+            registry.registerAdminConsoleCustomSetting('Formats', Formats);
         }
 
         if (registry.registerFileDropdownMenuAction) {

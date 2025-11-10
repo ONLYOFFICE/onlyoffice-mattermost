@@ -19,6 +19,5 @@
  *
  */
 
-export {default as ViewFormats} from './ViewFormats';
-export {default as EditFormats} from './EditFormats';
+export {default as Formats} from './Formats';
 export {default as FormatMultiSelectTable} from './FormatMultiSelectTable';

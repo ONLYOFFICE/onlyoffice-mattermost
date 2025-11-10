@@ -18,6 +18,5 @@
 package model
 
 type FormatResponse struct {
-	ViewFormats []string `json:"view_formats"`
-	EditFormats []string `json:"edit_formats"`
+	Formats []string `json:"formats"`
 }
