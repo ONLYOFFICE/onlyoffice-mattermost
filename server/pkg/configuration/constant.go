@@ -19,5 +19,6 @@ package configuration
 
 var (
 	DemoKey           string = "onlyoffice_demo_start"
+	EmptyFormats      string = "none"
 	_DemoPeriodMillis int64  = 7 * 24 * 60 * 60 * 1000
 )

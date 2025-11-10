@@ -150,6 +150,10 @@ func (c *Configuration) validateFormats() error {
 		return nil
 	}
 
+	if strings.ToLower(strings.TrimSpace(c.Formats)) == EmptyFormats {
+		return nil
+	}
+
 	formatManager, err := public.NewMapFormatManager()
 	if err != nil {
 		return &common.BadConfigurationError{
@@ -189,6 +193,10 @@ func (c *Configuration) IsFormatAllowedForViewing(format string) bool {
 		return true
 	}
 
+	if strings.ToLower(strings.TrimSpace(c.Formats)) == EmptyFormats {
+		return false
+	}
+
 	formatLower := strings.ToLower(strings.TrimSpace(format))
 	for _, name := range strings.Split(c.Formats, ",") {
 		if strings.ToLower(strings.TrimSpace(name)) == formatLower {
@@ -202,6 +210,10 @@ func (c *Configuration) IsFormatAllowedForViewing(format string) bool {
 func (c *Configuration) IsFormatAllowedForEditing(format string) bool {
 	if c.Formats == "" {
 		return true
+	}
+
+	if strings.ToLower(strings.TrimSpace(c.Formats)) == EmptyFormats {
+		return false
 	}
 
 	formatLower := strings.ToLower(strings.TrimSpace(format))

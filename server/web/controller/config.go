@@ -62,6 +62,10 @@ func (h *ConfigHandler) parseFormats(rawFormats string, filterFunc func(public.F
 		return h.getAllFormatsWhere(filterFunc)
 	}
 
+	if strings.ToLower(strings.TrimSpace(rawFormats)) == configuration.EmptyFormats {
+		return []string{}
+	}
+
 	formats := []string{}
 	for _, part := range strings.Split(rawFormats, ",") {
 		if format := strings.TrimSpace(strings.ToLower(part)); format != "" {

@@ -71,11 +71,11 @@ function Header({id, checked, disabled, onChange}: HeaderProps) {
                     checked={checked}
                     onChange={onChange}
                     disabled={disabled}
-                    style={{cursor: checked || disabled ? 'not-allowed' : 'pointer'}}
-                    aria-label='Select all formats'
+                    style={{cursor: disabled ? 'not-allowed' : 'pointer'}}
+                    aria-label={checked ? 'Deselect all formats' : 'Select all formats'}
                 />
                 <span>
-                    {checked ? 'All Formats Enabled' : 'Select All Formats'}
+                    {checked ? 'Deselect All Formats' : 'Select All Formats'}
                 </span>
             </label>
         </div>
@@ -145,10 +145,13 @@ export default function FormatMultiSelectTable({
             return;
         }
 
-        if (value && value.trim() !== '') {
+        if (value && value.trim() !== '' && value.trim().toLowerCase() !== 'none') {
             const formats = value.split(',').map((format) => format.trim());
             setSelectedFormats(formats);
             setSelectAll(formats.length === options.length);
+        } else if (value && value.trim().toLowerCase() === 'none') {
+            setSelectedFormats([]);
+            setSelectAll(false);
         } else {
             const allFormats = options.map((option) => option.value);
             setSelectedFormats(allFormats);
@@ -170,7 +173,14 @@ export default function FormatMultiSelectTable({
             const isAllSelected = newFormats.length === options.length;
             setSelectAll(isAllSelected);
 
-            const newValue = isAllSelected ? '' : newFormats.join(', ');
+            let newValue: string;
+            if (isAllSelected) {
+                newValue = '';
+            } else if (newFormats.length === 0) {
+                newValue = 'none';
+            } else {
+                newValue = newFormats.join(', ');
+            }
 
             onChange(id, newValue);
             setSaveNeeded();
@@ -180,16 +190,22 @@ export default function FormatMultiSelectTable({
     }, [disabled, options.length, id, onChange, setSaveNeeded]);
 
     const handleSelectAll = useCallback(() => {
-        if (disabled || selectAll) {
+        if (disabled) {
             return;
         }
 
-        const newFormats = options.map((option) => option.value);
-        setSelectedFormats(newFormats);
-        setSelectAll(true);
-
-        onChange(id, '');
-        setSaveNeeded();
+        if (selectAll) {
+            setSelectedFormats([]);
+            setSelectAll(false);
+            onChange(id, 'none');
+            setSaveNeeded();
+        } else {
+            const newFormats = options.map((option) => option.value);
+            setSelectedFormats(newFormats);
+            setSelectAll(true);
+            onChange(id, '');
+            setSaveNeeded();
+        }
     }, [disabled, selectAll, options, id, onChange, setSaveNeeded]);
 
     if (!options || options.length === 0) {
