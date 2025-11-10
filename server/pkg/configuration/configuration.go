@@ -51,8 +51,7 @@ type Configuration struct {
 	DemoHeader   string
 	DemoPrefix   string
 	DemoSecret   string
-	ViewFormats  string
-	EditFormats  string
+	Formats      string
 	Error        error
 }
 
@@ -70,8 +69,7 @@ func (c *Configuration) Clone() *Configuration {
 		DemoHeader:   c.DemoHeader,
 		DemoPrefix:   c.DemoPrefix,
 		DemoSecret:   c.DemoSecret,
-		ViewFormats:  c.ViewFormats,
-		EditFormats:  c.EditFormats,
+		Formats:      c.Formats,
 	}
 }
 
@@ -80,8 +78,7 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
-	c.ViewFormats = strings.TrimSpace(c.ViewFormats)
-	c.EditFormats = strings.TrimSpace(c.EditFormats)
+	c.Formats = strings.TrimSpace(c.Formats)
 
 	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
 	c.DemoHeader = "AuthorizationJWT"
@@ -149,7 +146,7 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 }
 
 func (c *Configuration) validateFormats() error {
-	if c.ViewFormats == "" && c.EditFormats == "" {
+	if c.Formats == "" {
 		return nil
 	}
 
@@ -162,36 +159,24 @@ func (c *Configuration) validateFormats() error {
 	}
 
 	allFormats := formatManager.GetAllFormats()
-	if c.ViewFormats != "" {
-		for _, name := range strings.Split(c.ViewFormats, ",") {
-			formatName := strings.TrimSpace(strings.ToLower(name))
-			if formatName == "" {
-				continue
-			}
+	for _, name := range strings.Split(c.Formats, ",") {
+		formatName := strings.TrimSpace(strings.ToLower(name))
+		if formatName == "" {
+			continue
+		}
 
-			format, exists := allFormats[formatName]
-			if !exists || (!format.IsViewable() && !format.IsLossyEditable() && !format.IsAutoConvertable()) {
-				return &common.BadConfigurationError{
-					Property: "Formats allowed for viewing",
-					Reason:   fmt.Sprintf("Invalid or non-viewable format: %s", formatName),
-				}
+		format, exists := allFormats[formatName]
+		if !exists {
+			return &common.BadConfigurationError{
+				Property: "Formats",
+				Reason:   fmt.Sprintf("Invalid format: %s", formatName),
 			}
 		}
-	}
 
-	if c.EditFormats != "" {
-		for _, name := range strings.Split(c.EditFormats, ",") {
-			formatName := strings.TrimSpace(strings.ToLower(name))
-			if formatName == "" {
-				continue
-			}
-
-			format, exists := allFormats[formatName]
-			if !exists || (!format.IsEditable() && !format.IsLossyEditable()) {
-				return &common.BadConfigurationError{
-					Property: "Formats allowed for editing",
-					Reason:   fmt.Sprintf("Invalid or non-editable format: %s", formatName),
-				}
+		if !format.IsViewable() && !format.IsEditable() && !format.IsLossyEditable() && !format.IsAutoConvertable() {
+			return &common.BadConfigurationError{
+				Property: "Formats",
+				Reason:   fmt.Sprintf("Format does not support viewing or editing: %s", formatName),
 			}
 		}
 	}
@@ -200,12 +185,12 @@ func (c *Configuration) validateFormats() error {
 }
 
 func (c *Configuration) IsFormatAllowedForViewing(format string) bool {
-	if c.ViewFormats == "" {
+	if c.Formats == "" {
 		return true
 	}
 
 	formatLower := strings.ToLower(strings.TrimSpace(format))
-	for _, name := range strings.Split(c.ViewFormats, ",") {
+	for _, name := range strings.Split(c.Formats, ",") {
 		if strings.ToLower(strings.TrimSpace(name)) == formatLower {
 			return true
 		}
@@ -215,12 +200,12 @@ func (c *Configuration) IsFormatAllowedForViewing(format string) bool {
 }
 
 func (c *Configuration) IsFormatAllowedForEditing(format string) bool {
-	if c.EditFormats == "" {
+	if c.Formats == "" {
 		return true
 	}
 
 	formatLower := strings.ToLower(strings.TrimSpace(format))
-	for _, name := range strings.Split(c.EditFormats, ",") {
+	for _, name := range strings.Split(c.Formats, ",") {
 		if strings.ToLower(strings.TrimSpace(name)) == formatLower {
 			return true
 		}

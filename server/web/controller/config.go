@@ -71,18 +71,13 @@ func (h *ConfigHandler) parseFormats(rawFormats string, filterFunc func(public.F
 	return formats
 }
 
-func isViewable(f public.Format) bool {
-	return f.IsViewable() || f.IsLossyEditable() || f.IsAutoConvertable()
-}
-
-func isEditable(f public.Format) bool {
-	return f.IsEditable() || f.IsLossyEditable()
+func (h *ConfigHandler) isSupported(f public.Format) bool {
+	return f.IsViewable() || f.IsEditable() || f.IsLossyEditable() || f.IsAutoConvertable()
 }
 
 func (h *ConfigHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	response := model.FormatResponse{
-		ViewFormats: h.parseFormats(h.configuration.ViewFormats, isViewable),
-		EditFormats: h.parseFormats(h.configuration.EditFormats, isEditable),
+		Formats: h.parseFormats(h.configuration.Formats, h.isSupported),
 	}
 
 	rw.Header().Set("Content-Type", "application/json")

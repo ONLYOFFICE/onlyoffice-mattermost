@@ -95,14 +95,14 @@ export function isExtensionSupported(fileExt: string, editOnly?: boolean): boole
         if (!formatHelpers.isEditable(format)) {
             return false;
         }
-        return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.edit_formats) : false;
+        return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.formats) : false;
     }
 
     if (!formatHelpers.isViewable(format)) {
         return false;
     }
 
-    return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.view_formats) : false;
+    return pluginConfig ? isFormatAllowed(fileExt, pluginConfig.formats) : false;
 }
 
 export function isFileAuthor(fileInfo: FileInfo): boolean {

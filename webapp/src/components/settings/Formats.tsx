@@ -19,11 +19,12 @@
  *
  */
 
-import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 import React, {useMemo} from 'react';
 
 import FormatMultiSelectTable from './FormatMultiSelectTable';
 import type {FormatOption} from './FormatMultiSelectTable';
+
+import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 
 interface Props {
     id: string;
@@ -34,7 +35,7 @@ interface Props {
     setSaveNeeded: () => void;
 }
 
-export default function EditFormats({
+export default function Formats({
     id,
     label,
     value,
@@ -42,13 +43,19 @@ export default function EditFormats({
     onChange,
     setSaveNeeded,
 }: Props) {
-    const editFormats = useMemo(() => {
-        const formats: FormatOption[] = [];
+    const formats = useMemo(() => {
+        const formatOptions: FormatOption[] = [];
         formatsData.forEach((format: any) => {
             if (format.actions && format.actions.length > 0) {
-                const hasEditAction = format.actions.some((action: string) => action === 'edit');
-                if (hasEditAction && format.name) {
-                    formats.push({
+                const hasAction = format.actions.some((action: string) =>
+                    action === 'view' ||
+                    action === 'edit' ||
+                    action === 'lossy-edit' ||
+                    action === 'auto-convert',
+                );
+
+                if (hasAction && format.name) {
+                    formatOptions.push({
                         label: format.name.toUpperCase(),
                         value: format.name.toLowerCase(),
                     });
@@ -56,7 +63,7 @@ export default function EditFormats({
             }
         });
 
-        return formats.sort((a, b) => a.label.localeCompare(b.label));
+        return formatOptions.sort((a, b) => a.label.localeCompare(b.label));
     }, []);
 
     return (
@@ -67,8 +74,8 @@ export default function EditFormats({
             disabled={disabled}
             onChange={onChange}
             setSaveNeeded={setSaveNeeded}
-            options={editFormats}
-            helpText='Select file formats that are allowed for editing in ONLYOFFICE. All formats are enabled by default. Uncheck formats to disable them.'
+            options={formats}
+            helpText='Select file formats that should be opened in ONLYOFFICE Docs. All formats are enabled by default. Uncheck formats to disable them.'
         />
     );
 }
