@@ -19,12 +19,11 @@
  *
  */
 
+import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 import React, {useMemo} from 'react';
 
 import FormatMultiSelectTable from './FormatMultiSelectTable';
 import type {FormatOption} from './FormatMultiSelectTable';
-
-import formatsData from 'public/formats/onlyoffice-docs-formats.json';
 
 interface Props {
     id: string;
