@@ -28,6 +28,7 @@ export const ONLYOFFICE_PLUGIN_PERMISSIONS = `${ONLYOFFICE_PLUGIN_API}/permissio
 export const ONLYOFFICE_PLUGIN_GET_CODE = `${ONLYOFFICE_PLUGIN_API}/code`;
 export const ONLYOFFICE_PLUGIN_CREATE = `${ONLYOFFICE_PLUGIN_API}/create`;
 export const ONLYOFFICE_PLUGIN_CONVERT = `${ONLYOFFICE_PLUGIN_API}/convert`;
+export const ONLYOFFICE_PLUGIN_CONFIG = `${ONLYOFFICE_PLUGIN_API}/config`;
 
 export async function get<T>(path: string, config?: RequestInit): Promise<T> {
     const init = {method: 'GET', ...config};
@@ -37,4 +38,12 @@ export async function get<T>(path: string, config?: RequestInit): Promise<T> {
 export async function post<T, U>(path: string, body: T, config?: RequestInit): Promise<U> {
     const init = {method: 'POST', body: JSON.stringify(body), ...config};
     return http<U>(path, init);
+}
+
+export interface PluginConfig {
+    formats: string[];
+}
+
+export async function getPluginConfig(): Promise<PluginConfig> {
+    return get<PluginConfig>(ONLYOFFICE_PLUGIN_CONFIG);
 }

@@ -118,6 +118,12 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !h.configuration.IsFormatAllowedForViewing(fileInfo.Extension) {
+		h.api.LogError(onlyofficeLoggerPrefix + "format not allowed for viewing: " + fileInfo.Extension)
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	post, postErr := h.api.GetPost(fileInfo.PostId)
 	if postErr != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + "Reason: " + postErr.Message)
@@ -138,7 +144,11 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 
 	permissions := oomodel.OnlyofficeDefaultPermissions
 	if h.fileHelper.IsExtensionEditable(fileInfo.Extension) {
-		permissions = h.fileHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
+		if h.configuration.IsFormatAllowedForEditing(fileInfo.Extension) {
+			permissions = h.fileHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
+		} else {
+			h.api.LogDebug(onlyofficeLoggerPrefix + "format not allowed for editing, forcing read-only: " + fileInfo.Extension)
+		}
 	}
 
 	code := h.fileHelper.GenerateKey()
@@ -172,6 +182,9 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 					RequestClose: true,
 				},
 				UiTheme: theme,
+				Close: oomodel.Close{
+					Visible: true,
+				},
 			},
 			Lang: payload.Lang,
 		},
@@ -194,7 +207,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]interface{}{
-		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js",
+		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
 		"config": string(encodedConfig),
 		"dark":   query.Get("dark"),
 	}

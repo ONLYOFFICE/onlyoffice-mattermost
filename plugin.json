@@ -6,7 +6,7 @@
     "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
     "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
     "icon_path": "assets/logo.svg",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "min_server_version": "9.11.0",
     "server": {
         "executables": {
@@ -21,14 +21,14 @@
         "bundle_path": "webapp/dist/main.js"
     },
     "settings_schema": {
-        "header": "ONLYOFFICE Docs is an open-source office suite which comprises powerful collaborative editors for text documents, spreadsheets, and presentations highly compatible with OOXML formats. \n \n \n Please note! ONLYOFFICE script code will be downloaded and executed from the server at the given address.",
+        "header": "**Welcome to ONLYOFFICE Docs!**\nOpen, edit, and co-author office documents in your Mattermost chats using ONLYOFFICE Docs.\n[**Learn more**](https://helpcenter.onlyoffice.com/integration/mattermost.aspx)   [**Suggest a feature**](https://feedback.onlyoffice.com/forums/966080-your-voice-matters?category_id=519288)",
         "footer": "**ONLYOFFICE Docs Cloud**\nEasily launch the editors in the cloud without downloading and installation\n \n[**Get now**](https://www.onlyoffice.com/docs-registration.aspx?referer=mattermost)",
         "settings": [
             {
                 "key": "DESAddress",
                 "display_name": "ONLYOFFICE Docs address: ",
                 "type": "text",
-                "help_text": "This field specifies the address of the server with ONLYOFFICE Docs installed. Please change the '<documentserver>' for the server address in the above line.",
+                "help_text": "ONLYOFFICE Docs Location specifies the address of the server with the document services installed. Please change the '<documentserver>' for the server address in the below line.",
                 "placeholder": "https://<documentserver>:<port>/",
                 "default": "https://<documentserver>:<port>/"
             },
@@ -36,6 +36,7 @@
                 "key": "DESJwt",
                 "display_name": "Document Server JWT Secret: ",
                 "type": "text",
+                "help_text": "Use the auto-generated JWT secret key or set your own here and the same one in the ONLYOFFICE Docs config file.",
                 "placeholder": "Enter your secret key",
                 "default": ""
             },
@@ -58,6 +59,12 @@
                 "display_name": "Connection to demo ONLYOFFICE Docs server enabled: ",
                 "type": "bool",
                 "default": false
+            },
+            {
+                "key": "Formats",
+                "display_name": "Formats: ",
+                "type": "custom",
+                "default": ""
             }
         ]
     }

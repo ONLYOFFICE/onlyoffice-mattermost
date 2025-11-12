@@ -1,3 +1,6 @@
+// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
+// See LICENSE.txt for license information.
+
 /**
  *
  * (c) Copyright Ascensio System SIA 2025
@@ -15,12 +18,6 @@
  * limitations under the License.
  *
  */
-@keyframes fadeIn {
-  from {opacity: 0}
-  to {opacity: 1}
-}
 
-@keyframes fadeOut {
-  from {opacity: 1}
-  to {opacity: 0}
-}
+export {default as Formats} from './Formats';
+export {default as FormatMultiSelectTable} from './FormatMultiSelectTable';

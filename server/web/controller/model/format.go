@@ -15,12 +15,8 @@
  * limitations under the License.
  *
  */
-@keyframes fadeIn {
-  from {opacity: 0}
-  to {opacity: 1}
-}
+package model
 
-@keyframes fadeOut {
-  from {opacity: 1}
-  to {opacity: 0}
+type FormatResponse struct {
+	Formats []string `json:"formats"`
 }
