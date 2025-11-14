@@ -1,0 +1,25 @@
+---
+- - :approve
+  - github.com/beevik/etree
+  - :who:
+    :why: BSD-2-Clause license
+    :versions: []
+    :when: 2025-11-05 12:43:38.190684700 Z
+- - :approve
+  - github.com/hashicorp/go-plugin
+  - :who:
+    :why: MPL-2.0 license
+    :versions: []
+    :when: 2025-11-05 12:44:34.209311200 Z
+- - :approve
+  - github.com/hashicorp/yamux
+  - :who:
+    :why: MPL-2.0 license
+    :versions: []
+    :when: 2025-11-05 12:45:00.548589000 Z
+- - :approve
+  - github.com/mattermost/mattermost/server/v8
+  - :who:
+    :why: Apache-2.0
+    :versions: []
+    :when: 2025-11-05 12:46:09.437155400 Z
