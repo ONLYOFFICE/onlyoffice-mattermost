@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.1.1
+### Changed
+- dependency bump for enhanced security
+
+### Fixed
+- fixed real-time extensions issue
+
 ## 2.1.0
 ### Added
 - selectable file extensions for opening documents in the editor

@@ -95,6 +95,21 @@ export default class Plugin {
             () => dispatch(openManager()),
             'ONLYOFFICE',
         );
+
+        if (registry.registerWebSocketEventHandler) {
+            registry.registerWebSocketEventHandler(
+                `custom_${manifest.id}_formats_config_changed`,
+                async () => {
+                    try {
+                        const config = await getPluginConfig();
+                        setPluginConfig(config);
+                    } catch (error) {
+                        // eslint-disable-next-line no-console
+                        console.error('ONLYOFFICE: Failed to reload config after websocket event:', error);
+                    }
+                },
+            );
+        }
     }
 }
 

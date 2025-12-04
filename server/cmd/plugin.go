@@ -213,6 +213,11 @@ func (p *Plugin) OnConfigurationChange() error {
 		}
 	}()
 
+	previousFormats := ""
+	if p.configuration != nil {
+		previousFormats = p.configuration.Formats
+	}
+
 	configuration, err := p.prepareConfiguration()
 	if err != nil {
 		return err
@@ -223,7 +228,16 @@ func (p *Plugin) OnConfigurationChange() error {
 		return nil
 	}
 
-	return p.validateConfiguration()
+	err = p.validateConfiguration()
+	if err != nil {
+		return err
+	}
+
+	if previousFormats != configuration.Formats {
+		p.publishFormatsConfigChange()
+	}
+
+	return nil
 }
 
 func (p *Plugin) reinitializeContainer(config *configuration.Configuration) error {
@@ -449,4 +463,22 @@ func (p *Plugin) setConfiguration(configuration *configuration.Configuration) {
 	configuration.SanitizeConfiguration()
 	configuration.HandleDemoConfiguration(p.MattermostPlugin.API)
 	p.configuration = configuration
+}
+
+func (p *Plugin) publishFormatsConfigChange() {
+	if p.MattermostPlugin.API == nil {
+		return
+	}
+
+	event := map[string]any{
+		"formats_updated": true,
+	}
+
+	p.MattermostPlugin.API.PublishWebSocketEvent(
+		"formats_config_changed",
+		event,
+		&model.WebsocketBroadcast{},
+	)
+
+	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published formats config change event")
 }
