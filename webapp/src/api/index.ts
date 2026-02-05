@@ -42,6 +42,7 @@ export async function post<T, U>(path: string, body: T, config?: RequestInit): P
 
 export interface PluginConfig {
     formats: string[];
+    ownerProtected: boolean;
 }
 
 export async function getPluginConfig(): Promise<PluginConfig> {

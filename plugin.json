@@ -65,6 +65,13 @@
                 "display_name": "Formats: ",
                 "type": "custom",
                 "default": ""
+            },
+            {
+                "key": "OwnerProtected",
+                "display_name": "File protection only by owner: ",
+                "type": "bool",
+                "help_text": "When enabled, only file owners can protect/unprotect files. When disabled, file protection is disabled for everyone.",
+                "default": false
             }
         ]
     }

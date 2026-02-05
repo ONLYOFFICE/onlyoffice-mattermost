@@ -18,5 +18,6 @@
 package model
 
 type FormatResponse struct {
-	Formats []string `json:"formats"`
+	Formats        []string `json:"formats"`
+	OwnerProtected bool     `json:"ownerProtected"`
 }

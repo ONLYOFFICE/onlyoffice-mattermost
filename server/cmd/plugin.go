@@ -214,8 +214,10 @@ func (p *Plugin) OnConfigurationChange() error {
 	}()
 
 	previousFormats := ""
+	previousOwnerProtected := false
 	if p.configuration != nil {
 		previousFormats = p.configuration.Formats
+		previousOwnerProtected = p.configuration.OwnerProtected
 	}
 
 	configuration, err := p.prepareConfiguration()
@@ -233,8 +235,8 @@ func (p *Plugin) OnConfigurationChange() error {
 		return err
 	}
 
-	if previousFormats != configuration.Formats {
-		p.publishFormatsConfigChange()
+	if previousFormats != configuration.Formats || previousOwnerProtected != configuration.OwnerProtected {
+		p.publishConfigChange()
 	}
 
 	return nil
@@ -465,20 +467,20 @@ func (p *Plugin) setConfiguration(configuration *configuration.Configuration) {
 	p.configuration = configuration
 }
 
-func (p *Plugin) publishFormatsConfigChange() {
+func (p *Plugin) publishConfigChange() {
 	if p.MattermostPlugin.API == nil {
 		return
 	}
 
 	event := map[string]any{
-		"formats_updated": true,
+		"config_updated": true,
 	}
 
 	p.MattermostPlugin.API.PublishWebSocketEvent(
-		"formats_config_changed",
+		"config_changed",
 		event,
 		&model.WebsocketBroadcast{},
 	)
 
-	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published formats config change event")
+	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published config change event")
 }

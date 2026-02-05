@@ -42,6 +42,7 @@ type Permissions struct {
 	ModifyContentControl    bool `json:"modifyContentControl,omitempty"`
 	ModifyFilter            bool `json:"modifyFilter,omitempty"`
 	Print                   bool `json:"print,omitempty"`
+	Protect                 bool `json:"protect"`
 	Review                  bool `json:"review,omitempty"`
 }
 

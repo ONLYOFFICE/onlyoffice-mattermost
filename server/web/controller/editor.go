@@ -151,6 +151,12 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if h.configuration.OwnerProtected && payload.UserID == post.UserId {
+		permissions.Protect = true
+	} else {
+		permissions.Protect = false
+	}
+
 	code := h.fileHelper.GenerateKey()
 	if err := h.api.KVSetWithExpiry(code, []byte(payload.UserID), 10); err != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not set code: " + err.Error())

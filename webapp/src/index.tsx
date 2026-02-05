@@ -98,7 +98,7 @@ export default class Plugin {
 
         if (registry.registerWebSocketEventHandler) {
             registry.registerWebSocketEventHandler(
-                `custom_${manifest.id}_formats_config_changed`,
+                `custom_${manifest.id}_config_changed`,
                 async () => {
                     try {
                         const config = await getPluginConfig();
