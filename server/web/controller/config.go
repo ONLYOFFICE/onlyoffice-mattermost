@@ -83,6 +83,8 @@ func (h *ConfigHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	response := model.FormatResponse{
 		Formats:        h.parseFormats(h.configuration.Formats, h.isSupported),
 		OwnerProtected: h.configuration.OwnerProtected,
+		PluginsEnabled: h.configuration.PluginsEnabled,
+		MacrosEnabled:  h.configuration.MacrosEnabled,
 	}
 
 	rw.Header().Set("Content-Type", "application/json")

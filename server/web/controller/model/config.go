@@ -55,6 +55,8 @@ type Customization struct {
 	Goback  Goback `json:"goback"`
 	UiTheme string `json:"uiTheme,omitempty"`
 	Close   Close  `json:"close,omitempty"`
+	Plugins bool   `json:"plugins"`
+	Macros  bool   `json:"macros"`
 }
 
 type Close struct {

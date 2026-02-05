@@ -72,6 +72,20 @@
                 "type": "bool",
                 "help_text": "When enabled, only file owners can protect/unprotect files. When disabled, file protection is disabled for everyone.",
                 "default": false
+            },
+            {
+                "key": "PluginsEnabled",
+                "display_name": "Enable ONLYOFFICE plugins: ",
+                "type": "bool",
+                "help_text": "When enabled, users can use ONLYOFFICE plugins in the editor. When disabled, the plugins interface is hidden.",
+                "default": true
+            },
+            {
+                "key": "MacrosEnabled",
+                "display_name": "Enable macros: ",
+                "type": "bool",
+                "help_text": "When enabled, users can create and run macros in documents. When disabled, macros functionality is hidden.",
+                "default": true
             }
         ]
     }

@@ -191,6 +191,8 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 				Close: oomodel.Close{
 					Visible: true,
 				},
+				Plugins: h.configuration.PluginsEnabled,
+				Macros:  h.configuration.MacrosEnabled,
 			},
 			Lang: payload.Lang,
 		},

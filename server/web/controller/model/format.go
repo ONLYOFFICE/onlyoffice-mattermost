@@ -20,4 +20,6 @@ package model
 type FormatResponse struct {
 	Formats        []string `json:"formats"`
 	OwnerProtected bool     `json:"ownerProtected"`
+	PluginsEnabled bool     `json:"pluginsEnabled"`
+	MacrosEnabled  bool     `json:"macrosEnabled"`
 }

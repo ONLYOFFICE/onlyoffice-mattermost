@@ -53,6 +53,8 @@ type Configuration struct {
 	DemoSecret     string
 	Formats        string
 	OwnerProtected bool
+	PluginsEnabled bool
+	MacrosEnabled  bool
 	Error          error
 }
 
@@ -72,6 +74,8 @@ func (c *Configuration) Clone() *Configuration {
 		DemoSecret:     c.DemoSecret,
 		Formats:        c.Formats,
 		OwnerProtected: c.OwnerProtected,
+		PluginsEnabled: c.PluginsEnabled,
+		MacrosEnabled:  c.MacrosEnabled,
 	}
 }
 

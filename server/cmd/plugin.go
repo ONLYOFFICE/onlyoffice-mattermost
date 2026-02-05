@@ -215,9 +215,13 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	previousFormats := ""
 	previousOwnerProtected := false
+	previousPluginsEnabled := true
+	previousMacrosEnabled := true
 	if p.configuration != nil {
 		previousFormats = p.configuration.Formats
 		previousOwnerProtected = p.configuration.OwnerProtected
+		previousPluginsEnabled = p.configuration.PluginsEnabled
+		previousMacrosEnabled = p.configuration.MacrosEnabled
 	}
 
 	configuration, err := p.prepareConfiguration()
@@ -235,7 +239,10 @@ func (p *Plugin) OnConfigurationChange() error {
 		return err
 	}
 
-	if previousFormats != configuration.Formats || previousOwnerProtected != configuration.OwnerProtected {
+	if previousFormats != configuration.Formats ||
+		previousOwnerProtected != configuration.OwnerProtected ||
+		previousPluginsEnabled != configuration.PluginsEnabled ||
+		previousMacrosEnabled != configuration.MacrosEnabled {
 		p.publishConfigChange()
 	}
 
