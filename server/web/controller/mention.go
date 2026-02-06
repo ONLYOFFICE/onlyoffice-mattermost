@@ -20,6 +20,8 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
@@ -58,7 +60,11 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		if err := recover(); err != nil {
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusInternalServerError)
-			rw.Write(model.MentionUsersResponse{}.ToJSON())
+			emptyResponse := model.MentionUsersResponse{
+				C:     "mention",
+				Users: []model.MentionUser{},
+			}
+			rw.Write(emptyResponse.ToJSON())
 		}
 	}()
 
@@ -67,6 +73,30 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		h.api.LogError(onlyofficeLoggerPrefix + "missing file parameter")
 		rw.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	fromStr := r.URL.Query().Get("from")
+	countStr := r.URL.Query().Get("count")
+	search := r.URL.Query().Get("search")
+	c := r.URL.Query().Get("c")
+	if c == "" {
+		c = "mention"
+	}
+
+	from := 0
+	if fromStr != "" {
+		if f, err := strconv.Atoi(fromStr); err == nil && f >= 0 {
+			from = f
+		}
+	}
+
+	count := 0
+	isPaginated := false
+	if countStr != "" {
+		if cnt, err := strconv.Atoi(countStr); err == nil && cnt > 0 {
+			count = cnt
+			isPaginated = true
+		}
 	}
 
 	fileInfo, fileInfoErr := h.api.GetFileInfo(fileID)
@@ -94,7 +124,11 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	if membersErr != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel members: " + membersErr.Message)
 		rw.WriteHeader(http.StatusInternalServerError)
-		rw.Write(model.MentionUsersResponse{}.ToJSON())
+		emptyResponse := model.MentionUsersResponse{
+			C:     c,
+			Users: []model.MentionUser{},
+		}
+		rw.Write(emptyResponse.ToJSON())
 		return
 	}
 
@@ -102,8 +136,8 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		channelMembers = []*mmModel.User{}
 	}
 
-	mentionUsers := make(model.MentionUsersResponse, 0, len(channelMembers))
 	currentUserID := r.Header.Get(tools.MMAuthHeader)
+	filteredUsers := make([]model.MentionUser, 0, len(channelMembers))
 	for _, user := range channelMembers {
 		if user == nil {
 			continue
@@ -113,16 +147,52 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		mentionUsers = append(mentionUsers, model.MentionUser{
+		if search != "" {
+			searchLower := strings.ToLower(search)
+			usernameLower := strings.ToLower(user.Username)
+			emailLower := strings.ToLower(user.Email)
+			if !strings.Contains(usernameLower, searchLower) && !strings.Contains(emailLower, searchLower) {
+				continue
+			}
+		}
+
+		filteredUsers = append(filteredUsers, model.MentionUser{
 			Email: user.Email,
 			Name:  user.Username,
 			ID:    user.Id,
 		})
 	}
 
+	totalUsers := len(filteredUsers)
+	var pageUsers []model.MentionUser
+	if isPaginated && count > 0 {
+		startIdx := from
+		endIdx := from + count
+		if startIdx < totalUsers {
+			if endIdx > totalUsers {
+				endIdx = totalUsers
+			}
+			pageUsers = filteredUsers[startIdx:endIdx]
+		} else {
+			pageUsers = []model.MentionUser{}
+		}
+	} else {
+		pageUsers = filteredUsers
+	}
+
+	response := model.MentionUsersResponse{
+		C:     c,
+		Users: pageUsers,
+	}
+
+	if isPaginated {
+		nextIndex := from + count
+		response.HasMore = nextIndex < totalUsers
+	}
+
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	if _, err := rw.Write(mentionUsers.ToJSON()); err != nil {
+	if _, err := rw.Write(response.ToJSON()); err != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not write response: " + err.Error())
 	}
 }

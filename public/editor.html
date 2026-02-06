@@ -127,7 +127,8 @@
         };
 
         var onRequestUsers = function (event) {
-            if (event && event.data && event.data.c === "mention") {
+            if (event && event.data) {
+                var c = event.data.c;
                 const urlParams = new URLSearchParams(window.location.search);
                 const fileId = urlParams.get('file');
                 
@@ -139,22 +140,54 @@
                     return;
                 }
 
-                fetch('/plugins/com.onlyoffice.mattermost/api/mentions/users?file=' + fileId + '&code=' + mentionsAuthCode, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include'
-                })
-                .then(response => response.json())
-                .then(users => {
-                    docEditor.setUsers({
-                        c: event.data.c,
-                        users: users
+                var allUsers = [];
+                var currentFrom = 0;
+                var requestedCount = 10;
+                var search = event.data.search || '';
+                
+                function fetchPage(from) {
+                    var queryParams = 'file=' + fileId + '&code=' + mentionsAuthCode + '&c=' + c;
+                    queryParams += '&from=' + from;
+                    queryParams += '&count=' + requestedCount;
+                    if (search) {
+                        queryParams += '&search=' + encodeURIComponent(search);
+                    }
+
+                    return fetch('/plugins/com.onlyoffice.mattermost/api/mentions/users?' + queryParams, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.error || 'Request failed with status ' + response.status);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.users && data.users.length > 0) {
+                            allUsers = allUsers.concat(data.users);
+                        }
+                        
+                        if (data.hasMore) {
+                            return fetchPage(from + requestedCount);
+                        } else {
+                            var result = {
+                                c: c,
+                                users: allUsers
+                            };
+                            
+                            docEditor.setUsers(result);
+                        }
                     });
-                })
-                .catch(error => {
-                    innerAlert("Error loading users: " + error);
+                }
+                
+                fetchPage(0).catch(error => {
+                    innerAlert("Error loading users: " + error.message);
                 });
             }
         };

@@ -25,7 +25,11 @@ type MentionUser struct {
 	Email string `json:"email"`
 }
 
-type MentionUsersResponse []MentionUser
+type MentionUsersResponse struct {
+	C       string        `json:"c"`
+	Users   []MentionUser `json:"users"`
+	HasMore bool          `json:"hasMore,omitempty"`
+}
 
 func (m MentionUsersResponse) ToJSON() []byte {
 	data, err := json.Marshal(m)
