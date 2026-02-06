@@ -23,3 +23,4 @@ export {closePermissions, openPermissions} from './permissions';
 export {closeEditor, openEditor} from './editor';
 export {closeManager, openManager} from './manager';
 export {closeConverter, openConverter} from './converter';
+export {updateHealthStatus} from './health';

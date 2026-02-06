@@ -80,6 +80,7 @@ func NewRouter(
 	jwtManager crypto.JwtManager,
 	callbackHandler callback.Handler,
 	mentionsHandler controller.MentionsHandler,
+	healthHandler controller.HealthHandler,
 	fileHelper file.FileHelper,
 	encoder crypto.Encoder,
 	formatManager public.FormatManager,
@@ -116,6 +117,7 @@ func NewRouter(
 	subrouter.HandleFunc("/download", dh.Handle).Methods(http.MethodGet)
 	subrouter.HandleFunc("/image", ih.Handle).Methods(http.MethodGet)
 	subrouter.HandleFunc("/config", cfh.Handle).Methods(http.MethodGet)
+	subrouter.HandleFunc("/health", healthHandler.GetHealthStatus).Methods(http.MethodGet)
 
 	authMiddleware := middleware.NewAuthorizationMiddleware(api)
 

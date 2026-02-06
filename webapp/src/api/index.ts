@@ -50,3 +50,12 @@ export interface PluginConfig {
 export async function getPluginConfig(): Promise<PluginConfig> {
     return get<PluginConfig>(ONLYOFFICE_PLUGIN_CONFIG);
 }
+
+export interface HealthStatus {
+    healthy: boolean;
+    time: number;
+}
+
+export async function getHealthStatus(): Promise<HealthStatus> {
+    return get<HealthStatus>(ONLYOFFICE_PLUGIN_API + '/health');
+}

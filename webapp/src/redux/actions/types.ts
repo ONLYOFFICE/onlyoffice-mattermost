@@ -35,6 +35,8 @@ export const CLOSE_PERMISSIONS_MODAL = pluginId + '_close_permissions_modal';
 export const OPEN_MANAGER_MODAL = pluginId + '_open_manager_modal';
 export const CLOSE_MANAGER_MODAL = pluginId + '_close_manager_modal';
 
+export const UPDATE_HEALTH_STATUS = pluginId + '_update_health_status';
+
 export const MATTERMOST_ME_ACTION = 'RECEIVED_ME';
 
 export const SUBMENU = pluginId + '_submenu';

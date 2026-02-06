@@ -1,9 +1,6 @@
-// Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
-// See LICENSE.txt for license information.
-
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +15,11 @@
  * limitations under the License.
  *
  */
+package health
 
-import {combineReducers} from 'redux';
+import "go.uber.org/fx"
 
-import {converterModal} from './converter';
-import {editorModal} from './editor';
-import {managerModal} from './manager';
-import {permissionsModal} from './permissions';
-import healthReducer from './health';
-
-export default combineReducers({
-    permissionsModal,
-    editorModal,
-    managerModal,
-    converterModal,
-    health: healthReducer,
-});
+var Module = fx.Module(
+	"health",
+	fx.Provide(NewHealthChecker),
+)

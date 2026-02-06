@@ -19,6 +19,7 @@
  *
  */
 
+import React from 'react';
 import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
@@ -26,11 +27,12 @@ import editor from 'public/images/editor.svg';
 import editorDark from 'public/images/editor_dark.svg';
 import permissions from 'public/images/permissions.svg';
 import permissionsDark from 'public/images/permissions_dark.svg';
-import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {openEditor, openPermissions} from 'redux/actions';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
+
+import manifest from 'manifest';
 
 import 'public/scss/preview.scss';
 
@@ -44,8 +46,15 @@ export default function OnlyofficeFilePreview(props: Props) {
     const i18n = getTranslations();
     const dispatch = useDispatch();
     const icon = fileHelper.getIconByExt(props.fileInfo.extension);
-    const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo);
-
+    const isHealthy = useSelector((state: any) => {
+        const pluginState = state['plugins-' + manifest.id] || {};
+        const health = pluginState.health || {healthy: true};
+        const healthy = health.healthy !== false;
+        return healthy;
+    });
+    
+    const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo) && isHealthy;
+    
     return (
         <div
             className='file-details__container'
@@ -88,14 +97,31 @@ export default function OnlyofficeFilePreview(props: Props) {
                                 />
                             )
                     }
-                    <img
-                        className='onlyoffice_preview__btn'
-                        alt={'open editor'}
-                        onClick={() => openEditor(props.fileInfo)(dispatch)}
-                        src={props.theme === 'dark' ? editorDark : editor}
-                        data-theme={props.theme}
-                        data-dark-theme={props.darkTheme}
-                    />
+                    {isHealthy && (
+                        <img
+                            className='onlyoffice_preview__btn'
+                            alt={'open editor'}
+                            onClick={() => openEditor(props.fileInfo)(dispatch)}
+                            src={props.theme === 'dark' ? editorDark : editor}
+                            data-theme={props.theme}
+                            data-dark-theme={props.darkTheme}
+                        />
+                    )}
+                    {!isHealthy && (
+                        <div
+                            className='onlyoffice_preview__disabled'
+                            title={(i18n as any)['preview.server_unavailable'] || 'ONLYOFFICE document server is currently unavailable'}
+                            style={{
+                                opacity: 0.5,
+                                cursor: 'not-allowed',
+                                fontSize: '12px',
+                                color: props.theme === 'dark' ? '#999' : '#666',
+                                marginTop: '4px',
+                            }}
+                        >
+                            {(i18n as any)['preview.server_unavailable'] || 'Server unavailable'}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
