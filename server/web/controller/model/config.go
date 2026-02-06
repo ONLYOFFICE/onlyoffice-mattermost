@@ -54,6 +54,7 @@ type User struct {
 type Customization struct {
 	Goback  Goback `json:"goback"`
 	UiTheme string `json:"uiTheme,omitempty"`
+	Chat    bool   `json:"chat"`
 	Close   Close  `json:"close,omitempty"`
 	Plugins bool   `json:"plugins"`
 	Macros  bool   `json:"macros"`

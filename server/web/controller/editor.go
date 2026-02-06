@@ -205,6 +205,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 					RequestClose: true,
 				},
 				UiTheme: theme,
+				Chat:    false,
 				Close: oomodel.Close{
 					Visible: true,
 				},
