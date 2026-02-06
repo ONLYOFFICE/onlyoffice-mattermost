@@ -82,7 +82,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                 response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions,
             );
             pipe<any>(mapUsersToMattermostUsers, sortMattermostUsers, setUsers)(response);
-        } catch (err) {
+        } catch {
             setError(true);
         } finally {
             setLoading(false);

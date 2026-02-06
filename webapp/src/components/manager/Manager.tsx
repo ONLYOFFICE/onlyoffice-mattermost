@@ -117,7 +117,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
             setFileName(getDefaultFileName('docx', i18n));
             setFileType('docx');
             handleExit();
-        } catch (error) {
+        } catch {
             setError(i18n['manager.error_create_failed']);
         } finally {
             setLoading(false);

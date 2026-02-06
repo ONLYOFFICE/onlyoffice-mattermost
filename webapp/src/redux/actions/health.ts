@@ -19,8 +19,9 @@
  *
  */
 
-import {UPDATE_HEALTH_STATUS} from './types';
 import type {Dispatch} from 'redux';
+
+import {UPDATE_HEALTH_STATUS} from './types';
 
 export const updateHealthStatus = (healthy: boolean) => (dispatch: Dispatch) => {
     dispatch({

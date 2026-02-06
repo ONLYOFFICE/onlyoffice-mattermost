@@ -107,7 +107,7 @@ export default function Converter({visible, fileInfo, theme, darkTheme, close}: 
                 setSelectedFormat(null);
                 handleClose();
             }
-        } catch (error: any) {
+        } catch {
             setError(i18n['converter.error_convert_failed'] || 'Failed to convert file. Please try again.');
         } finally {
             setLoading(false);

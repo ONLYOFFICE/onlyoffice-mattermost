@@ -29,7 +29,7 @@ export async function http<T>(path: string, config: RequestInit): Promise<T> {
 
     try {
         return await response.json();
-    } catch (error) {
+    } catch {
         return undefined as T;
     }
 }

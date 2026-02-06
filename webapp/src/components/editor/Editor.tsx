@@ -64,7 +64,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
                     }));
                 }, 1000);
             }
-        } catch (error) {
+        } catch {
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT));
             }, 1000);

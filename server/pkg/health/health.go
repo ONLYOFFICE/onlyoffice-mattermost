@@ -29,7 +29,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/robfig/cron/v3"
+	cron "github.com/robfig/cron/v3"
 )
 
 const (

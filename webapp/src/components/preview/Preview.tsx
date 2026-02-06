@@ -19,20 +19,19 @@
  *
  */
 
-import React from 'react';
 import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
+import manifest from 'manifest';
 import editor from 'public/images/editor.svg';
 import editorDark from 'public/images/editor_dark.svg';
 import permissions from 'public/images/permissions.svg';
 import permissionsDark from 'public/images/permissions_dark.svg';
+import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {openEditor, openPermissions} from 'redux/actions';
 
 import type {FileInfo} from 'mattermost-redux/types/files';
-
-import manifest from 'manifest';
 
 import 'public/scss/preview.scss';
 
@@ -52,9 +51,9 @@ export default function OnlyofficeFilePreview(props: Props) {
         const healthy = health.healthy !== false;
         return healthy;
     });
-    
+
     const showPermissions = fileHelper.isExtensionSupported(props.fileInfo.extension, true) && fileHelper.isFileAuthor(props.fileInfo) && isHealthy;
-    
+
     return (
         <div
             className='file-details__container'

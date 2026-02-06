@@ -19,11 +19,12 @@
  *
  */
 
-import React from 'react';
 import {isConvertSupported, isExtensionSupported, isFileAuthor, setPluginConfig} from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import {getPluginConfig, getHealthStatus} from 'api';
+import manifest from 'manifest';
+import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
 import {openConverter, openEditor, openManager, openPermissions, updateHealthStatus} from 'redux/actions';
 import Reducer from 'redux/reducers';
@@ -39,8 +40,6 @@ import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
 import OnlyofficeFilePreview from 'components/preview';
 import {Formats} from 'components/settings';
-
-import manifest from 'manifest';
 
 import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
