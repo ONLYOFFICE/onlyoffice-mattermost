@@ -77,6 +77,7 @@
         const ONLYOFFICE_ERROR_EVENT = new Event('onlyofficeerror');
 
         var docEditor;
+        var mentionsAuthCode = "{{.mentionscode}}";
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -125,11 +126,88 @@
             window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
         };
 
+        var onRequestUsers = function (event) {
+            if (event && event.data && event.data.c === "mention") {
+                const urlParams = new URLSearchParams(window.location.search);
+                const fileId = urlParams.get('file');
+                
+                if (!fileId) {
+                    return;
+                }
+
+                if (!mentionsAuthCode) {
+                    return;
+                }
+
+                fetch('/plugins/com.onlyoffice.mattermost/api/mentions/users?file=' + fileId + '&code=' + mentionsAuthCode, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                })
+                .then(response => response.json())
+                .then(users => {
+                    docEditor.setUsers({
+                        c: event.data.c,
+                        users: users
+                    });
+                })
+                .catch(error => {
+                    innerAlert("Error loading users: " + error);
+                });
+            }
+        };
+
+        var onRequestSendNotify = function (event) {
+            if (event && event.data) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const fileId = urlParams.get('file');
+                
+                if (!fileId) {
+                    return;
+                }
+
+                if (!mentionsAuthCode) {
+                    return;
+                }
+
+                const payload = {
+                    fileId: fileId,
+                    emails: event.data.emails || [],
+                    message: event.data.message || "",
+                    actionLink: event.data.actionLink || ""
+                };
+
+                fetch('/plugins/com.onlyoffice.mattermost/api/mentions/notify?code=' + mentionsAuthCode, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || 'Request failed with status ' + response.status);
+                        });
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    innerAlert("Error sending notifications: " + error.message);
+                });
+            }
+        };
+
         var events = {
             "onAppReady": onAppReady,
             "onRequestClose": onRequestClose,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
+            "onRequestUsers": onRequestUsers,
+            "onRequestSendNotify": onRequestSendNotify,
         };
 
         var config = {{ .config }};

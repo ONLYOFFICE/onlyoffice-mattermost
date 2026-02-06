@@ -79,6 +79,7 @@ func NewRouter(
 	configuration *configuration.Configuration,
 	jwtManager crypto.JwtManager,
 	callbackHandler callback.Handler,
+	mentionsHandler controller.MentionsHandler,
 	fileHelper file.FileHelper,
 	encoder crypto.Encoder,
 	formatManager public.FormatManager,
@@ -136,6 +137,12 @@ func NewRouter(
 	subrouter.HandleFunc("/code", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return cdh.Handle
 	})).Methods(http.MethodGet)
+	subrouter.HandleFunc("/mentions/users", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return mentionsHandler.GetUsers
+	})).Methods(http.MethodGet)
+	subrouter.HandleFunc("/mentions/notify", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return mentionsHandler.SendNotifications
+	})).Methods(http.MethodPost)
 
 	return router
 }

@@ -150,6 +150,7 @@ func (p *Plugin) initializeContainer() *fx.App {
 			controller.NewDownloadHandler,
 			controller.NewCodeHandler,
 			controller.NewNotFoundHandler,
+			controller.NewMentionsHandler,
 			fx.Annotate(
 				func() string {
 					botID, err := p.EnsureBot()
