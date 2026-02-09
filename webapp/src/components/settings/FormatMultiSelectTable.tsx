@@ -140,23 +140,27 @@ export default function FormatMultiSelectTable({
 
     useEffect(() => {
         if (!options || options.length === 0) {
-            setSelectedFormats([]);
-            setSelectAll(false);
+            setTimeout(() => {
+                setSelectedFormats([]);
+                setSelectAll(false);
+            }, 0);
             return;
         }
 
-        if (value && value.trim() !== '' && value.trim().toLowerCase() !== 'none') {
-            const formats = value.split(',').map((format) => format.trim());
-            setSelectedFormats(formats);
-            setSelectAll(formats.length === options.length);
-        } else if (value && value.trim().toLowerCase() === 'none') {
-            setSelectedFormats([]);
-            setSelectAll(false);
-        } else {
-            const allFormats = options.map((option) => option.value);
-            setSelectedFormats(allFormats);
-            setSelectAll(true);
-        }
+        setTimeout(() => {
+            if (value && value.trim() !== '' && value.trim().toLowerCase() !== 'none') {
+                const formats = value.split(',').map((format) => format.trim());
+                setSelectedFormats(formats);
+                setSelectAll(formats.length === options.length);
+            } else if (value && value.trim().toLowerCase() === 'none') {
+                setSelectedFormats([]);
+                setSelectAll(false);
+            } else {
+                const allFormats = options.map((option) => option.value);
+                setSelectedFormats(allFormats);
+                setSelectAll(true);
+            }
+        }, 0);
     }, [value, options]);
 
     const handleToggle = useCallback((format: string) => {

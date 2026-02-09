@@ -212,7 +212,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 color: props.theme === 'dark' ? '#ffffff' : provided.color,
             }),
         },
-    }), [props.theme]);
+    }), [props.theme, props.darkTheme]);
 
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {
