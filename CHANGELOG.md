@@ -8,6 +8,7 @@
 
 ### Changed
 - updated copyrights
+- updated dependencies
 
 ### Fixed
 - webapp websocket notifications
