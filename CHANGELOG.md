@@ -1,10 +1,18 @@
 # Change Log
 
-## 2.1.1
+## 2.2.0
+### Added
+- user mentions via Mattermost bot
+- periodic health-checks for document server
+- plugins, macros and protection flags in settings
+
 ### Changed
-- dependency bump for enhanced security
+- updated copyrights
+- updated dependencies
 
 ### Fixed
+- webapp websocket notifications
+- disabled chat by default
 - fixed real-time extensions issue
 
 ## 2.1.0

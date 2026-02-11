@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ type Permissions struct {
 	ModifyContentControl    bool `json:"modifyContentControl,omitempty"`
 	ModifyFilter            bool `json:"modifyFilter,omitempty"`
 	Print                   bool `json:"print,omitempty"`
+	Protect                 bool `json:"protect"`
 	Review                  bool `json:"review,omitempty"`
 }
 

@@ -2,5 +2,11 @@
   "root": true,
   "extends": [
     "plugin:@mattermost/react"
-  ]
+  ],
+  "rules": {
+    "@typescript-eslint/no-duplicate-enum-values": "off",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/type-annotation-spacing": "off"
+  }
 }

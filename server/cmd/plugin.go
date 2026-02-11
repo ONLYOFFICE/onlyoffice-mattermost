@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/health"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/middleware"
@@ -64,6 +65,7 @@ type Plugin struct {
 	configurationLock sync.RWMutex
 
 	router        *mux.Router
+	healthChecker health.HealthChecker
 	commandClient client.CommandClient
 	jwtManager    crypto.JwtManager
 
@@ -150,6 +152,8 @@ func (p *Plugin) initializeContainer() *fx.App {
 			controller.NewDownloadHandler,
 			controller.NewCodeHandler,
 			controller.NewNotFoundHandler,
+			controller.NewMentionsHandler,
+			controller.NewHealthHandler,
 			fx.Annotate(
 				func() string {
 					botID, err := p.EnsureBot()
@@ -167,10 +171,12 @@ func (p *Plugin) initializeContainer() *fx.App {
 		client.Module,
 		converter.Module,
 		bot.Module,
+		health.Module,
 		web.Module,
 		fx.Invoke(func(router *mux.Router) { p.router = router }),
 		fx.Invoke(func(commandClient client.CommandClient) { p.commandClient = commandClient }),
 		fx.Invoke(func(jwtManager crypto.JwtManager) { p.jwtManager = jwtManager }),
+		fx.Invoke(func(healthChecker health.HealthChecker) { p.healthChecker = healthChecker }),
 	)
 }
 
@@ -183,10 +189,18 @@ func (p *Plugin) OnActivate() error {
 		return p.configuration.Error
 	}
 
+	if p.healthChecker != nil {
+		p.healthChecker.Start()
+	}
+
 	return nil
 }
 
 func (p *Plugin) OnDeactivate() error {
+	if p.healthChecker != nil {
+		p.healthChecker.Stop()
+	}
+
 	if p.app != nil {
 		return p.app.Stop(context.Background())
 	}
@@ -214,8 +228,14 @@ func (p *Plugin) OnConfigurationChange() error {
 	}()
 
 	previousFormats := ""
+	previousOwnerProtected := false
+	previousPluginsEnabled := true
+	previousMacrosEnabled := true
 	if p.configuration != nil {
 		previousFormats = p.configuration.Formats
+		previousOwnerProtected = p.configuration.OwnerProtected
+		previousPluginsEnabled = p.configuration.PluginsEnabled
+		previousMacrosEnabled = p.configuration.MacrosEnabled
 	}
 
 	configuration, err := p.prepareConfiguration()
@@ -233,14 +253,21 @@ func (p *Plugin) OnConfigurationChange() error {
 		return err
 	}
 
-	if previousFormats != configuration.Formats {
-		p.publishFormatsConfigChange()
+	if previousFormats != configuration.Formats ||
+		previousOwnerProtected != configuration.OwnerProtected ||
+		previousPluginsEnabled != configuration.PluginsEnabled ||
+		previousMacrosEnabled != configuration.MacrosEnabled {
+		p.publishConfigChange()
 	}
 
 	return nil
 }
 
 func (p *Plugin) reinitializeContainer(config *configuration.Configuration) error {
+	if p.healthChecker != nil {
+		p.healthChecker.Stop()
+	}
+
 	if p.app != nil {
 		tctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -252,6 +279,7 @@ func (p *Plugin) reinitializeContainer(config *configuration.Configuration) erro
 		p.app = nil
 		p.commandClient = nil
 		p.jwtManager = nil
+		p.healthChecker = nil
 		p.ready = false
 	}
 
@@ -268,6 +296,10 @@ func (p *Plugin) reinitializeContainer(config *configuration.Configuration) erro
 	if err := p.app.Start(tctx); err != nil {
 		p.handleConfigError(config, err, "Failed to start plugin dependencies")
 		return err
+	}
+
+	if p.healthChecker != nil {
+		p.healthChecker.Start()
 	}
 
 	p.ready = true
@@ -465,20 +497,20 @@ func (p *Plugin) setConfiguration(configuration *configuration.Configuration) {
 	p.configuration = configuration
 }
 
-func (p *Plugin) publishFormatsConfigChange() {
+func (p *Plugin) publishConfigChange() {
 	if p.MattermostPlugin.API == nil {
 		return
 	}
 
 	event := map[string]any{
-		"formats_updated": true,
+		"config_updated": true,
 	}
 
 	p.MattermostPlugin.API.PublishWebSocketEvent(
-		"formats_config_changed",
+		"config_changed",
 		event,
 		&model.WebsocketBroadcast{},
 	)
 
-	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published formats config change event")
+	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published config change event")
 }

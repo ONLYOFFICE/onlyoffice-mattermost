@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ export default function Converter({visible, fileInfo, theme, darkTheme, close}: 
                 setSelectedFormat(null);
                 handleClose();
             }
-        } catch (error: any) {
+        } catch {
             setError(i18n['converter.error_convert_failed'] || 'Failed to convert file. Please try again.');
         } finally {
             setLoading(false);

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,5 +18,8 @@
 package model
 
 type FormatResponse struct {
-	Formats []string `json:"formats"`
+	Formats        []string `json:"formats"`
+	OwnerProtected bool     `json:"ownerProtected"`
+	PluginsEnabled bool     `json:"pluginsEnabled"`
+	MacrosEnabled  bool     `json:"macrosEnabled"`
 }

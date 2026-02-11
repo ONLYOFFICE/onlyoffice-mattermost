@@ -6,6 +6,7 @@
     "plugin.convert_button": "Convertir le fichier",
     "preview.open_button": "Ouvrir dans ONLYOFFICE",
     "preview.file_type": "Type de fichier",
+    "preview.server_unavailable": "ONLYOFFICE document server is currently unavailable FR",
     "permissions.loading": "Chargement...",
     "permissions.access_header": "Droits d'accès pour",
     "permissions.access_header_default": "Droits d'accès par défaut pour les membres du chat",

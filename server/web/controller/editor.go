@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,9 +151,32 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if h.configuration.OwnerProtected && payload.UserID == post.UserId {
+		permissions.Protect = true
+	} else {
+		permissions.Protect = false
+	}
+
 	code := h.fileHelper.GenerateKey()
 	if err := h.api.KVSetWithExpiry(code, []byte(payload.UserID), 10); err != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not set code: " + err.Error())
+	}
+
+	var mentionsCode string
+
+	mentionsKey := "mentions:" + payload.UserID
+	mentionsCodeBytes, err := h.api.KVGet(mentionsKey)
+	if err != nil || len(mentionsCodeBytes) == 0 {
+		mentionsCode = h.fileHelper.GenerateKey()
+		if err := h.api.KVSetWithExpiry(mentionsKey, []byte(mentionsCode), 60*60*24); err != nil {
+			h.api.LogError(onlyofficeLoggerPrefix + "could not set mentions code: " + err.Error())
+		}
+	} else {
+		mentionsCode = string(mentionsCodeBytes)
+	}
+
+	if err := h.api.KVSetWithExpiry(mentionsCode, []byte(payload.UserID), 60*60*24); err != nil {
+		h.api.LogError(onlyofficeLoggerPrefix + "could not set mentions code mapping: " + err.Error())
 	}
 
 	theme := "theme-classic-light"
@@ -182,9 +205,12 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 					RequestClose: true,
 				},
 				UiTheme: theme,
+				Chat:    false,
 				Close: oomodel.Close{
 					Visible: true,
 				},
+				Plugins: h.configuration.PluginsEnabled,
+				Macros:  h.configuration.MacrosEnabled,
 			},
 			Lang: payload.Lang,
 		},
@@ -206,10 +232,11 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"apijs":  h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
-		"config": string(encodedConfig),
-		"dark":   query.Get("dark"),
+	data := map[string]any{
+		"apijs":        h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
+		"config":       string(encodedConfig),
+		"dark":         query.Get("dark"),
+		"mentionscode": string(mentionsCode),
 	}
 
 	h.api.LogDebug(onlyofficeLoggerPrefix + "building an editor window")

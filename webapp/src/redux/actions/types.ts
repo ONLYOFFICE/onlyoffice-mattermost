@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ export const CLOSE_PERMISSIONS_MODAL = pluginId + '_close_permissions_modal';
 
 export const OPEN_MANAGER_MODAL = pluginId + '_open_manager_modal';
 export const CLOSE_MANAGER_MODAL = pluginId + '_close_manager_modal';
+
+export const UPDATE_HEALTH_STATUS = pluginId + '_update_health_status';
 
 export const MATTERMOST_ME_ACTION = 'RECEIVED_ME';
 

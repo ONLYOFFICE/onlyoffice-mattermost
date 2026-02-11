@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,8 @@ func NewRouter(
 	configuration *configuration.Configuration,
 	jwtManager crypto.JwtManager,
 	callbackHandler callback.Handler,
+	mentionsHandler controller.MentionsHandler,
+	healthHandler controller.HealthHandler,
 	fileHelper file.FileHelper,
 	encoder crypto.Encoder,
 	formatManager public.FormatManager,
@@ -115,6 +117,7 @@ func NewRouter(
 	subrouter.HandleFunc("/download", dh.Handle).Methods(http.MethodGet)
 	subrouter.HandleFunc("/image", ih.Handle).Methods(http.MethodGet)
 	subrouter.HandleFunc("/config", cfh.Handle).Methods(http.MethodGet)
+	subrouter.HandleFunc("/health", healthHandler.GetHealthStatus).Methods(http.MethodGet)
 
 	authMiddleware := middleware.NewAuthorizationMiddleware(api)
 
@@ -136,6 +139,12 @@ func NewRouter(
 	subrouter.HandleFunc("/code", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return cdh.Handle
 	})).Methods(http.MethodGet)
+	subrouter.HandleFunc("/mentions/users", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return mentionsHandler.GetUsers
+	})).Methods(http.MethodGet)
+	subrouter.HandleFunc("/mentions/notify", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return mentionsHandler.SendNotifications
+	})).Methods(http.MethodPost)
 
 	return router
 }

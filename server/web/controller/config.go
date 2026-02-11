@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,10 @@ func (h *ConfigHandler) isSupported(f public.Format) bool {
 
 func (h *ConfigHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	response := model.FormatResponse{
-		Formats: h.parseFormats(h.configuration.Formats, h.isSupported),
+		Formats:        h.parseFormats(h.configuration.Formats, h.isSupported),
+		OwnerProtected: h.configuration.OwnerProtected,
+		PluginsEnabled: h.configuration.PluginsEnabled,
+		MacrosEnabled:  h.configuration.MacrosEnabled,
 	}
 
 	rw.Header().Set("Content-Type", "application/json")

@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
                     }));
                 }, 1000);
             }
-        } catch (error) {
+        } catch {
             setTimeout(() => {
                 window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT));
             }, 1000);
