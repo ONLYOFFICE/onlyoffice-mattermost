@@ -13,12 +13,6 @@
 ### Fixed
 - webapp websocket notifications
 - disabled chat by default
-
-## 2.1.1
-### Changed
-- dependency bump for enhanced security
-
-### Fixed
 - fixed real-time extensions issue
 
 ## 2.1.0
