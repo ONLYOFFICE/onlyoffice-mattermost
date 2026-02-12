@@ -151,10 +151,14 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if h.configuration.OwnerProtected && payload.UserID == post.UserId {
-		permissions.Protect = true
+	if h.configuration.OwnerProtected {
+		if payload.UserID == post.UserId {
+			permissions.Protect = true
+		} else {
+			permissions.Protect = false
+		}
 	} else {
-		permissions.Protect = false
+		permissions.Protect = true
 	}
 
 	code := h.fileHelper.GenerateKey()
