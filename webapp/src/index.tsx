@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@
 import {isConvertSupported, isExtensionSupported, isFileAuthor, setPluginConfig} from 'util/file';
 import {getTranslations} from 'util/lang';
 
-import {getPluginConfig} from 'api';
+import {getPluginConfig, getHealthStatus} from 'api';
 import manifest from 'manifest';
 import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
-import {openConverter, openEditor, openManager, openPermissions} from 'redux/actions';
+import {openConverter, openEditor, openManager, openPermissions, updateHealthStatus} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
@@ -46,11 +46,23 @@ import 'public/scss/editor.scss';
 
 export default class Plugin {
     public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
+        const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
+
         try {
             const config = await getPluginConfig();
             setPluginConfig(config);
         } catch (error) {
-            // TODO: Handle error gracefully
+            // eslint-disable-next-line no-console
+            console.error('ONLYOFFICE: Failed to fetch initial config:', error);
+        }
+
+        try {
+            const healthStatus = await getHealthStatus();
+            dispatch(updateHealthStatus(healthStatus.healthy));
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('ONLYOFFICE: Failed to fetch initial health status:', error);
+            dispatch(updateHealthStatus(true));
         }
 
         registry.registerTranslations(getTranslations);
@@ -59,7 +71,6 @@ export default class Plugin {
         registry.registerRootComponent(OnlyofficeFilePermissions);
         registry.registerRootComponent(OnlyofficeManager);
         registry.registerRootComponent(OnlyofficeFileConverter);
-        const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         if (registry.registerAdminConsoleCustomSetting) {
             registry.registerAdminConsoleCustomSetting('Formats', Formats);
@@ -67,17 +78,35 @@ export default class Plugin {
 
         if (registry.registerFileDropdownMenuAction) {
             registry.registerFileDropdownMenuAction(
-                (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension),
+                (fileInfo: FileInfo) => {
+                    const state = store.getState() as any;
+                    const pluginState = state['plugins-' + manifest.id] || {};
+                    const health = pluginState.health || {healthy: true};
+                    const isHealthy = health.healthy !== false;
+                    return isExtensionSupported(fileInfo.extension) && isHealthy;
+                },
                 () => getTranslations()['plugin.open_button'],
                 (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
             );
             registry.registerFileDropdownMenuAction(
-                (fileInfo: FileInfo) => isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo),
+                (fileInfo: FileInfo) => {
+                    const state = store.getState() as any;
+                    const pluginState = state['plugins-' + manifest.id] || {};
+                    const health = pluginState.health || {healthy: true};
+                    const isHealthy = health.healthy !== false;
+                    return isExtensionSupported(fileInfo.extension, true) && isFileAuthor(fileInfo) && isHealthy;
+                },
                 () => getTranslations()['plugin.access_button'],
                 (fileInfo: FileInfo) => dispatch(openPermissions(fileInfo)),
             );
             registry.registerFileDropdownMenuAction(
-                (fileInfo: FileInfo) => isConvertSupported(fileInfo.extension) && isFileAuthor(fileInfo),
+                (fileInfo: FileInfo) => {
+                    const state = store.getState() as any;
+                    const pluginState = state['plugins-' + manifest.id] || {};
+                    const health = pluginState.health || {healthy: true};
+                    const isHealthy = health.healthy !== false;
+                    return isConvertSupported(fileInfo.extension) && isFileAuthor(fileInfo) && isHealthy;
+                },
                 () => getTranslations()['plugin.convert_button'],
                 (fileInfo: FileInfo) => dispatch(openConverter(fileInfo)),
             );
@@ -95,6 +124,29 @@ export default class Plugin {
             () => dispatch(openManager()),
             'ONLYOFFICE',
         );
+
+        if (registry.registerWebSocketEventHandler) {
+            registry.registerWebSocketEventHandler(
+                `custom_${manifest.id}_config_changed`,
+                async () => {
+                    try {
+                        const config = await getPluginConfig();
+                        setPluginConfig(config);
+                    } catch (error) {
+                        // eslint-disable-next-line no-console
+                        console.error('ONLYOFFICE: Failed to reload config after websocket event:', error);
+                    }
+                },
+            );
+
+            registry.registerWebSocketEventHandler(
+                `custom_${manifest.id}_health_status`,
+                (event: any) => {
+                    const healthy = event.data?.healthy ?? true;
+                    dispatch(updateHealthStatus(healthy));
+                },
+            );
+        }
     }
 }
 

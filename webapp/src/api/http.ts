@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ export async function http<T>(path: string, config: RequestInit): Promise<T> {
 
     try {
         return await response.json();
-    } catch (error) {
+    } catch {
         return undefined as T;
     }
 }

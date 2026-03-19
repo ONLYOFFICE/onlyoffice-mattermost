@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,7 +212,7 @@ const UserActions = (props: Props & { user: MattermostUser }) => {
                 color: props.theme === 'dark' ? '#ffffff' : provided.color,
             }),
         },
-    }), [props.theme]);
+    }), [props.theme, props.darkTheme]);
 
     const permissionsMap = getFileAccess().map((entry: FileAccess) => {
         return {

@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -330,7 +330,7 @@ export const PermissionsHeader: React.FC<Props> = ({
                 };
             },
         },
-    }), [theme]);
+    }), [theme, darkTheme]);
 
     const permissionsOptions = getFileAccess().map((entry: FileAccess) => ({
         value: entry.toString(),
@@ -344,9 +344,10 @@ export const PermissionsHeader: React.FC<Props> = ({
     useEffect(() => {
         const isChannel = window.location.href.split('/').includes('channels');
         if (!loading) {
-            setAccessHeader(
-                isChannel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'],
-            );
+            const headerText = isChannel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'];
+            setTimeout(() => {
+                setAccessHeader(headerText);
+            }, 0);
         }
         return () => setSelectedUsers([]);
     }, [channel, loading, i18n]);

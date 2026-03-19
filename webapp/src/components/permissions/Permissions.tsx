@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                 response.find((user) => user.id === ONLYOFFICE_WILDCARD_USER)?.permissions,
             );
             pipe<any>(mapUsersToMattermostUsers, sortMattermostUsers, setUsers)(response);
-        } catch (err) {
+        } catch {
             setError(true);
         } finally {
             setLoading(false);

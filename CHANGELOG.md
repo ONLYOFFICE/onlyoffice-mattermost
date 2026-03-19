@@ -1,5 +1,20 @@
 # Change Log
 
+## 2.2.0
+### Added
+- user mentions via Mattermost bot
+- periodic health-checks for document server
+- plugins, macros and protection flags in settings
+
+### Changed
+- updated copyrights
+- updated dependencies
+
+### Fixed
+- webapp websocket notifications
+- disabled chat by default
+- fixed real-time extensions issue
+
 ## 2.1.0
 ### Added
 - selectable file extensions for opening documents in the editor

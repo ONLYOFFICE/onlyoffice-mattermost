@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
             setFileName(getDefaultFileName('docx', i18n));
             setFileType('docx');
             handleExit();
-        } catch (error) {
+        } catch {
             setError(i18n['manager.error_create_failed']);
         } finally {
             setLoading(false);

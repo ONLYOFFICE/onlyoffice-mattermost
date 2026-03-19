@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,20 @@ export async function post<T, U>(path: string, body: T, config?: RequestInit): P
 
 export interface PluginConfig {
     formats: string[];
+    ownerProtected: boolean;
+    pluginsEnabled: boolean;
+    macrosEnabled: boolean;
 }
 
 export async function getPluginConfig(): Promise<PluginConfig> {
     return get<PluginConfig>(ONLYOFFICE_PLUGIN_CONFIG);
+}
+
+export interface HealthStatus {
+    healthy: boolean;
+    time: number;
+}
+
+export async function getHealthStatus(): Promise<HealthStatus> {
+    return get<HealthStatus>(ONLYOFFICE_PLUGIN_API + '/health');
 }

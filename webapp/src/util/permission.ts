@@ -3,7 +3,7 @@
 
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,29 +70,10 @@ export function getFilePermissions(accessType: string): FilePermissions {
     return FilePermissionsMap.get(accessType.toLowerCase() === FileAccess.EDIT_ONLY.toString().toLocaleLowerCase() ? FileAccess.EDIT_ONLY : FileAccess.READ_ONLY) || READ;
 }
 
-function permissionsComparison<T extends FilePermissions>(firstObject: T, secondObject: T): boolean {
-    const firstKeys = Object.keys(firstObject);
-    const secondKeys = Object.keys(secondObject);
-
-    if (firstKeys.length !== secondKeys.length) {
-        return false;
-    }
-
-    for (const key of firstKeys) {
-        const firstVal = firstObject[key];
-        const secondVal = secondObject[key];
-        if (firstVal !== secondVal) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 export function getPermissionsTypeByPermissions(permissions: FilePermissions | undefined): FileAccess {
     if (!permissions) {
         return FileAccess.READ_ONLY;
     }
-    const isEditOnly = permissionsComparison<FilePermissions>(permissions, EDIT);
-    return isEditOnly ? FileAccess.EDIT_ONLY : FileAccess.READ_ONLY;
+
+    return permissions.edit ? FileAccess.EDIT_ONLY : FileAccess.READ_ONLY;
 }
