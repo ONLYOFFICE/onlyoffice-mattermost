@@ -1,8 +1,8 @@
 ﻿# ONLYOFFICE app for Mattermost
 
-This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using ONLYOFFICE Docs packaged as Document Server.
+This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using [ONLYOFFICE Docs](https://www.onlyoffice.com/docs).
 
-## Features
+## Features ✨
 
 The app allows to:
 
@@ -27,7 +27,7 @@ The app allows to:
 
 ## Installing ONLYOFFICE Docs
 
-**Self-hosted editors**
+### Self-hosted editors 🏠
 
 You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Mattermost and any end clients. ONLYOFFICE Document Server must also be able to POST to Mattermost directly.
 
@@ -41,11 +41,11 @@ To install Enterprise Edition, follow the instructions [here](https://helpcenter
 
 Community Edition vs Enterprise Edition comparison can be found [here](#onlyoffice-docs-editions).
 
-**ONLYOFFICE Docs Cloud**
+### ONLYOFFICE Docs Cloud ☁️
 
 You can also opt for ONLYOFFICE Docs Cloud which doesn't require downloading and installation.
 
-To get ONLYOFFICE Docs Cloud, get started [here](https://www.onlyoffice.com/docs-registration.aspx).
+To get ONLYOFFICE Docs Cloud, [get started here](https://www.onlyoffice.com/docs-registration).
 
 ## Installing ONLYOFFICE app for Mattermost
 
@@ -77,7 +77,7 @@ As a Mattermost administrator, configure the app via the System Console. App Mar
   The URL of the installed ONLYOFFICE Docs (Document Server).
 
 - **Document Server JWT Secret**:
-   JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. Specify your own secret key in the Mattermost plugin configuration. In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/), specify the same secret key and enable the validation.
+   JWT is enabled by default and the secret key is generated automatically to restrict the access to ONLYOFFICE Docs and for security reasons and data integrity. If needed, specify your own secret key in the Mattermost plugin configuration. In the ONLYOFFICE Docs [config file](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/), specify the same secret key and enable the validation.
 
 - **JWT Header**:
   If JWT protection is enabled, it is necessary to specify a custom header name since the Mattermost security policy blocks external 'Authorization' Headers. This header should be specified in the ONLYOFFICE Docs signature settings as well (further information can be found [here](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/)).
@@ -136,36 +136,34 @@ All change notifications can be found within the message's discussion thread. Si
 
 ## ONLYOFFICE Docs editions
 
-ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers. 
+ONLYOFFICE offers different versions of its online document editors that can be deployed on your own servers.
 
-**ONLYOFFICE Docs** packaged as Document Server:
+* Community Edition 🆓 (`onlyoffice-documentserver` package)
+* Enterprise Edition 🏢 (`onlyoffice-documentserver-ee` package)
 
-* Community Edition (`onlyoffice-documentserver` package)
-* Enterprise Edition (`onlyoffice-documentserver-ee` package)
-
-The table below will help you make the right choice.
+The table below will help you to make the right choice.
 
 | Pricing and licensing | Community Edition | Enterprise Edition |
 | ------------- | ------------- | ------------- |
-| | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-enterprise)  |
-| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost)  |
+| | [Get it now](https://www.onlyoffice.com/download-community?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-enterprise)  |
+| Cost  | FREE  | [Go to the pricing page](https://www.onlyoffice.com/docs-enterprise-prices?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost)  |
 | Simultaneous connections | up to 20 maximum  | As in chosen pricing plan |
 | Number of users | up to 20 recommended | As in chosen pricing plan |
 | License | GNU AGPL v.3 | Proprietary |
 | **Support** | **Community Edition** | **Enterprise Edition** |
-| Documentation | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-community-index.aspx) | [Help Center](https://helpcenter.onlyoffice.com/installation/docs-enterprise-index.aspx) |
-| Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or paid | One year support included |
+| Documentation | [Help Center](https://helpcenter.onlyoffice.com/docs/installation/community) | [Help Center](https://helpcenter.onlyoffice.com/docs/installation/enterprise) |
+| Standard support | [GitHub](https://github.com/ONLYOFFICE/DocumentServer/issues) or paid | 1 or 3 years support included |
 | Premium support | [Contact us](mailto:sales@onlyoffice.com) | [Contact us](mailto:sales@onlyoffice.com) |
 | **Services** | **Community Edition** | **Enterprise Edition** |
 | Conversion Service                | + | + |
 | Document Builder Service          | + | + |
 | **Interface** | **Community Edition** | **Enterprise Edition** |
-| Tabbed interface                       | + | + |
-| Dark theme                             | + | + |
-| 125%, 150%, 175%, 200% scaling         | + | + |
-| White Label                            | - | - |
-| Integrated test example (node.js)      | + | + |
-| Mobile web editors                     | - | +* |
+| Tabbed interface                  | + | + |
+| Dark theme                        | + | + |
+| 125%, 150%, 175%, 200% scaling    | + | + |
+| White Label                       | - | - |
+| Integrated test example (node.js) | + | + |
+| Mobile web editors                | - | +* |
 | **Plugins & Macros** | **Community Edition** | **Enterprise Edition** |
 | Plugins                           | + | + |
 | Macros                            | + | + |
@@ -179,8 +177,8 @@ The table below will help you make the right choice.
 | **Document Editor features** | **Community Edition** | **Enterprise Edition** |
 | Font and paragraph formatting   | + | + |
 | Object insertion                | + | + |
-| Adding Content control          | + | + | 
-| Editing Content control         | + | + | 
+| Adding Content control          | + | + |
+| Editing Content control         | + | + |
 | Layout tools                    | + | + |
 | Table of contents               | + | + |
 | Navigation panel                | + | + |
@@ -207,13 +205,21 @@ The table below will help you make the right choice.
 | Adding form fields              | + | + |
 | Form preview                    | + | + |
 | Saving as PDF                   | + | + |
-| **Working with PDF**      | **Community Edition** | **Enterprise Edition** |
-| Text annotations (highlight, underline, cross out) | + | + |
+| **PDF Editor features**      | **Community Edition** | **Enterprise Edition** |
+| Text editing and co-editing                                | + | + |
+| Work with pages (adding, deleting, rotating)               | + | + |
+| Inserting objects (shapes, images, hyperlinks, etc.)       | + | + |
+| Text annotations (highlight, underline, cross out, stamps) | + | + |
 | Comments                        | + | + |
 | Freehand drawings               | + | + |
 | Form filling                    | + | + |
-| | [Get it now](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download-docs.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-enterprise)  |
+| | [Get it now](https://www.onlyoffice.com/download-community?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-community)  | [Start Free Trial](https://www.onlyoffice.com/download?utm_source=github&utm_medium=cpc&utm_campaign=GitHubMattermost#docs-enterprise)  |
 
 \* If supported by DMS.
 
-In case of technical problems, the best way to get help is to submit your issues [here](https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues). Alternatively, you can contact ONLYOFFICE team on [forum.onlyoffice.com](https://forum.onlyoffice.com/).
+## Need help? User Feedback and Support 💡
+
+* **🐞 Found a bug?** Please report it by creating an [issue](https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues).
+* **❓ Have a question?** Ask our community and developers on the [ONLYOFFICE Forum](https://community.onlyoffice.com).
+* **👨‍💻 Need help for developers?** Check our [API documentation](https://api.onlyoffice.com).
+* **💡 Want to suggest a feature?** Share your ideas on our [feedback platform](https://feedback.onlyoffice.com/forums/966080-your-voice-matters).
