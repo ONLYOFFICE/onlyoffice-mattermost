@@ -31,7 +31,7 @@ The app allows to:
 
 You will need an instance of ONLYOFFICE Docs (Document Server) that is resolvable and connectable both from Mattermost and any end clients. ONLYOFFICE Document Server must also be able to POST to Mattermost directly.
 
-ONLYOFFICE Document Server and Mattermost can be installed either on different computers or on the same machine. In case you choose the latter option, you need to set up a custom port for Document Server. 
+ONLYOFFICE Document Server and Mattermost can be installed either on different computers or on the same machine. In case you choose the latter option, you need to set up a custom port for Document Server.
 
 You can install free Community version of ONLYOFFICE Docs or scalable Enterprise Edition.
 
@@ -51,12 +51,12 @@ To get ONLYOFFICE Docs Cloud, [get started here](https://www.onlyoffice.com/docs
 
 1. Install Node.js. [Check instructions](https://github.com/nodesource/distributions#installation-instructions)
 2. Install Go. [Check instructions](https://go.dev/doc/install)
-3. Install make: 
+3. Install make:
 
     ```sh
     sudo apt install make
     ```
-4. Clone the plugin branch: 
+4. Clone the plugin branch:
 
     ```sh
     git clone https://github.com/ONLYOFFICE/onlyoffice-mattermost.git
@@ -91,9 +91,9 @@ You can also connect to the public test server of ONLYOFFICE Docs for one month 
 
 **Context menu**
 
-When files are sent in the chat message, the following actions are available in the file context menu by clicking the ⋮ symbol: 
+When files are sent in the chat message, the following actions are available in the file context menu by clicking the ⋮ symbol:
 
-- **Open file in ONLYOFFICE** and **Change access rights** — for the author of the message. 
+- **Open file in ONLYOFFICE** and **Change access rights** — for the author of the message.
 - **Open file in ONLYOFFICE** — for the recipient of the message.
 
 ![Settings](assets/screen_actions.png)
@@ -106,7 +106,7 @@ Users can create new files directly in the chat:  click on the paperclip icon in
 
 **Opening the editors**
 
-Clicking on the file name opens a preview of the file with the Open button. 
+Clicking on the file name opens a preview of the file with the Open button.
 
 When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFFICE editor opens in the same window.
 
