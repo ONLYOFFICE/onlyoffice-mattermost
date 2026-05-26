@@ -6,7 +6,7 @@
     "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
     "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
     "icon_path": "assets/logo.svg",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "min_server_version": "9.11.0",
     "server": {
         "executables": {
@@ -86,6 +86,13 @@
                 "type": "bool",
                 "help_text": "When enabled, users can create and run macros in the editors. When disabled, all macro functionality is hidden.",
                 "default": true
+            },
+            {
+                "key": "HealthNotificationsEnabled",
+                "display_name": "Enable health notifications: ",
+                "type": "bool",
+                "help_text": "When enabled, system admins will receive direct messages when the plugin detects an unhealthy Document Server state.",
+                "default": false
             }
         ]
     }
