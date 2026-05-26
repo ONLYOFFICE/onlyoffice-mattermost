@@ -145,7 +145,10 @@ Please check your plugin settings:
 
 Or enable the demo mode if you want to test the plugin.`
 
-	h.notifyAdmins(message)
+	if h.configuration.HealthNotificationsEnabled {
+		h.notifyAdmins(message)
+	}
+
 	h.publishHealthStatus(false)
 }
 

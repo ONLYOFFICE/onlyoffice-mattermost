@@ -41,41 +41,43 @@ import (
 // If you add non-reference types to your configuration struct, be sure to rewrite Clone as a deep
 // copy appropriate for your types.
 type Configuration struct {
-	DESAddress     string
-	DESJwt         string
-	DESJwtHeader   string
-	DESJwtPrefix   string
-	DemoEnabled    bool
-	DemoExpires    int64
-	DemoAddress    string
-	DemoHeader     string
-	DemoPrefix     string
-	DemoSecret     string
-	Formats        string
-	OwnerProtected bool
-	PluginsEnabled bool
-	MacrosEnabled  bool
-	Error          error
+	DESAddress                 string
+	DESJwt                     string
+	DESJwtHeader               string
+	DESJwtPrefix               string
+	DemoEnabled                bool
+	DemoExpires                int64
+	DemoAddress                string
+	DemoHeader                 string
+	DemoPrefix                 string
+	DemoSecret                 string
+	Formats                    string
+	OwnerProtected             bool
+	PluginsEnabled             bool
+	MacrosEnabled              bool
+	HealthNotificationsEnabled bool
+	Error                      error
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
 // your configuration has reference types.
 func (c *Configuration) Clone() *Configuration {
 	return &Configuration{
-		DESAddress:     c.DESAddress,
-		DESJwt:         c.DESJwt,
-		DESJwtHeader:   c.DESJwtHeader,
-		DESJwtPrefix:   c.DESJwtPrefix,
-		DemoEnabled:    c.DemoEnabled,
-		DemoExpires:    c.DemoExpires,
-		DemoAddress:    c.DemoAddress,
-		DemoHeader:     c.DemoHeader,
-		DemoPrefix:     c.DemoPrefix,
-		DemoSecret:     c.DemoSecret,
-		Formats:        c.Formats,
-		OwnerProtected: c.OwnerProtected,
-		PluginsEnabled: c.PluginsEnabled,
-		MacrosEnabled:  c.MacrosEnabled,
+		DESAddress:                 c.DESAddress,
+		DESJwt:                     c.DESJwt,
+		DESJwtHeader:               c.DESJwtHeader,
+		DESJwtPrefix:               c.DESJwtPrefix,
+		DemoEnabled:                c.DemoEnabled,
+		DemoExpires:                c.DemoExpires,
+		DemoAddress:                c.DemoAddress,
+		DemoHeader:                 c.DemoHeader,
+		DemoPrefix:                 c.DemoPrefix,
+		DemoSecret:                 c.DemoSecret,
+		Formats:                    c.Formats,
+		OwnerProtected:             c.OwnerProtected,
+		PluginsEnabled:             c.PluginsEnabled,
+		MacrosEnabled:              c.MacrosEnabled,
+		HealthNotificationsEnabled: c.HealthNotificationsEnabled,
 	}
 }
 

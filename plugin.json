@@ -86,6 +86,13 @@
                 "type": "bool",
                 "help_text": "When enabled, users can create and run macros in the editors. When disabled, all macro functionality is hidden.",
                 "default": true
+            },
+            {
+                "key": "HealthNotificationsEnabled",
+                "display_name": "Enable health notifications: ",
+                "type": "bool",
+                "help_text": "When enabled, system admins will receive direct messages when the plugin detects an unhealthy Document Server state.",
+                "default": false
             }
         ]
     }
