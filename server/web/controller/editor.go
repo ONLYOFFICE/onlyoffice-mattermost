@@ -183,9 +183,9 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not set mentions code mapping: " + err.Error())
 	}
 
-	theme := "theme-classic-light"
+	theme := "default-light"
 	if strings.ToLower(query.Get("dark")) == "true" {
-		theme = "theme-dark"
+		theme = "default-dark"
 	}
 
 	config := oomodel.Config{
