@@ -119,7 +119,7 @@ func (p *Plugin) provideFileBackend() filestore.FileBackend {
 	fs, err := filestore.NewFileBackend(
 		filestore.NewFileBackendSettingsFromConfig(
 			&serverConfig.FileSettings,
-			license != nil && *license.Features.Compliance,
+			license != nil && license.Features.Compliance != nil && *license.Features.Compliance,
 			true,
 		),
 	)
