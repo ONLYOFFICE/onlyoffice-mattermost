@@ -52,18 +52,20 @@ To get ONLYOFFICE Docs Cloud, [get started here](https://www.onlyoffice.com/docs
 1. Install Node.js. [Check instructions](https://github.com/nodesource/distributions#installation-instructions)
 2. Install Go. [Check instructions](https://go.dev/doc/install)
 3. Install make:
-
     ```sh
     sudo apt install make
     ```
 4. Clone the plugin branch:
-
     ```sh
     git clone https://github.com/ONLYOFFICE/onlyoffice-mattermost.git
     ```
-5. Go to the project root and start the build:
+5. Go to the project root and fetch git submodules:
     ```sh
     cd onlyoffice-mattermost/
+    git submodule update --init --recursive
+    ```
+6. Start the build:
+    ```sh
     make
     ```
 
