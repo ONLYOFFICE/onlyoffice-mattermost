@@ -205,11 +205,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 			},
 			CallbackURL: serverURL + "/callback?file=" + payload.FileID,
 			Customization: oomodel.Customization{
-				Goback: oomodel.Goback{
-					RequestClose: true,
-				},
 				UiTheme: theme,
-				Chat:    false,
 				Close: oomodel.Close{
 					Visible: true,
 				},
