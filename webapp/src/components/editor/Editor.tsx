@@ -19,9 +19,9 @@
  *
  */
 
-import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
+import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT, ONLYOFFICE_REFRESH_EVENT} from 'util/const';
 
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
 
@@ -38,6 +38,7 @@ type Props = {
 
 export default function Editor({visible, close, fileInfo, theme}: Props) {
     const lang = localStorage.getItem('onlyoffice_locale') || 'en';
+    const [iframeKey, setIframeKey] = useState(0);
 
     const handleClose = useCallback(() => {
         if (!visible) {
@@ -49,6 +50,13 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         }
         setTimeout(() => close(), 280);
     }, [close, visible]);
+
+    const handleRefresh = useCallback(() => {
+        if (!visible) {
+            return;
+        }
+        setIframeKey((k) => k + 1);
+    }, [visible]);
 
     const onEditorLoaded = useCallback((event: React.SyntheticEvent<HTMLIFrameElement>) => {
         const iframe = event.target as HTMLIFrameElement;
@@ -76,6 +84,11 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         return () => window.removeEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
     }, [handleClose]);
 
+    useEffect(() => {
+        window.addEventListener(ONLYOFFICE_REFRESH_EVENT, handleRefresh);
+        return () => window.removeEventListener(ONLYOFFICE_REFRESH_EVENT, handleRefresh);
+    }, [handleRefresh]);
+
     if (!visible) {
         return null;
     }
@@ -89,6 +102,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         >
             <EditorLoader theme={theme}/>
             <iframe
+                key={iframeKey}
                 src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
                 className='onlyoffice-modal__frame'
                 name='iframeEditor'

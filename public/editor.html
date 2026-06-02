@@ -75,6 +75,7 @@
         const ONLYOFFICE_CLOSE_EVENT = new Event('onlyofficecloseeditor');
         const ONLYOFFICE_READY_EVENT = new Event('onlyofficeready');
         const ONLYOFFICE_ERROR_EVENT = new Event('onlyofficeerror');
+        const ONLYOFFICE_REFRESH_EVENT = new Event('onlyofficerefresheditor');
 
         var docEditor;
         var mentionsAuthCode = "{{.mentionscode}}";
@@ -123,7 +124,7 @@
         };
 
         var onOutdatedVersion = function (event) {
-            window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
+            window.parent.dispatchEvent(ONLYOFFICE_REFRESH_EVENT);
         };
 
         var onRequestUsers = function (event) {
