@@ -188,6 +188,33 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		theme = "default-dark"
 	}
 
+	editorConfig := oomodel.EditorConfig{
+		User: oomodel.User{
+			ID:    payload.UserID,
+			Name:  payload.Username,
+			Image: fmt.Sprintf("%s/image?code=%s", serverURL, code),
+		},
+		CallbackURL: serverURL + "/callback?file=" + payload.FileID,
+		Customization: oomodel.Customization{
+			UiTheme: theme,
+			Close: oomodel.Close{
+				Visible: true,
+			},
+			Plugins: h.configuration.PluginsEnabled,
+			Macros:  h.configuration.MacrosEnabled,
+		},
+		Lang: payload.Lang,
+	}
+
+	editorConfig.CoEditing = oomodel.CoEditing{
+		Mode:   "fast",
+		Change: permissions.Edit,
+	}
+
+	if !permissions.Edit {
+		editorConfig.Mode = "view"
+	}
+
 	config := oomodel.Config{
 		Document: oomodel.Document{
 			FileType:    fileInfo.Extension,
@@ -197,24 +224,8 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 			Permissions: permissions,
 		},
 		DocumentType: docType,
-		EditorConfig: oomodel.EditorConfig{
-			User: oomodel.User{
-				ID:    payload.UserID,
-				Name:  payload.Username,
-				Image: fmt.Sprintf("%s/image?code=%s", serverURL, code),
-			},
-			CallbackURL: serverURL + "/callback?file=" + payload.FileID,
-			Customization: oomodel.Customization{
-				UiTheme: theme,
-				Close: oomodel.Close{
-					Visible: true,
-				},
-				Plugins: h.configuration.PluginsEnabled,
-				Macros:  h.configuration.MacrosEnabled,
-			},
-			Lang: payload.Lang,
-		},
-		Type: tools.IsMobile(r.Header.Get("User-Agent")),
+		EditorConfig: editorConfig,
+		Type:         tools.IsMobile(r.Header.Get("User-Agent")),
 	}
 
 	config.IssuedAt, config.ExpiresAt = jwt.NewNumericDate(time.Now()),
