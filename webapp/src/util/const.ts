@@ -28,4 +28,3 @@ export const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/api`;
 export const ONLYOFFICE_CLOSE_EVENT = 'onlyofficecloseeditor';
 export const ONLYOFFICE_READY_EVENT = 'onlyofficeready';
 export const ONLYOFFICE_ERROR_EVENT = 'onlyofficeerror';
-export const ONLYOFFICE_REFRESH_EVENT = 'onlyofficerefresheditor';

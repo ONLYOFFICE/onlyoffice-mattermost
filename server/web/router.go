@@ -106,6 +106,7 @@ func NewRouter(
 	dh := controller.NewDownloadHandler(api, configuration, jwtManager)
 	ih := controller.NewImageHandler(api)
 	eh := controller.NewEditorHandler(api, configuration, fileHelper, encoder, jwtManager, editorTemplate)
+	rfh := controller.NewRefreshHandler(api, configuration, fileHelper, encoder, jwtManager)
 	ph := controller.NewPermissionsHandler(api, configuration, fileHelper, bot)
 	crh := controller.NewCreateHandler(api, configuration)
 	cvh := controller.NewConvertHandler(api, configuration, formatManager, jwtManager, commandClient)
@@ -126,6 +127,9 @@ func NewRouter(
 	})).Methods(http.MethodPost)
 	subrouter.Handle("/editor", timeoutRoutes(5*time.Second)(authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return eh.Handle
+	}))).Methods(http.MethodGet)
+	subrouter.Handle("/editor/config", timeoutRoutes(5*time.Second)(authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return rfh.Handle
 	}))).Methods(http.MethodGet)
 	subrouter.HandleFunc("/permissions", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return ph.GetPermissions
