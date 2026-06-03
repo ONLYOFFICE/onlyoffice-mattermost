@@ -38,9 +38,16 @@ type Document struct {
 	Permissions Permissions `json:"permissions"`
 }
 
+type CoEditing struct {
+	Mode   string `json:"mode"`
+	Change bool   `json:"change"`
+}
+
 type EditorConfig struct {
 	User          User          `json:"user"`
 	CallbackURL   string        `json:"callbackUrl"`
+	Mode          string        `json:"mode,omitempty"`
+	CoEditing     CoEditing     `json:"coEditing"`
 	Customization Customization `json:"customization,omitempty"`
 	Lang          string        `json:"lang,omitempty"`
 }

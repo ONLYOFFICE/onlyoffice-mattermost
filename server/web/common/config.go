@@ -137,9 +137,9 @@ func BuildEditorConfig(
 		api.LogError(LoggerPrefix + "could not set code: " + err.Error())
 	}
 
-	theme := "theme-classic-light"
+	theme := "default-light"
 	if strings.ToLower(query.Get("dark")) == "true" {
-		theme = "theme-dark"
+		theme = "default-dark"
 	}
 
 	config = oomodel.Config{
