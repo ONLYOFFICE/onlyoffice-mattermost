@@ -122,8 +122,32 @@
             if (event) innerAlert(event.data);
         };
 
-        var onOutdatedVersion = function (event) {
-            window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
+        var onRequestRefreshFile = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fileId = urlParams.get('file');
+            const lang = urlParams.get('lang') || 'en';
+            const dark = urlParams.get('dark') || 'false';
+
+            fetch('/plugins/com.onlyoffice.mattermost/api/editor/config?file=' + fileId + '&lang=' + lang + '&dark=' + dark, {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
+                    return;
+                }
+                
+                return response.json();
+            })
+            .then((config) => {
+                if (config) {
+                    docEditor.refreshFile(config);
+                }
+            })
+            .catch((error) => {
+                window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
+            });
         };
 
         var onRequestUsers = function (event) {
@@ -238,7 +262,7 @@
             "onAppReady": onAppReady,
             "onRequestClose": onRequestClose,
             "onError": onError,
-            "onOutdatedVersion": onOutdatedVersion,
+            "onRequestRefreshFile": onRequestRefreshFile,
             "onRequestUsers": onRequestUsers,
             "onRequestSendNotify": onRequestSendNotify,
         };

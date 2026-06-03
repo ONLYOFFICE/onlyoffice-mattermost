@@ -33,7 +33,7 @@ var (
 )
 
 type Permissions struct {
-	Chat                    bool `json:"chat,omitempty"`
+	Chat                    bool `json:"chat"`
 	Comment                 bool `json:"comment,omitempty"`
 	Copy                    bool `json:"copy,omitempty"`
 	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly,omitempty"`
