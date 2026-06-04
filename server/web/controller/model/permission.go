@@ -28,10 +28,12 @@ var (
 	}
 	OnlyofficeDefaultPermissions = Permissions{
 		Edit: false,
+		Chat: false,
 	}
 )
 
 type Permissions struct {
+	Chat                    bool `json:"chat"`
 	Comment                 bool `json:"comment,omitempty"`
 	Copy                    bool `json:"copy,omitempty"`
 	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly,omitempty"`

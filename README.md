@@ -1,4 +1,4 @@
-﻿# ONLYOFFICE app for Mattermost
+# ONLYOFFICE app for Mattermost
 
 This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using [ONLYOFFICE Docs](https://www.onlyoffice.com/docs).
 
@@ -13,17 +13,19 @@ The app allows to:
 ### Supported formats
 
 **For viewing:**
-* **WORD**: DOC, DOCM, DOCX, DOT, DOTM, DOTX, EPUB, FB2, FODT, HTM, HTML, HWP, HWPX, MD, MHT, MHTML, ODT, OTT, PAGES, RTF, STW, SXW, TXT, WPS, WPT, XML
-* **CELL**: CSV, ET, ETT, FODS, NUMBERS, ODS, OTS, SXC, XLS, XLSM, XLSX, XLT, XLTM, XLTX
-* **SLIDE**: DPS, DPT, FODP, KEY, ODG, ODP, OTP, POT, POTM, POTX, PPS, PPSM, PPSX, PPT, PPTM, PPTX, SXI
-* **PDF**: DJVU, OXPS, PDF, XPS
-* **DIAGRAM**: VSDM, VSDX, VSSM, VSSX, VSTM, VSTX
+
+- **WORD**: DOC, DOCM, DOCX, DOT, DOTM, DOTX, EPUB, FB2, FODT, HML, HTM, HTML, HWP, HWPX, MD, MHT, MHTML, ODT, OTT, PAGES, RTF, STW, SXW, TXT, WPS, WPT, XML
+- **CELL**: CSV, ET, ETT, FODS, NUMBERS, ODS, OTS, SXC, TSV, XLS, XLSB, XLSM, XLSX, XLT, XLTM, XLTX
+- **SLIDE**: DPS, DPT, FODP, KEY, ODG, ODP, OTP, POT, POTM, POTX, PPS, PPSM, PPSX, PPT, PPTM, PPTX, SXI
+- **PDF**: DJVU, OXPS, PDF, XPS
+- **DIAGRAM**: VSDM, VSDX, VSSM, VSSX, VSTM, VSTX
 
 **For editing:**
-* **WORD**: DOCM, DOCX, DOTM, DOTX
-* **CELL**: XLSB, XLSM, XLSX, XLTM, XLTX
-* **SLIDE**: POTM, POTX, PPSM, PPSX, PPTM, PPTX
-* **PDF**: PDF
+
+- **WORD**: DOCM, DOCX, DOTM, DOTX
+- **CELL**: XLSB, XLSM, XLSX, XLTM, XLTX
+- **SLIDE**: POTM, POTX, PPSM, PPSX, PPTM, PPTX
+- **PDF**: PDF
 
 ## Installing ONLYOFFICE Docs
 
@@ -135,6 +137,10 @@ Whenever access levels are updated, the ONLYOFFICE bot will notify the chat. For
 ONLYOFFICE bot sends notifications about changes in the document specifying the name of the user who made those changes.
 
 All change notifications can be found within the message's discussion thread. Simply click the arrow on the right edge of the message to open a panel on the right, where the full history of the message's discussion is displayed.
+
+## Known issues
+
+Changes cannot be saved to storage when using S3 for storage in Mattermost **(affects Mattermost 11.7.2 only)**.
 
 ## ONLYOFFICE Docs editions
 

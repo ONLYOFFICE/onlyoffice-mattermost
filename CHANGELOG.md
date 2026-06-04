@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.3.0
+### Added
+- configuration flag to toggle health-check notifications.
+- live view support
+
+### Changed
+- disabled administrator notifications by default.
+- modern light/dark themes
+- refresh editor on outdated file version
+- updated dependencies.
+
 ## 2.2.0
 ### Added
 - user mentions via Mattermost bot

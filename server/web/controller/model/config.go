@@ -38,9 +38,16 @@ type Document struct {
 	Permissions Permissions `json:"permissions"`
 }
 
+type CoEditing struct {
+	Mode   string `json:"mode"`
+	Change bool   `json:"change"`
+}
+
 type EditorConfig struct {
 	User          User          `json:"user"`
 	CallbackURL   string        `json:"callbackUrl"`
+	Mode          string        `json:"mode,omitempty"`
+	CoEditing     CoEditing     `json:"coEditing"`
 	Customization Customization `json:"customization,omitempty"`
 	Lang          string        `json:"lang,omitempty"`
 }
@@ -52,9 +59,7 @@ type User struct {
 }
 
 type Customization struct {
-	Goback  Goback `json:"goback"`
 	UiTheme string `json:"uiTheme,omitempty"`
-	Chat    bool   `json:"chat"`
 	Close   Close  `json:"close,omitempty"`
 	Plugins bool   `json:"plugins"`
 	Macros  bool   `json:"macros"`
@@ -63,8 +68,4 @@ type Customization struct {
 type Close struct {
 	Visible bool   `json:"visible"`
 	Text    string `json:"text,omitempty"`
-}
-
-type Goback struct {
-	RequestClose bool `json:"requestClose"`
 }
