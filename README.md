@@ -1,4 +1,4 @@
-﻿# ONLYOFFICE app for Mattermost
+# ONLYOFFICE app for Mattermost
 
 This app enables users to edit office documents from [Mattermost](https://mattermost.com/) using [ONLYOFFICE Docs](https://www.onlyoffice.com/docs).
 
@@ -137,6 +137,10 @@ Whenever access levels are updated, the ONLYOFFICE bot will notify the chat. For
 ONLYOFFICE bot sends notifications about changes in the document specifying the name of the user who made those changes.
 
 All change notifications can be found within the message's discussion thread. Simply click the arrow on the right edge of the message to open a panel on the right, where the full history of the message's discussion is displayed.
+
+## Known issues
+
+Changes cannot be saved to storage when using S3 for storage in Mattermost **(affects Mattermost 11.7.2 only)**.
 
 ## ONLYOFFICE Docs editions
 
