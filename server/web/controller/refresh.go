@@ -56,7 +56,7 @@ func NewRefreshHandler(
 func (h *RefreshHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	h.api.LogDebug(common.LoggerPrefix + "got an editor config request")
 
-	config, _, statusCode, err := common.BuildEditorConfig(r, h.configuration, h.api, h.encoder, h.jwtManager, h.fileHelper)
+	config, _, _, statusCode, err := common.BuildEditorConfig(r, h.configuration, h.api, h.encoder, h.jwtManager, h.fileHelper)
 	if err != nil {
 		h.api.LogError(common.LoggerPrefix + err.Error())
 		rw.WriteHeader(statusCode)

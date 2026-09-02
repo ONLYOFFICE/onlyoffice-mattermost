@@ -61,7 +61,7 @@ func NewEditorHandler(
 func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	h.api.LogDebug(common.LoggerPrefix + "got an editor request")
 
-	config, docKey, statusCode, err := common.BuildEditorConfig(r, h.configuration, h.api, h.encoder, h.jwtManager, h.fileHelper)
+	config, docKey, isOwner, statusCode, err := common.BuildEditorConfig(r, h.configuration, h.api, h.encoder, h.jwtManager, h.fileHelper)
 	if err != nil {
 		h.api.LogError(common.LoggerPrefix + err.Error())
 		rw.WriteHeader(statusCode)
@@ -92,10 +92,11 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]any{
-		"apijs":        h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
-		"config":       string(encodedConfig),
-		"dark":         r.URL.Query().Get("dark"),
-		"mentionscode": string(mentionsCode),
+		"apijs":          h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
+		"config":         string(encodedConfig),
+		"dark":           r.URL.Query().Get("dark"),
+		"mentionscode":   string(mentionsCode),
+		"sharingenabled": isOwner,
 	}
 
 	h.api.LogDebug(common.LoggerPrefix + "building an editor window")

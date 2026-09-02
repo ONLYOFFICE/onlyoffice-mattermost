@@ -75,9 +75,11 @@
         const ONLYOFFICE_CLOSE_EVENT = new Event('onlyofficecloseeditor');
         const ONLYOFFICE_READY_EVENT = new Event('onlyofficeready');
         const ONLYOFFICE_ERROR_EVENT = new Event('onlyofficeerror');
+        const ONLYOFFICE_SHARING_EVENT = new Event('onlyofficesharingsettings');
 
         var docEditor;
         var mentionsAuthCode = "{{.mentionscode}}";
+        var sharingSettingsEnabled = {{if .sharingenabled}}true{{else}}false{{end}};
 
         var innerAlert = function (message) {
             if (console && console.log)
@@ -122,6 +124,10 @@
             if (event) innerAlert(event.data);
         };
 
+        var onRequestSharingSettings = function () {
+            window.parent.dispatchEvent(ONLYOFFICE_SHARING_EVENT);
+        };
+
         var onRequestRefreshFile = function () {
             const urlParams = new URLSearchParams(window.location.search);
             const fileId = urlParams.get('file');
@@ -149,6 +155,16 @@
                 window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
             });
         };
+
+        window.addEventListener('message', function (event) {
+            if (event.origin !== window.location.origin) {
+                return;
+            }
+
+            if (event.data && event.data.type === 'onlyoffice-refresh-permissions') {
+                onRequestRefreshFile();
+            }
+        });
 
         var onRequestUsers = function (event) {
             if (event && event.data) {
@@ -266,6 +282,10 @@
             "onRequestUsers": onRequestUsers,
             "onRequestSendNotify": onRequestSendNotify,
         };
+
+        if (sharingSettingsEnabled) {
+            events["onRequestSharingSettings"] = onRequestSharingSettings;
+        }
 
         var config = {{ .config }};
         config["events"] = events;

@@ -58,7 +58,7 @@ func BuildEditorConfig(
 	encoder crypto.Encoder,
 	jwtManager crypto.JwtManager,
 	fileHelper file.FileHelper,
-) (config oomodel.Config, docKey string, statusCode int, err error) {
+) (config oomodel.Config, docKey string, isOwner bool, statusCode int, err error) {
 	hasOwnCredentials := configuration.DESAddress != configuration.DemoAddress &&
 		configuration.DESJwt != "" &&
 		configuration.DESJwtHeader != "" &&
@@ -68,13 +68,13 @@ func BuildEditorConfig(
 		configuration.DemoExpires >= time.Now().UnixMilli()
 
 	if !demoActive && !hasOwnCredentials {
-		return oomodel.Config{}, "", http.StatusUnauthorized, fmt.Errorf("no valid credentials and demo is not active")
+		return oomodel.Config{}, "", false, http.StatusUnauthorized, fmt.Errorf("no valid credentials and demo is not active")
 	}
 
 	serverURL := *api.GetConfig().ServiceSettings.SiteURL + "/" + apiRootSuffix
 	user, userErr := api.GetUser(r.Header.Get(tools.MMAuthHeader))
 	if userErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not get user info")
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not get user info")
 	}
 
 	query := r.URL.Query()
@@ -86,31 +86,33 @@ func BuildEditorConfig(
 	}
 
 	if validationErr := payload.validate(); validationErr != nil {
-		return oomodel.Config{}, "", http.StatusBadRequest, fmt.Errorf("editor payload validation error: %w", validationErr)
+		return oomodel.Config{}, "", false, http.StatusBadRequest, fmt.Errorf("editor payload validation error: %w", validationErr)
 	}
 
 	fileInfo, fileInfoErr := api.GetFileInfo(payload.FileID)
 	if fileInfoErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not access file info %s: %s", payload.FileID, fileInfoErr.Message)
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not access file info %s: %s", payload.FileID, fileInfoErr.Message)
 	}
 
 	if !configuration.IsFormatAllowedForViewing(fileInfo.Extension) {
-		return oomodel.Config{}, "", http.StatusForbidden, fmt.Errorf("format not allowed for viewing: %s", fileInfo.Extension)
+		return oomodel.Config{}, "", false, http.StatusForbidden, fmt.Errorf("format not allowed for viewing: %s", fileInfo.Extension)
 	}
 
 	post, postErr := api.GetPost(fileInfo.PostId)
 	if postErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not access post %s: %s", fileInfo.PostId, postErr.Message)
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not access post %s: %s", fileInfo.PostId, postErr.Message)
 	}
+
+	isOwner = payload.UserID == post.UserId
 
 	docType, typeErr := fileHelper.GetFileType(fileInfo.Extension)
 	if typeErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not get file type: %w", typeErr)
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not get file type: %w", typeErr)
 	}
 
 	docKey, keyErr := encoder.Encode(fileInfo.Id + strconv.FormatInt(post.UpdateAt, 10))
 	if keyErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not encode document key: %w", keyErr)
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not encode document key: %w", keyErr)
 	}
 
 	permissions := oomodel.OnlyofficeDefaultPermissions
@@ -123,11 +125,7 @@ func BuildEditorConfig(
 	}
 
 	if configuration.OwnerProtected {
-		if payload.UserID == post.UserId {
-			permissions.Protect = true
-		} else {
-			permissions.Protect = false
-		}
+		permissions.Protect = isOwner
 	} else {
 		permissions.Protect = true
 	}
@@ -186,9 +184,9 @@ func BuildEditorConfig(
 		jwt.NewNumericDate(time.Now().Add(3*time.Minute))
 	cToken, cTokenErr := jwtManager.Sign([]byte(configuration.DESJwt), config)
 	if cTokenErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not sign config: %w", cTokenErr)
+		return oomodel.Config{}, "", false, http.StatusInternalServerError, fmt.Errorf("could not sign config: %w", cTokenErr)
 	}
 
 	config.Token = cToken
-	return config, docKey, http.StatusOK, nil
+	return config, docKey, isOwner, http.StatusOK, nil
 }
