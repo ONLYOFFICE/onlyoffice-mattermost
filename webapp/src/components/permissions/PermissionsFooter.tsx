@@ -19,7 +19,7 @@
  *
  */
 
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
+import {ONLYOFFICE_PERMISSIONS_CHANGED_EVENT, ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {getTranslations} from 'util/lang';
 import {getFilePermissions} from 'util/permission';
 import type {SubmitPermissionsRequest} from 'util/permission';
@@ -76,6 +76,10 @@ export const PermissionsFooter: React.FC<Props> = ({
                     `${ONLYOFFICE_PLUGIN_PERMISSIONS}?code=${code}`,
                     submitRequests,
                 );
+
+                window.dispatchEvent(new CustomEvent(ONLYOFFICE_PERMISSIONS_CHANGED_EVENT, {
+                    detail: {fileId: fileInfo.id},
+                }));
             }
         } finally {
             onClose();

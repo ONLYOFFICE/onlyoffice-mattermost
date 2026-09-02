@@ -38,6 +38,64 @@
   @include dark-theme {
     background-color: $backdrop_dark;
   }
+
+  &:has(#onlyoffice-permissions-modal) {
+    background-color: transparent !important;
+
+    .onlyoffice-modal__frame {
+      pointer-events: none;
+    }
+  }
+
+  .onlyoffice-permissions-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: $backdrop_overlay;
+  }
+
+  #onlyoffice-permissions-modal {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 2 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    opacity: 1 !important;
+    background: transparent !important;
+    pointer-events: none;
+
+    .modal-dialog {
+      pointer-events: auto;
+      width: calc(100% - 2rem);
+      max-width: 600px;
+      margin: 1.75rem auto;
+    }
+
+    .modal-content {
+      border-radius: 8px;
+      overflow: hidden;
+
+      @include light-theme {
+        background-color: $modal_background_light;
+        color: $text_dark;
+      }
+
+      @include dark-theme {
+        background-color: $modal_background_dark;
+        color: $text_light;
+      }
+    }
+  }
+}
+
+.onlyoffice-modal__frame-container {
+  @include parent_size();
+  position: relative;
+  z-index: 0;
 }
 
 .onlyoffice-modal__backdrop_hide {

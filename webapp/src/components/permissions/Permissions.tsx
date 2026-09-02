@@ -19,7 +19,7 @@
  *
  */
 
-import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
+import {ONLYOFFICE_EDITOR_FRAME_ID, ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {pipe} from 'util/func';
 import {getTranslations} from 'util/lang';
 import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
@@ -29,6 +29,7 @@ import type {MattermostUser, OnlyofficeUser} from 'util/user';
 import {get, ONLYOFFICE_PLUGIN_PERMISSIONS} from 'api';
 import React, {useState, useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
+import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
 
 import {Client4} from 'mattermost-redux/client';
@@ -45,8 +46,20 @@ type Props = {
     visible: boolean;
     close: () => (dispatch: Dispatch) => void;
     fileInfo: FileInfo;
+    editorOpen: boolean;
     theme: string;
     darkTheme: string | undefined;
+};
+
+const findContainer = (editorOpen: boolean): HTMLElement => {
+    if (editorOpen) {
+        const editorFrame = document.getElementById(ONLYOFFICE_EDITOR_FRAME_ID);
+        if (editorFrame?.parentElement) {
+            return editorFrame.parentElement;
+        }
+    }
+
+    return document.body;
 };
 
 const removeInAnimation = (): void => {
@@ -56,7 +69,7 @@ const removeInAnimation = (): void => {
     backdrop?.classList.remove('in');
 };
 
-export default function OnlyofficeFilePermissions({visible, close, fileInfo, theme, darkTheme}: Props) {
+export default function OnlyofficeFilePermissions({visible, close, fileInfo, editorOpen, theme, darkTheme}: Props) {
     const i18n = getTranslations();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false);
@@ -119,16 +132,70 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
         }
     }, [visible]);
 
-    if (visible) {
-        return (
+    if (!visible) {
+        return null;
+    }
+
+    const modalBody = (
+        <div
+            className={`onlyoffice-permissions-modal__body${channel ? '' : ' onlyoffice-permissions-modal__body--compact'}`}
+            data-theme={theme}
+            data-dark-theme={darkTheme}
+        >
+            <div className='filtered-user-list'>
+                <PermissionsHeader
+                    fileInfo={fileInfo}
+                    channel={channel}
+                    loading={loading}
+                    wildcardAccess={wildcardAccess}
+                    users={users}
+                    onAppendUsers={handleAppendUsers}
+                    onSetWildcardAccess={setWildcardAccess}
+                    theme={theme}
+                    darkTheme={darkTheme}
+                />
+                {channel && (
+                    <PermissionsList
+                        theme={theme}
+                        darkTheme={darkTheme}
+                        users={users}
+                        error={error}
+                        onRemoveUser={handleRemoveUser}
+                        onChangeUserPermissions={handleChangeUserPermissions}
+                    />
+                )}
+                <PermissionsFooter
+                    users={users}
+                    onClose={handleExit}
+                    fileInfo={fileInfo}
+                    loading={loading || error}
+                    wildcardAccess={wildcardAccess}
+                    theme={theme}
+                    darkTheme={darkTheme}
+                />
+            </div>
+        </div>
+    );
+
+    if (editorOpen) {
+        const container = findContainer(true);
+
+        const permissionsModal = (
             <Modal
                 show={visible}
                 onHide={handleExit}
                 onExited={handleExit}
                 role='dialog'
                 id='onlyoffice-permissions-modal'
+                className='onlyoffice-permissions-modal--editor'
                 data-theme={theme}
                 data-dark-theme={darkTheme}
+                container={container}
+                backdrop={false}
+                enforceFocus={false}
+                onEntered={() => {
+                    document.getElementById('onlyoffice-permissions-modal')?.classList.add('in');
+                }}
             >
                 <Modal.Header
                     className='onlyoffice-permissions-modal__header'
@@ -149,48 +216,53 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
                         <span className='sr-only'>{'Close'}</span>
                     </button>
                 </Modal.Header>
-                <div
-                    className={`onlyoffice-permissions-modal__body${channel ? '' : ' onlyoffice-permissions-modal__body--compact'}`}
-                    data-theme={theme}
-                    data-dark-theme={darkTheme}
-                >
-                    <div className='filtered-user-list'>
-                        <PermissionsHeader
-                            fileInfo={fileInfo}
-                            channel={channel}
-                            loading={loading}
-                            wildcardAccess={wildcardAccess}
-                            users={users}
-                            onAppendUsers={handleAppendUsers}
-                            onSetWildcardAccess={setWildcardAccess}
-                            theme={theme}
-                            darkTheme={darkTheme}
-                        />
-                        {channel && (
-                            <PermissionsList
-                                theme={theme}
-                                darkTheme={darkTheme}
-                                users={users}
-                                error={error}
-                                onRemoveUser={handleRemoveUser}
-                                onChangeUserPermissions={handleChangeUserPermissions}
-                            />
-                        )}
-                        <PermissionsFooter
-                            users={users}
-                            onClose={handleExit}
-                            fileInfo={fileInfo}
-                            loading={loading || error}
-                            wildcardAccess={wildcardAccess}
-                            theme={theme}
-                            darkTheme={darkTheme}
-                        />
-                    </div>
-                </div>
+                {modalBody}
             </Modal>
+        );
+
+        return ReactDOM.createPortal(
+            <>
+                <div
+                    className='onlyoffice-permissions-modal__backdrop'
+                    onClick={handleExit}
+                    aria-hidden='true'
+                />
+                {permissionsModal}
+            </>,
+            container,
         );
     }
 
-    return null;
+    return (
+        <Modal
+            show={visible}
+            onHide={handleExit}
+            onExited={handleExit}
+            role='dialog'
+            id='onlyoffice-permissions-modal'
+            data-theme={theme}
+            data-dark-theme={darkTheme}
+        >
+            <Modal.Header
+                className='onlyoffice-permissions-modal__header'
+                data-theme={theme}
+                data-dark-theme={darkTheme}
+            >
+                <span className='onlyoffice-permissions-modal__header__text'>
+                    {`${i18n['permissions.modal_header']}`}
+                </span>
+                <button
+                    type='button'
+                    className='close onlyoffice-permissions-modal__header__close'
+                    aria-label='Close'
+                    onClick={handleExit}
+                    disabled={loading}
+                >
+                    <span aria-hidden='true'>{'×'}</span>
+                    <span className='sr-only'>{'Close'}</span>
+                </button>
+            </Modal.Header>
+            {modalBody}
+        </Modal>
+    );
 }
-

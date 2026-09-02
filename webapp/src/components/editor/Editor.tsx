@@ -19,9 +19,18 @@
  *
  */
 
-import {ONLYOFFICE_CLOSE_EVENT, ONLYOFFICE_PLUGIN_API, ONLYOFFICE_ERROR_EVENT} from 'util/const';
+import {
+    ONLYOFFICE_CLOSE_EVENT,
+    ONLYOFFICE_EDITOR_FRAME_ID,
+    ONLYOFFICE_PLUGIN_API,
+    ONLYOFFICE_ERROR_EVENT,
+    ONLYOFFICE_SHARING_EVENT,
+    ONLYOFFICE_PERMISSIONS_CHANGED_EVENT,
+    ONLYOFFICE_REFRESH_PERMISSIONS_MESSAGE,
+} from 'util/const';
+import {isFileAuthor} from 'util/file';
 
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
 
@@ -34,10 +43,12 @@ type Props = {
     fileInfo?: FileInfo;
     theme: string;
     close: () => (dispatch: Dispatch) => void;
+    openPermissions: (fileInfo: FileInfo) => (dispatch: Dispatch) => void;
 };
 
-export default function Editor({visible, close, fileInfo, theme}: Props) {
+export default function Editor({visible, close, fileInfo, theme, openPermissions}: Props) {
     const lang = localStorage.getItem('onlyoffice_locale') || 'en';
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const handleClose = useCallback(() => {
         if (!visible) {
@@ -71,10 +82,39 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         }
     }, []);
 
+    const handleSharingSettings = useCallback(() => {
+        if (!fileInfo || !isFileAuthor(fileInfo)) {
+            return;
+        }
+
+        openPermissions(fileInfo);
+    }, [fileInfo, openPermissions]);
+
+    const handlePermissionsChanged = useCallback((event: CustomEvent<{fileId: string}>) => {
+        if (!fileInfo || event.detail?.fileId !== fileInfo.id) {
+            return;
+        }
+
+        iframeRef.current?.contentWindow?.postMessage(
+            {type: ONLYOFFICE_REFRESH_PERMISSIONS_MESSAGE},
+            window.location.origin,
+        );
+    }, [fileInfo]);
+
     useEffect(() => {
         window.addEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
         return () => window.removeEventListener(ONLYOFFICE_CLOSE_EVENT, handleClose);
     }, [handleClose]);
+
+    useEffect(() => {
+        window.addEventListener(ONLYOFFICE_SHARING_EVENT, handleSharingSettings);
+        return () => window.removeEventListener(ONLYOFFICE_SHARING_EVENT, handleSharingSettings);
+    }, [handleSharingSettings]);
+
+    useEffect(() => {
+        window.addEventListener(ONLYOFFICE_PERMISSIONS_CHANGED_EVENT, handlePermissionsChanged as EventListener);
+        return () => window.removeEventListener(ONLYOFFICE_PERMISSIONS_CHANGED_EVENT, handlePermissionsChanged as EventListener);
+    }, [handlePermissionsChanged]);
 
     if (!visible) {
         return null;
@@ -88,13 +128,19 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
             className='onlyoffice-modal__backdrop'
         >
             <EditorLoader theme={theme}/>
-            <iframe
-                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
-                className='onlyoffice-modal__frame'
-                name='iframeEditor'
-                data-theme={theme}
-                onLoad={onEditorLoaded}
-            />
+            <div
+                id={ONLYOFFICE_EDITOR_FRAME_ID}
+                className='onlyoffice-modal__frame-container'
+            >
+                <iframe
+                    ref={iframeRef}
+                    src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
+                    className='onlyoffice-modal__frame'
+                    name='iframeEditor'
+                    data-theme={theme}
+                    onLoad={onEditorLoaded}
+                />
+            </div>
         </div>,
         document.body,
     );
