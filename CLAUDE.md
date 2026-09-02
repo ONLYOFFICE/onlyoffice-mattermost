@@ -83,3 +83,32 @@ Endpoints use the sub-route prefix `/plugins/com.onlyoffice.mattermost/api/*`.
 * **Reference Requirements**: Always parse `.claude/SKILL.md` and context parameters inside nested skills before updating callback handling or editor configuration signing algorithms.
 * **Storage Constraint**: Never generate localized disk storage steps. Pass all active payloads directly to Mattermost storage abstraction boundaries via `filestore.FileBackend`.
 * **Security Context**: Ensure token authorization utilizes unique client parameters. Never allow the use of standard HTTP `Authorization` headers to prevent data blockage within Mattermost proxies.
+
+---
+
+## Dependency Management & Safe Upgrades
+
+To ensure the stability of the ONLYOFFICE Mattermost integration, updates to dependencies across both the Go server and TypeScript webapp must be handled carefully. Unpinned upgrades can break file I/O pipelines or violate proxy contracts.
+
+### Core Upgrade Principles
+* **Align Mattermost Server Libraries**: Server dependencies (especially `://github.com`) must strictly target the minimum supported platform version declared in `plugin.json`.
+* **Preserve Webpack Sandbox Context**: The webapp operates inside a tightly sandboxed environment injected through `window.registerPlugin`. Major upgrades to build utilities (Webpack, Babel) can silently break asset registration.
+* **Maintain JWT Signature Parity**: Cryptographic libraries used for payload encoding must not modify signing behavior, payload structure, or validation logic. The ONLYOFFICE Document Server requires absolute compliance with configuration specifications.
+
+### Safe Upgrade Workflows
+
+#### 1. Go Server Dependencies (`server/`)
+* **Identify Vulnerabilities**: Audit requirements using tools like `govulncheck` or analyze unpinned modules with `go list -m -u all`.
+* **Pin Specific Releases**: Target precise tags during updates via `go get -u ://github.com` rather than broad blanket upgrades.
+* **Clean Code Maps**: Purge stale markers and recalculate module hash integrity maps using `go mod tidy`.
+* **Enforce Integrity Checks**: Run `make check-style` and `make test` locally to verify build stability before committing package mutations.
+
+#### 2. TypeScript Webapp Dependencies (`webapp/`)
+* **Audit Security Contexts**: Review vulnerable package footprints regularly using `npm audit`.
+* **Isolate Dependency Shifts**: Rely on `npm update` for non-breaking patch adjustments. Apply major updates manually using explicit version declarations (`npm install package-name@latest`).
+* **Preserve Dependency Lockfiles**: Do not delete `package-lock.json` globally. Allow the npm package manager to resolve tree-shaking rules and sub-dependency configurations naturally.
+* **Verify Typings**: Run type checking and static analysis routines (`cd webapp && npm run check-types && npm run lint`) to catch breakages introduced by upgraded type definitions.
+
+### Critical Pitfalls to Avoid
+* **Breaking Webpack Bundling Rules**: Altering `webpack` versions or updating `mattermost-webapp` definition bundles can change how layout elements map inside the Mattermost channel view. Always validate interface mutations under active watch compilation rules (`make watch`).
+* **Header Stripping via Secondary Libraries**: Upgrading mid-tier proxy, router, or client packages can cause unexpected sanitation or removal of custom headers. If `DESJwtHeader` is stripped or renamed, backend authentication loops with the document server will instantly fail.
