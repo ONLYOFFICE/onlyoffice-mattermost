@@ -121,6 +121,7 @@ func (p *Plugin) provideFileBackend() filestore.FileBackend {
 			&serverConfig.FileSettings,
 			license != nil && license.Features.Compliance != nil && *license.Features.Compliance,
 			true,
+			model.SafeDereference(serverConfig.ServiceSettings.AllowedUntrustedInternalConnections),
 		),
 	)
 
