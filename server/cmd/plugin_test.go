@@ -121,7 +121,7 @@ func (c *stubCommandClient) SendConvert(commandURL string, request client.Conver
 func TestInitializeContainerWiresDependencies(t *testing.T) {
 	api := containerAPI(t)
 	p := &Plugin{}
-	p.API = api
+	p.MattermostPlugin.API = api
 	p.configuration = validPluginConfig()
 
 	p.app = p.initializeContainer()
@@ -150,7 +150,7 @@ func TestInitializeContainerWiresDependencies(t *testing.T) {
 func TestInitializeContainerStartStopCycle(t *testing.T) {
 	api := containerAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 	plugin.configuration = validPluginConfig()
 
 	require.NoError(t, plugin.reinitializeContainer(plugin.configuration))
@@ -197,7 +197,7 @@ func TestOnDeactivateNilDeps(t *testing.T) {
 func TestServeHTTPNilRouter(t *testing.T) {
 	api := baseAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	recorder := httptest.NewRecorder()
 	plugin.ServeHTTP(nil, recorder, httptest.NewRequest(http.MethodGet, "/api/health", nil))
@@ -218,7 +218,7 @@ func TestGetConfiguration(t *testing.T) {
 func TestSetConfiguration(t *testing.T) {
 	api := baseAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	config := validPluginConfig()
 	plugin.setConfiguration(config)
@@ -238,7 +238,7 @@ func TestPublishConfigChange(t *testing.T) {
 	t.Run("publishes event", func(t *testing.T) {
 		api := baseAPI(t)
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		plugin.publishConfigChange()
 		api.AssertCalled(t, "PublishWebSocketEvent", "config_changed", mock.Anything, mock.Anything)
 	})
@@ -252,7 +252,7 @@ func TestLogErrorWithoutAPI(t *testing.T) {
 func TestHandleConfigError(t *testing.T) {
 	api := baseAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	cfg := validPluginConfig()
 	err := errors.New("boom")
@@ -268,7 +268,7 @@ func TestHandleConfigError(t *testing.T) {
 func TestValidateServerVersion(t *testing.T) {
 	api := baseAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	t.Run("empty", func(t *testing.T) {
 		err := plugin.validateServerVersion(validPluginConfig(), "")
@@ -299,7 +299,7 @@ func TestValidateDependencies(t *testing.T) {
 
 	t.Run("nil command client", func(t *testing.T) {
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		err := plugin.validateDependencies(validPluginConfig())
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "command client is nil")
@@ -308,7 +308,7 @@ func TestValidateDependencies(t *testing.T) {
 
 	t.Run("nil jwt manager", func(t *testing.T) {
 		plugin := &Plugin{commandClient: &stubCommandClient{}}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		err := plugin.validateDependencies(validPluginConfig())
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "jwt manager is nil")
@@ -320,7 +320,7 @@ func TestValidateDependencies(t *testing.T) {
 			commandClient: &stubCommandClient{},
 			jwtManager:    crypto.NewJwtManager(),
 		}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		require.NoError(t, plugin.validateDependencies(validPluginConfig()))
 	})
 }
@@ -328,7 +328,7 @@ func TestValidateDependencies(t *testing.T) {
 func TestCreateVersionTokenAndValidateDocumentServer(t *testing.T) {
 	api := baseAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 	plugin.jwtManager = crypto.NewJwtManager()
 
 	token, err := plugin.createVersionToken(validPluginConfig())
@@ -366,7 +366,7 @@ func TestEnsureBot(t *testing.T) {
 		api.On("SetProfileImage", "bot-1", mock.AnythingOfType("[]uint8")).Return(nil)
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		id, err := plugin.EnsureBot()
 		require.NoError(t, err)
 		assert.Equal(t, "bot-1", id)
@@ -378,7 +378,7 @@ func TestEnsureBot(t *testing.T) {
 			Return("", model.NewAppError("EnsureBotUser", "fail", nil, "fail", http.StatusInternalServerError))
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		_, err := plugin.EnsureBot()
 		assert.ErrorIs(t, err, common.ErrCreateBotProfile)
 	})
@@ -389,7 +389,7 @@ func TestEnsureBot(t *testing.T) {
 		api.On("GetBundlePath").Return("", errors.New("no bundle"))
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		_, err := plugin.EnsureBot()
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "no bundle")
@@ -401,7 +401,7 @@ func TestEnsureBot(t *testing.T) {
 		api.On("GetBundlePath").Return(t.TempDir(), nil)
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		_, err := plugin.EnsureBot()
 		assert.ErrorIs(t, err, common.ErrLoadBotProfileImage)
 	})
@@ -414,7 +414,7 @@ func TestEnsureBot(t *testing.T) {
 			Return(model.NewAppError("SetProfileImage", "fail", nil, "fail", http.StatusInternalServerError))
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		_, err := plugin.EnsureBot()
 		assert.ErrorIs(t, err, common.ErrSetBotProfileImage)
 	})
@@ -426,7 +426,7 @@ func TestPrepareConfiguration(t *testing.T) {
 		api.On("LoadPluginConfiguration", mock.Anything).Return(errors.New("load failed"))
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		_, err := plugin.prepareConfiguration()
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to load plugin configuration")
@@ -442,7 +442,7 @@ func TestPrepareConfiguration(t *testing.T) {
 			Return(nil)
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		cfg, err := plugin.prepareConfiguration()
 		require.NoError(t, err)
 		assert.Equal(t, "https://docs.example.com", cfg.DESAddress)
@@ -460,7 +460,7 @@ func TestValidateConfiguration(t *testing.T) {
 			Return(nil)
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		err := plugin.validateConfiguration()
 		require.Error(t, err)
 		time.Sleep(150 * time.Millisecond)
@@ -476,7 +476,7 @@ func TestValidateConfiguration(t *testing.T) {
 			Return(nil)
 
 		plugin := &Plugin{}
-		plugin.API = api
+		plugin.MattermostPlugin.API = api
 		plugin.commandClient = &stubCommandClient{response: client.VersionResponse{Error: 0, Version: "8.3.0"}}
 		plugin.jwtManager = crypto.NewJwtManager()
 
@@ -490,7 +490,7 @@ func TestValidateConfiguration(t *testing.T) {
 func TestProvideFormatManagerAndFileBackend(t *testing.T) {
 	api := containerAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	fm := plugin.provideFormatManager()
 	require.NotNil(t, fm)
@@ -502,7 +502,7 @@ func TestProvideFormatManagerAndFileBackend(t *testing.T) {
 func TestReinitializeContainerReplacesApp(t *testing.T) {
 	api := containerAPI(t)
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 	plugin.configuration = validPluginConfig()
 
 	require.NoError(t, plugin.reinitializeContainer(plugin.configuration))
@@ -538,7 +538,7 @@ func TestOnConfigurationChangeSuccess(t *testing.T) {
 		Return(nil)
 
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 	plugin.configuration = &configuration.Configuration{
 		DESAddress:   docs.URL,
 		DESJwt:       "secret",
@@ -560,7 +560,7 @@ func TestOnConfigurationChangePrepareFails(t *testing.T) {
 	api.On("LoadPluginConfiguration", mock.Anything).Return(errors.New("load failed"))
 
 	plugin := &Plugin{}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 	err := plugin.OnConfigurationChange()
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load plugin configuration")
@@ -584,7 +584,7 @@ func TestServeHTTPWithRouter(t *testing.T) {
 	})
 
 	plugin := &Plugin{router: router}
-	plugin.API = api
+	plugin.MattermostPlugin.API = api
 
 	recorder := httptest.NewRecorder()
 	plugin.ServeHTTP(nil, recorder, httptest.NewRequest(http.MethodGet, "/ping", nil))
