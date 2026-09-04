@@ -22,7 +22,7 @@
 import {getTranslations} from 'util/lang';
 
 import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 import type {Dispatch} from 'redux';
@@ -68,18 +68,22 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
     const [error, setError] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
 
-    useEffect(() => {
-        const currentDefaultName = getDefaultFileName(fileType, i18n);
-        const otherDefaultNames = [
-            i18n['manager.default_name.document'],
-            i18n['manager.default_name.presentation'],
-            i18n['manager.default_name.spreadsheet'],
-        ];
+    const handleFileTypeChange = (type: string): void => {
+        setFileType(type);
+        setFileName((current) => {
+            const otherDefaultNames = [
+                i18n['manager.default_name.document'],
+                i18n['manager.default_name.presentation'],
+                i18n['manager.default_name.spreadsheet'],
+            ];
 
-        if (otherDefaultNames.includes(fileName)) {
-            setFileName(currentDefaultName);
-        }
-    }, [fileType, i18n]);
+            if (otherDefaultNames.includes(current)) {
+                return getDefaultFileName(type, i18n);
+            }
+
+            return current;
+        });
+    };
 
     if (!visible) {
         return null;
@@ -160,7 +164,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
                         error={error}
                         theme={theme}
                         darkTheme={darkTheme}
-                        onFileTypeChange={setFileType}
+                        onFileTypeChange={handleFileTypeChange}
                         onFileNameChange={handleFileNameChange}
                     />
                 </div>
