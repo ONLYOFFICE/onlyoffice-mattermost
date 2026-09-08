@@ -65,6 +65,7 @@ describe('Permissions', () => {
                 visible={false}
                 close={close}
                 fileInfo={fileInfo}
+                editorOpen={false}
                 theme='light'
                 darkTheme={undefined}
             />,
@@ -84,6 +85,7 @@ describe('Permissions', () => {
                 visible={true}
                 close={close}
                 fileInfo={fileInfo}
+                editorOpen={false}
                 theme='light'
                 darkTheme={undefined}
             />,
@@ -103,6 +105,7 @@ describe('Permissions', () => {
                 visible={true}
                 close={close}
                 fileInfo={fileInfo}
+                editorOpen={false}
                 theme='light'
                 darkTheme={undefined}
             />,

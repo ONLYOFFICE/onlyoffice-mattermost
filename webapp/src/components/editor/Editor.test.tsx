@@ -76,6 +76,7 @@ describe('Editor', () => {
                 visible={false}
                 theme='light'
                 close={jest.fn(() => jest.fn())}
+                openPermissions={jest.fn(() => jest.fn())}
                 fileInfo={{id: 'f1'} as any}
             />,
         );
@@ -89,6 +90,7 @@ describe('Editor', () => {
                 visible={true}
                 theme='dark'
                 close={jest.fn(() => jest.fn())}
+                openPermissions={jest.fn(() => jest.fn())}
                 fileInfo={{id: 'f1'} as any}
             />,
         );
@@ -108,6 +110,7 @@ describe('Editor', () => {
                 visible={true}
                 theme='light'
                 close={close}
+                openPermissions={jest.fn(() => jest.fn())}
                 fileInfo={{id: 'f1'} as any}
             />,
         );

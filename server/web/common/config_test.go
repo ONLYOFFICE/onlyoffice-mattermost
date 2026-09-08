@@ -104,7 +104,7 @@ func TestBuildEditorConfigHappyPath(t *testing.T) {
 	}, nil)
 	api.On("KVSetWithExpiry", mock.AnythingOfType("string"), []byte("user-1"), int64(10)).Return(nil)
 
-	config, docKey, status, err := BuildEditorConfig(
+	config, docKey, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -158,7 +158,7 @@ func TestBuildEditorConfigDarkThemeAndViewMode(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/editor?file=file-1&dark=true", nil)
 	req.Header.Set(tools.MMAuthHeader, "user-2")
 
-	config, _, status, err := BuildEditorConfig(
+	config, _, _, status, err := BuildEditorConfig(
 		req,
 		validEditorConfiguration(),
 		api,
@@ -176,7 +176,7 @@ func TestBuildEditorConfigDarkThemeAndViewMode(t *testing.T) {
 }
 
 func TestBuildEditorConfigNoCredentials(t *testing.T) {
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		&configuration.Configuration{DemoAddress: "https://onlinedocs.docs.onlyoffice.com"},
 		&plugintest.API{},
@@ -211,7 +211,7 @@ func TestBuildEditorConfigDemoActive(t *testing.T) {
 		DESJwtPrefix: "Bearer ",
 	}
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		config,
 		api,
@@ -230,7 +230,7 @@ func TestBuildEditorConfigUserError(t *testing.T) {
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return((*model.User)(nil), model.NewAppError("GetUser", "fail", nil, "missing", http.StatusNotFound))
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -252,7 +252,7 @@ func TestBuildEditorConfigMissingFileQuery(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/editor", nil)
 	req.Header.Set(tools.MMAuthHeader, "user-1")
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		req,
 		validEditorConfiguration(),
 		api,
@@ -272,7 +272,7 @@ func TestBuildEditorConfigFileInfoError(t *testing.T) {
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return((*model.FileInfo)(nil), model.NewAppError("GetFileInfo", "fail", nil, "missing", http.StatusNotFound))
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -297,7 +297,7 @@ func TestBuildEditorConfigFormatNotAllowed(t *testing.T) {
 	config := validEditorConfiguration()
 	config.Formats = "xlsx"
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		config,
 		api,
@@ -320,7 +320,7 @@ func TestBuildEditorConfigPostError(t *testing.T) {
 	}, nil)
 	api.On("GetPost", "post-1").Return((*model.Post)(nil), model.NewAppError("GetPost", "fail", nil, "missing", http.StatusNotFound))
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -343,7 +343,7 @@ func TestBuildEditorConfigUnsupportedExtension(t *testing.T) {
 	}, nil)
 	api.On("GetPost", "post-1").Return(&model.Post{Id: "post-1", UserId: "user-1", UpdateAt: 1}, nil)
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -371,7 +371,7 @@ func TestBuildEditorConfigOwnerProtectedNonOwner(t *testing.T) {
 	config := validEditorConfiguration()
 	config.OwnerProtected = true
 
-	built, _, status, err := BuildEditorConfig(
+	built, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-2", "file-1"),
 		config,
 		api,
@@ -399,7 +399,7 @@ func TestBuildEditorConfigOwnerProtectedAuthor(t *testing.T) {
 	config := validEditorConfiguration()
 	config.OwnerProtected = true
 
-	built, _, status, err := BuildEditorConfig(
+	built, _, _, status, err := BuildEditorConfig(
 		editorRequest("author", "file-1"),
 		config,
 		api,
@@ -426,7 +426,7 @@ func TestBuildEditorConfigKVSetErrorIsLogged(t *testing.T) {
 		Return(model.NewAppError("KVSetWithExpiry", "fail", nil, "kv", http.StatusInternalServerError))
 	api.On("LogError", mock.Anything).Return()
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -450,7 +450,7 @@ func TestBuildEditorConfigEncodeError(t *testing.T) {
 	}, nil)
 	api.On("GetPost", "post-1").Return(&model.Post{Id: "post-1", UserId: "user-1", UpdateAt: 1}, nil)
 
-	_, _, status, err := BuildEditorConfig(
+	_, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,
@@ -476,7 +476,7 @@ func TestBuildEditorConfigNonEditableExtension(t *testing.T) {
 	api.On("KVSetWithExpiry", "fixed-code", []byte("user-1"), int64(10)).Return(nil)
 
 	helper := viewOnlyHelper{Helper: newFileHelper(t)}
-	config, _, status, err := BuildEditorConfig(
+	config, _, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),
 		api,

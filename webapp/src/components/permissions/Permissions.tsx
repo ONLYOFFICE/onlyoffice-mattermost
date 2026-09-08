@@ -136,7 +136,7 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, edi
         }
     }, [visible, fileInfo?.id]);
 
-    if (!(visible && fileInfo)) {
+    if (!visible || !fileInfo) {
         return null;
     }
 
