@@ -20,16 +20,17 @@ package health
 import (
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
 type fxStubBot struct{}
@@ -49,7 +50,7 @@ func TestHealthModuleProvidesHealthChecker(t *testing.T) {
 		DESJwtPrefix: "Bearer ",
 	}
 
-	var checker HealthChecker
+	var checker Checker
 	app := fxtest.New(t,
 		fx.NopLogger,
 		fx.Provide(

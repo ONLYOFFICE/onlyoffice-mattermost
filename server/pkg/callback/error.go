@@ -51,10 +51,10 @@ func (e *InvalidFileDownloadURLError) Error() string {
 	return fmt.Sprintf(onlyofficeLoggerCallbackPrefix+"could not find a callback file %s url", e.FileID)
 }
 
-type CallbackHandlerDoesNotExistError struct {
+type HandlerDoesNotExistError struct {
 	Code int
 }
 
-func (e *CallbackHandlerDoesNotExistError) Error() string {
+func (e *HandlerDoesNotExistError) Error() string {
 	return fmt.Sprintf(onlyofficeLoggerCallbackPrefix+"callback handler for code (%d) does not exist", e.Code)
 }

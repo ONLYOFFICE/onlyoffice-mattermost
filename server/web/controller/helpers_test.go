@@ -21,14 +21,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 )
 
 type stubBot struct {
@@ -80,7 +81,7 @@ func siteURLConfig() *model.Config {
 	return config
 }
 
-func newFileHelper(t *testing.T) file.FileHelper {
+func newFileHelper(t *testing.T) file.Helper {
 	t.Helper()
 	formatManager, err := public.NewMapFormatManager()
 

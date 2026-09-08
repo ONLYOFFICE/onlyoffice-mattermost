@@ -18,12 +18,16 @@
 package web
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
@@ -32,17 +36,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
-	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
-
-type routerCallbackStub struct{}
-
-func (routerCallbackStub) Handle(ctx context.Context, c callback.Callback) error {
-	return nil
-}
 
 type routerHealthStub struct{}
 

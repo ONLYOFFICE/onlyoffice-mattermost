@@ -24,14 +24,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 func TestMentionsGetUsers(t *testing.T) {
@@ -151,7 +152,7 @@ func TestConvertHandler(t *testing.T) {
 		api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{Id: "file-1", CreatorId: "owner", Extension: "doc"}, nil)
 		api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Locale: "en-US"}, nil)
 		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), &stubCommandClient{})
-		body, _ := json.Marshal(model.ConvertFileRequest{FileID: "file-1"})
+		body := []byte(`{"file_id":"file-1"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
 		recorder := httptest.NewRecorder()
@@ -170,7 +171,7 @@ func TestConvertHandler(t *testing.T) {
 
 		commandClient := &stubCommandClient{convertResp: client.ConvertResponse{Error: 5}}
 		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), commandClient)
-		body, _ := json.Marshal(model.ConvertFileRequest{FileID: "file-1", OutputType: "docx"})
+		body := []byte(`{"file_id":"file-1","output_type":"docx"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
 		recorder := httptest.NewRecorder()
@@ -207,7 +208,7 @@ func TestConvertHandler(t *testing.T) {
 		}}
 
 		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), commandClient)
-		body, _ := json.Marshal(model.ConvertFileRequest{FileID: "file-1", OutputType: "docx"})
+		body := []byte(`{"file_id":"file-1","output_type":"docx"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
 		recorder := httptest.NewRecorder()

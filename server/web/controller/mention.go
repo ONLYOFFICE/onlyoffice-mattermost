@@ -23,11 +23,12 @@ import (
 	"strconv"
 	"strings"
 
+	mmModel "github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	mmModel "github.com/mattermost/mattermost/server/public/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 type MentionsHandler struct {
@@ -52,7 +53,7 @@ func (h *MentionsHandler) writeErrorResponse(rw http.ResponseWriter, errorMsg st
 	}
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(statusCode)
-	rw.Write(response.ToJSON())
+	_, _ = rw.Write(response.ToJSON())
 }
 
 func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
@@ -64,7 +65,7 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 				C:     "mention",
 				Users: []model.MentionUser{},
 			}
-			rw.Write(emptyResponse.ToJSON())
+			_, _ = rw.Write(emptyResponse.ToJSON())
 		}
 	}()
 
@@ -128,7 +129,7 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 			C:     c,
 			Users: []model.MentionUser{},
 		}
-		rw.Write(emptyResponse.ToJSON())
+		_, _ = rw.Write(emptyResponse.ToJSON())
 		return
 	}
 
@@ -280,5 +281,5 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(response.ToJSON())
+	_, _ = rw.Write(response.ToJSON())
 }

@@ -20,17 +20,18 @@ package file
 import (
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 )
 
 func TestFileModuleProvidesFileHelper(t *testing.T) {
 	formatManager, err := public.NewMapFormatManager()
 	require.NoError(t, err)
 
-	var helper FileHelper
+	var helper Helper
 	app := fxtest.New(t,
 		fx.NopLogger,
 		fx.Provide(func() public.FormatManager { return formatManager }),

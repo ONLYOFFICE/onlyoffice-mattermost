@@ -24,16 +24,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 )
 
 type failingEncoder struct{}
@@ -43,7 +44,7 @@ func (failingEncoder) Encode(text string) (string, error) {
 }
 
 type viewOnlyHelper struct {
-	file.FileHelper
+	file.Helper
 }
 
 func (viewOnlyHelper) IsExtensionEditable(fileExt string) bool { return false }
@@ -66,7 +67,7 @@ func validEditorConfiguration() *configuration.Configuration {
 	}
 }
 
-func newFileHelper(t *testing.T) file.FileHelper {
+func newFileHelper(t *testing.T) file.Helper {
 	t.Helper()
 	formatManager, err := public.NewMapFormatManager()
 	require.NoError(t, err)
@@ -126,7 +127,7 @@ func TestBuildEditorConfigHappyPath(t *testing.T) {
 	assert.Contains(t, config.Document.URL, "/download?id=file-1")
 	assert.Contains(t, config.EditorConfig.User.Image, "/image?code=")
 	assert.Equal(t, "en", config.EditorConfig.Lang)
-	assert.Equal(t, "default-light", config.EditorConfig.Customization.UiTheme)
+	assert.Equal(t, "default-light", config.EditorConfig.Customization.UITheme)
 	assert.True(t, config.EditorConfig.Customization.Plugins)
 	assert.True(t, config.EditorConfig.Customization.Macros)
 	assert.True(t, config.Document.Permissions.Protect)
@@ -169,7 +170,7 @@ func TestBuildEditorConfigDarkThemeAndViewMode(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, status)
-	assert.Equal(t, "default-dark", config.EditorConfig.Customization.UiTheme)
+	assert.Equal(t, "default-dark", config.EditorConfig.Customization.UITheme)
 	assert.Equal(t, "view", config.EditorConfig.Mode)
 	assert.False(t, config.Document.Permissions.Edit)
 }
@@ -474,7 +475,7 @@ func TestBuildEditorConfigNonEditableExtension(t *testing.T) {
 	api.On("GetPost", "post-1").Return(&model.Post{Id: "post-1", UserId: "user-1", UpdateAt: 1}, nil)
 	api.On("KVSetWithExpiry", "fixed-code", []byte("user-1"), int64(10)).Return(nil)
 
-	helper := viewOnlyHelper{FileHelper: newFileHelper(t)}
+	helper := viewOnlyHelper{Helper: newFileHelper(t)}
 	config, _, status, err := BuildEditorConfig(
 		editorRequest("user-1", "file-1"),
 		validEditorConfiguration(),

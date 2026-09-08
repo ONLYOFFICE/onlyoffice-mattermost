@@ -21,14 +21,15 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
-func newHelper(t *testing.T) FileHelper {
+func newHelper(t *testing.T) Helper {
 	t.Helper()
 	formatManager, err := public.NewMapFormatManager()
 	require.NoError(t, err)

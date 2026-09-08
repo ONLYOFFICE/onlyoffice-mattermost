@@ -21,11 +21,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/common"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/common"
 )
 
 func validCredentials() *Configuration {

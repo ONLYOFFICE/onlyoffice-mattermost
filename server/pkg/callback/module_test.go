@@ -22,14 +22,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 type fxStubBot struct{}

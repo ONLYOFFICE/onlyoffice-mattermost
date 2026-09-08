@@ -25,13 +25,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 type stubBot struct {
@@ -146,7 +147,7 @@ func TestRegistryRunHandlerUnknownStatus(t *testing.T) {
 		&stubBot{},
 	)
 
-	var missing *CallbackHandlerDoesNotExistError
+	var missing *HandlerDoesNotExistError
 	require.ErrorAs(t, err, &missing)
 	assert.Equal(t, 99, missing.Code)
 }
@@ -217,9 +218,11 @@ func TestSaveHandlerEmptyURL(t *testing.T) {
 	require.ErrorAs(t, err, &invalidErr)
 }
 
-func TestHandlerHandleDiscardsErrors(t *testing.T) {
+func TestHandlerHandleReturnsMissingHandlerError(t *testing.T) {
 	api := &plugintest.API{}
 	handler := newHandler(api, converter.New(), &stubFileBackend{}, &stubBot{})
 	err := handler.Handle(context.Background(), Callback{Status: 99, FileID: "f", Key: "k"})
-	assert.NoError(t, err)
+	var missing *HandlerDoesNotExistError
+	require.ErrorAs(t, err, &missing)
+	assert.Equal(t, 99, missing.Code)
 }

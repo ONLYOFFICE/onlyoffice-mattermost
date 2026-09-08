@@ -30,6 +30,18 @@ import (
 	"testing"
 	"time"
 
+	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/gorilla/mux"
+	mmModel "github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxtest"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
@@ -42,17 +54,6 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
 	model "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	jwt "github.com/golang-jwt/jwt/v5"
-	"github.com/gorilla/mux"
-	mmModel "github.com/mattermost/mattermost/server/public/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
-	"go.uber.org/fx/fxtest"
 )
 
 type integrationBot struct {

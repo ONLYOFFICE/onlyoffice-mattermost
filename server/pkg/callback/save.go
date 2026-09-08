@@ -22,11 +22,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 var _ = registryContainer.RegisterHandler(2, _saveFile)

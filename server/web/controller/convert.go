@@ -27,17 +27,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
+	"github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/text/language"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	"github.com/google/uuid"
-	"github.com/mattermost/mattermost/server/public/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"golang.org/x/sync/errgroup"
-	"golang.org/x/text/language"
 )
 
 const (
@@ -87,7 +88,7 @@ func (h *ConvertHandler) logErrorAndRespondWithJSON(rw http.ResponseWriter, mess
 	h.api.LogError(logPrefix + message)
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(resp.ToJSON())
+	_, _ = rw.Write(resp.ToJSON())
 }
 
 func (h *ConvertHandler) validateCredentials(r *http.Request) (string, error) {
@@ -206,7 +207,7 @@ func (h *ConvertHandler) performConversion(convertReq *client.ConvertRequest, fi
 }
 
 func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
-	response, err := http.Get(fileURL)
+	response, err := http.Get(fileURL) //nolint:gosec // G107: URL originates from Document Server conversion response
 	if err != nil {
 		return nil, fmt.Errorf("could not get converted file: %w", err)
 	}
@@ -268,13 +269,13 @@ func (h *ConvertHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	var req oomodel.ConvertFileRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.logErrorAndRespond(rw, "could not decode request: "+err.Error(), http.StatusBadRequest)
+	if decodeErr := json.NewDecoder(r.Body).Decode(&req); decodeErr != nil {
+		h.logErrorAndRespond(rw, "could not decode request: "+decodeErr.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := req.Validate(); err != nil {
-		h.logErrorAndRespond(rw, "invalid request: "+err.Error(), http.StatusBadRequest)
+	if validateErr := req.Validate(); validateErr != nil {
+		h.logErrorAndRespond(rw, "invalid request: "+validateErr.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -284,12 +285,12 @@ func (h *ConvertHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.validateFileAndUser(file, user); err != nil {
+	if ownerErr := h.validateFileAndUser(file, user); ownerErr != nil {
 		statusCode := http.StatusBadRequest
-		if err.Error() == "user is not the owner of the file" {
+		if ownerErr.Error() == "user is not the owner of the file" {
 			statusCode = http.StatusForbidden
 		}
-		h.logErrorAndRespond(rw, err.Error(), statusCode)
+		h.logErrorAndRespond(rw, ownerErr.Error(), statusCode)
 		return
 	}
 
@@ -325,5 +326,5 @@ func (h *ConvertHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	resp := &oomodel.ConvertFileResponse{Error: 0}
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(resp.ToJSON())
+	_, _ = rw.Write(resp.ToJSON())
 }

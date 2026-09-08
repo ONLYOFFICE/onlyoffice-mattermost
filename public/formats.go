@@ -72,11 +72,12 @@ func (f Format) IsOpenXMLConvertable() bool {
 }
 
 func (f Format) GetOpenXMLExtension() string {
-	if f.Type == "cell" {
+	switch f.Type {
+	case "cell":
 		return "xlsx"
-	} else if f.Type == "slide" {
+	case "slide":
 		return "pptx"
-	} else {
+	default:
 		return "docx"
 	}
 }

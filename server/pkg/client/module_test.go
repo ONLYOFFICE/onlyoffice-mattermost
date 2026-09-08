@@ -20,10 +20,11 @@ package client
 import (
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
 func TestClientModuleProvidesCommandClient(t *testing.T) {

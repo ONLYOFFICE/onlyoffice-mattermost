@@ -27,6 +27,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gorilla/mux"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxtest"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
@@ -37,15 +47,6 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/health"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
-	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
-	"go.uber.org/fx/fxtest"
 )
 
 type fxStubBot struct{}

@@ -21,26 +21,27 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 type PermissionsHandler struct {
 	api           plugin.API
 	configuration *configuration.Configuration
-	fileHelper    file.FileHelper
+	fileHelper    file.Helper
 	bot           bot.Bot
 }
 
 func NewPermissionsHandler(
 	api plugin.API,
 	configuration *configuration.Configuration,
-	fileHelper file.FileHelper,
+	fileHelper file.Helper,
 	bot bot.Bot,
 ) PermissionsHandler {
 	return PermissionsHandler{

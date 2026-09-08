@@ -25,15 +25,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 type stubCallbackHandler struct {

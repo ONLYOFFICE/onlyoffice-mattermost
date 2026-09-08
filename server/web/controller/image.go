@@ -56,5 +56,5 @@ func (h *ImageHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	contentType := http.DetectContentType(image)
 	rw.Header().Set("Content-Type", contentType)
 	rw.WriteHeader(http.StatusOK)
-	rw.Write(image)
+	_, _ = rw.Write(image) //nolint:gosec // G705: profile image bytes from Mattermost API, Content-Type set via DetectContentType
 }

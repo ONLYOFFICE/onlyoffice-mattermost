@@ -24,13 +24,14 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 func TestEditorHandlerError(t *testing.T) {

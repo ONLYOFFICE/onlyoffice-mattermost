@@ -22,15 +22,16 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	ctrlmodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	jwt "github.com/golang-jwt/jwt/v5"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	ctrlmodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 func downloadConfig() *configuration.Configuration {

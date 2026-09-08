@@ -24,19 +24,20 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	model "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	model "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 func TestPluginHTTP(t *testing.T) {
 	api := containerAPI(t)
 	plugin := &Plugin{}
-	plugin.MattermostPlugin.API = api
+	plugin.API = api
 	plugin.configuration = validPluginConfig()
 
 	require.NoError(t, plugin.reinitializeContainer(plugin.configuration))

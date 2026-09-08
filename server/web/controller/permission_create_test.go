@@ -24,12 +24,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
 func TestPermissionsGet(t *testing.T) {

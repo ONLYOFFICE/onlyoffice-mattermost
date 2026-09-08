@@ -20,8 +20,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/mattermost/mattermost/server/public/plugin"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 )
 
 type AuthorizationMiddleware struct {
