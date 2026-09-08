@@ -21,10 +21,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 var registryContainer = registry{
@@ -70,7 +71,7 @@ func (r *registry) RunHandler(
 		return handler(ctx, callback, api, converter, filestore, bot)
 	}
 
-	return &CallbackHandlerDoesNotExistError{
+	return &HandlerDoesNotExistError{
 		Code: code,
 	}
 }

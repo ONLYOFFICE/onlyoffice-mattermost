@@ -23,10 +23,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 // Configuration captures the plugin's external configuration as exposed in the Mattermost server
@@ -143,13 +144,11 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 		c.DESJwt = c.DemoSecret
 		c.DESJwtHeader = c.DemoHeader
 		c.DESJwtPrefix = c.DemoPrefix
-	} else {
-		if strings.EqualFold(c.DESAddress, c.DemoAddress) {
-			c.DESAddress = ""
-			c.DESJwt = ""
-			c.DESJwtHeader = ""
-			c.DESJwtPrefix = ""
-		}
+	} else if strings.EqualFold(c.DESAddress, c.DemoAddress) {
+		c.DESAddress = ""
+		c.DESJwt = ""
+		c.DESJwtHeader = ""
+		c.DESJwtPrefix = ""
 	}
 }
 

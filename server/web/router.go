@@ -25,6 +25,9 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/gorilla/mux"
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
@@ -34,8 +37,6 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/middleware"
-	"github.com/gorilla/mux"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 func recoverRoutes(next http.Handler) http.Handler {
@@ -65,7 +66,7 @@ func timeoutRoutes(timeout time.Duration) func(next http.HandlerFunc) http.Handl
 			select {
 			case <-ctx.Done():
 				w.WriteHeader(http.StatusGatewayTimeout)
-				w.Write([]byte("request timeout"))
+				_, _ = w.Write([]byte("request timeout"))
 				return
 			case <-done:
 				return
@@ -81,7 +82,7 @@ func NewRouter(
 	callbackHandler callback.Handler,
 	mentionsHandler controller.MentionsHandler,
 	healthHandler controller.HealthHandler,
-	fileHelper file.FileHelper,
+	fileHelper file.Helper,
 	encoder crypto.Encoder,
 	formatManager public.FormatManager,
 	commandClient client.CommandClient,

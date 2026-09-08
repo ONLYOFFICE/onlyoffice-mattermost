@@ -21,8 +21,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	resty "github.com/go-resty/resty/v2"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
 type CommandClient interface {

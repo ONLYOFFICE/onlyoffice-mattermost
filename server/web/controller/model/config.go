@@ -59,7 +59,7 @@ type User struct {
 }
 
 type Customization struct {
-	UiTheme string `json:"uiTheme,omitempty"`
+	UITheme string `json:"uiTheme,omitempty"`
 	Close   Close  `json:"close,omitempty"`
 	Plugins bool   `json:"plugins"`
 	Macros  bool   `json:"macros"`

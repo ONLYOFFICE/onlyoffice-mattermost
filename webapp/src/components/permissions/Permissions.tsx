@@ -45,7 +45,7 @@ import 'public/scss/permissions.scss';
 type Props = {
     visible: boolean;
     close: () => (dispatch: Dispatch) => void;
-    fileInfo: FileInfo;
+    fileInfo: FileInfo | null;
     editorOpen: boolean;
     theme: string;
     darkTheme: string | undefined;
@@ -78,6 +78,10 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, edi
     const [wildcardAccess, setWildcardAccess] = useState<string>(FileAccess.READ_ONLY);
 
     const fetchData = async (): Promise<void> => {
+        if (!fileInfo) {
+            return;
+        }
+
         setChannel(null);
         const urlParts = window.location.href.split('/');
         try {
@@ -127,12 +131,12 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, edi
     };
 
     useEffect(() => {
-        if (visible) {
+        if (visible && fileInfo) {
             fetchData();
         }
-    }, [visible]);
+    }, [visible, fileInfo?.id]);
 
-    if (!visible) {
+    if (!(visible && fileInfo)) {
         return null;
     }
 

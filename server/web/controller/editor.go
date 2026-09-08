@@ -34,7 +34,7 @@ import (
 type EditorHandler struct {
 	api            plugin.API
 	configuration  *configuration.Configuration
-	fileHelper     file.FileHelper
+	fileHelper     file.Helper
 	encoder        crypto.Encoder
 	jwtManager     crypto.JwtManager
 	editorTemplate *template.Template
@@ -43,7 +43,7 @@ type EditorHandler struct {
 func NewEditorHandler(
 	api plugin.API,
 	configuration *configuration.Configuration,
-	fileHelper file.FileHelper,
+	fileHelper file.Helper,
 	encoder crypto.Encoder,
 	jwtManager crypto.JwtManager,
 	editorTemplate *template.Template,
@@ -71,18 +71,18 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	userID := r.Header.Get(tools.MMAuthHeader)
 	var mentionsCode string
 	mentionsKey := "mentions:" + userID
-	mentionsCodeBytes, err := h.api.KVGet(mentionsKey)
-	if err != nil || len(mentionsCodeBytes) == 0 {
+	mentionsCodeBytes, kvErr := h.api.KVGet(mentionsKey)
+	if kvErr != nil || len(mentionsCodeBytes) == 0 {
 		mentionsCode = h.fileHelper.GenerateKey()
-		if err := h.api.KVSetWithExpiry(mentionsKey, []byte(mentionsCode), 60*60*24); err != nil {
-			h.api.LogError(common.LoggerPrefix + "could not set mentions code: " + err.Error())
+		if setErr := h.api.KVSetWithExpiry(mentionsKey, []byte(mentionsCode), 60*60*24); setErr != nil {
+			h.api.LogError(common.LoggerPrefix + "could not set mentions code: " + setErr.Error())
 		}
 	} else {
 		mentionsCode = string(mentionsCodeBytes)
 	}
 
-	if err := h.api.KVSetWithExpiry(mentionsCode, []byte(userID), 60*60*24); err != nil {
-		h.api.LogError(common.LoggerPrefix + "could not set mentions code mapping: " + err.Error())
+	if setErr := h.api.KVSetWithExpiry(mentionsCode, []byte(userID), 60*60*24); setErr != nil {
+		h.api.LogError(common.LoggerPrefix + "could not set mentions code mapping: " + setErr.Error())
 	}
 
 	encodedConfig, cerr := json.Marshal(config)
@@ -95,7 +95,7 @@ func (h *EditorHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		"apijs":          h.configuration.DESAddress + "/web-apps/apps/api/documents/api.js?shardkey=" + docKey,
 		"config":         string(encodedConfig),
 		"dark":           r.URL.Query().Get("dark"),
-		"mentionscode":   string(mentionsCode),
+		"mentionscode":   mentionsCode,
 		"sharingenabled": isOwner,
 	}
 

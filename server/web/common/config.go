@@ -57,7 +57,7 @@ func BuildEditorConfig(
 	api plugin.API,
 	encoder crypto.Encoder,
 	jwtManager crypto.JwtManager,
-	fileHelper file.FileHelper,
+	fileHelper file.Helper,
 ) (config oomodel.Config, docKey string, isOwner bool, statusCode int, err error) {
 	hasOwnCredentials := configuration.DESAddress != configuration.DemoAddress &&
 		configuration.DESJwt != "" &&
@@ -148,7 +148,7 @@ func BuildEditorConfig(
 		},
 		CallbackURL: serverURL + "/callback?file=" + payload.FileID,
 		Customization: oomodel.Customization{
-			UiTheme: theme,
+			UITheme: theme,
 			Close: oomodel.Close{
 				Visible: true,
 			},
