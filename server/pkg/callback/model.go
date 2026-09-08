@@ -32,10 +32,6 @@ type Callback struct {
 	Token  string   `json:"token"`
 }
 
-type CallbackResponse struct {
-	Error int8 `json:"error"`
-}
-
 func (c *Callback) Validate() error {
 	return validator.New().Struct(c)
 }

@@ -20,10 +20,11 @@ package callback
 import (
 	"context"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 type Handler interface {
@@ -52,6 +53,5 @@ func newHandler(
 }
 
 func (h *handlerImpl) Handle(ctx context.Context, callback Callback) error {
-	registryContainer.RunHandler(ctx, callback.Status, callback, h.api, h.converter, h.filestore, h.bot)
-	return nil
+	return registryContainer.RunHandler(ctx, callback.Status, callback, h.api, h.converter, h.filestore, h.bot)
 }

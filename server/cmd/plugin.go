@@ -65,7 +65,7 @@ type Plugin struct {
 	configurationLock sync.RWMutex
 
 	router        *mux.Router
-	healthChecker health.HealthChecker
+	healthChecker health.Checker
 	commandClient client.CommandClient
 	jwtManager    crypto.JwtManager
 
@@ -83,9 +83,9 @@ func (p *Plugin) handleConfigError(config *configuration.Configuration, err erro
 	p.setConfiguration(config)
 
 	time.AfterFunc(100*time.Millisecond, func() {
-		if p.MattermostPlugin.API != nil {
-			if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
-				p.MattermostPlugin.API.LogError(
+		if p.API != nil {
+			if disableErr := p.API.DisablePlugin(PluginID); disableErr != nil {
+				p.API.LogError(
 					common.OnlyofficeLoggerCmdPrefix + "Could not disable the plugin via Mattermost API: " + disableErr.Message,
 				)
 			}
@@ -96,8 +96,8 @@ func (p *Plugin) handleConfigError(config *configuration.Configuration, err erro
 }
 
 func (p *Plugin) logError(message string) {
-	if p.MattermostPlugin.API != nil {
-		p.MattermostPlugin.API.LogError(message)
+	if p.API != nil {
+		p.API.LogError(message)
 	} else {
 		fmt.Println(message)
 	}
@@ -113,8 +113,8 @@ func (p *Plugin) provideFormatManager() public.FormatManager {
 }
 
 func (p *Plugin) provideFileBackend() filestore.FileBackend {
-	license := p.MattermostPlugin.API.GetLicense()
-	serverConfig := p.MattermostPlugin.API.GetUnsanitizedConfig()
+	license := p.API.GetLicense()
+	serverConfig := p.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
 	fs, err := filestore.NewFileBackend(
 		filestore.NewFileBackendSettingsFromConfig(
@@ -138,10 +138,10 @@ func (p *Plugin) initializeContainer() *fx.App {
 		fx.NopLogger,
 		fx.Supply(p),
 		fx.Provide(
-			func() plugin.API { return p.MattermostPlugin.API },
+			func() plugin.API { return p.API },
 			func() *configuration.Configuration { return p.configuration },
 			func() middleware.AuthorizationMiddleware {
-				return middleware.NewAuthorizationMiddleware(p.MattermostPlugin.API)
+				return middleware.NewAuthorizationMiddleware(p.API)
 			},
 			p.provideFormatManager,
 			p.provideFileBackend,
@@ -177,7 +177,7 @@ func (p *Plugin) initializeContainer() *fx.App {
 		fx.Invoke(func(router *mux.Router) { p.router = router }),
 		fx.Invoke(func(commandClient client.CommandClient) { p.commandClient = commandClient }),
 		fx.Invoke(func(jwtManager crypto.JwtManager) { p.jwtManager = jwtManager }),
-		fx.Invoke(func(healthChecker health.HealthChecker) { p.healthChecker = healthChecker }),
+		fx.Invoke(func(healthChecker health.Checker) { p.healthChecker = healthChecker }),
 	)
 }
 
@@ -215,9 +215,9 @@ func (p *Plugin) OnConfigurationChange() error {
 			message := common.OnlyofficeLoggerCmdPrefix + fmt.Sprintf("Panic in OnConfigurationChange: %v", r)
 			p.logError(message)
 			time.AfterFunc(100*time.Millisecond, func() {
-				if p.MattermostPlugin.API != nil {
-					if disableErr := p.MattermostPlugin.API.DisablePlugin(PluginID); disableErr != nil {
-						p.MattermostPlugin.API.LogError(
+				if p.API != nil {
+					if disableErr := p.API.DisablePlugin(PluginID); disableErr != nil {
+						p.API.LogError(
 							common.OnlyofficeLoggerCmdPrefix +
 								"Could not disable the plugin via Mattermost API: " +
 								disableErr.Message,
@@ -245,7 +245,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	}
 
 	p.setConfiguration(configuration)
-	if err := p.reinitializeContainer(configuration); err != nil {
+	if reinitErr := p.reinitializeContainer(configuration); reinitErr != nil {
 		return nil
 	}
 
@@ -287,7 +287,7 @@ func (p *Plugin) reinitializeContainer(config *configuration.Configuration) erro
 	p.app = p.initializeContainer()
 	if p.app == nil {
 		err := fmt.Errorf("failed to initialize fx container")
-		p.handleConfigError(config, err, "Failed to initialize plugin dependencies")
+		_ = p.handleConfigError(config, err, "Failed to initialize plugin dependencies")
 		return err
 	}
 
@@ -295,7 +295,7 @@ func (p *Plugin) reinitializeContainer(config *configuration.Configuration) erro
 	defer cancel()
 
 	if err := p.app.Start(tctx); err != nil {
-		p.handleConfigError(config, err, "Failed to start plugin dependencies")
+		_ = p.handleConfigError(config, err, "Failed to start plugin dependencies")
 		return err
 	}
 
@@ -309,12 +309,12 @@ func (p *Plugin) reinitializeContainer(config *configuration.Configuration) erro
 
 func (p *Plugin) prepareConfiguration() (*configuration.Configuration, error) {
 	config := new(configuration.Configuration)
-	if err := p.MattermostPlugin.API.LoadPluginConfiguration(config); err != nil {
+	if err := p.API.LoadPluginConfiguration(config); err != nil {
 		return nil, errors.Wrap(err, "failed to load plugin configuration")
 	}
 
 	config.SanitizeConfiguration()
-	config.HandleDemoConfiguration(p.MattermostPlugin.API)
+	config.HandleDemoConfiguration(p.API)
 	return config, nil
 }
 
@@ -337,7 +337,7 @@ func (p *Plugin) validateConfiguration() error {
 	}
 
 	p.setConfiguration(config)
-	p.MattermostPlugin.API.LogInfo(common.OnlyofficeLoggerCmdPrefix + "Configuration updated successfully")
+	p.API.LogInfo(common.OnlyofficeLoggerCmdPrefix + "Configuration updated successfully")
 	return nil
 }
 
@@ -435,12 +435,12 @@ func (p *Plugin) EnsureBot() (string, error) {
 		Description: "ONLYOFFICE Helper",
 	}
 
-	botID, err := p.MattermostPlugin.API.EnsureBotUser(bot)
+	botID, err := p.API.EnsureBotUser(bot)
 	if err != nil {
 		return "", common.ErrCreateBotProfile
 	}
 
-	bundlePath, err := p.MattermostPlugin.API.GetBundlePath()
+	bundlePath, err := p.API.GetBundlePath()
 	if err != nil {
 		return "", err
 	}
@@ -450,7 +450,7 @@ func (p *Plugin) EnsureBot() (string, error) {
 		return "", common.ErrLoadBotProfileImage
 	}
 
-	if appErr := p.MattermostPlugin.API.SetProfileImage(botID, profileImage); appErr != nil {
+	if appErr := p.API.SetProfileImage(botID, profileImage); appErr != nil {
 		return "", common.ErrSetBotProfileImage
 	}
 
@@ -459,7 +459,7 @@ func (p *Plugin) EnsureBot() (string, error) {
 
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	if p.router == nil {
-		p.MattermostPlugin.API.LogError("Router not initialized")
+		p.API.LogError("Router not initialized")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -494,12 +494,12 @@ func (p *Plugin) setConfiguration(configuration *configuration.Configuration) {
 	}
 
 	configuration.SanitizeConfiguration()
-	configuration.HandleDemoConfiguration(p.MattermostPlugin.API)
+	configuration.HandleDemoConfiguration(p.API)
 	p.configuration = configuration
 }
 
 func (p *Plugin) publishConfigChange() {
-	if p.MattermostPlugin.API == nil {
+	if p.API == nil {
 		return
 	}
 
@@ -507,11 +507,11 @@ func (p *Plugin) publishConfigChange() {
 		"config_updated": true,
 	}
 
-	p.MattermostPlugin.API.PublishWebSocketEvent(
+	p.API.PublishWebSocketEvent(
 		"config_changed",
 		event,
 		&model.WebsocketBroadcast{},
 	)
 
-	p.MattermostPlugin.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published config change event")
+	p.API.LogDebug(common.OnlyofficeLoggerCmdPrefix + "Published config change event")
 }

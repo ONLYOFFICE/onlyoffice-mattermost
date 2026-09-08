@@ -24,9 +24,9 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
-var _ FileHelper = (*fileHelperImpl)(nil)
+var _ Helper = (*fileHelperImpl)(nil)
 
-type FileHelper interface {
+type Helper interface {
 	GetFileType(fileExt string) (string, error)
 
 	UserHasFilePermissions(userID string, fileID string, post *mmModel.Post) bool
@@ -49,7 +49,7 @@ type fileHelperImpl struct {
 	formatManager public.FormatManager
 }
 
-func New(formatManager public.FormatManager) FileHelper {
+func New(formatManager public.FormatManager) Helper {
 	return &fileHelperImpl{
 		formatManager: formatManager,
 	}
