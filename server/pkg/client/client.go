@@ -19,10 +19,12 @@ package client
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	resty "github.com/go-resty/resty/v2"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
@@ -44,10 +46,22 @@ type commandClientImpl struct {
 	client     *resty.Client
 }
 
-func New(jwtManager crypto.JwtManager) CommandClient {
+func NewHTTPClient(config *configuration.Configuration) *http.Client {
+	allowPrivate := config != nil && config.AllowPrivateDocumentServer
+	return NewHttpClient(Options{
+		AllowPrivate: allowPrivate,
+	})
+}
+
+func New(jwtManager crypto.JwtManager, config *configuration.Configuration) CommandClient {
+	allowPrivate := config != nil && config.AllowPrivateDocumentServer
+	httpClient := NewHttpClient(Options{
+		AllowPrivate: allowPrivate,
+	})
+
 	return &commandClientImpl{
 		jwtManager: jwtManager,
-		client:     resty.New(),
+		client:     resty.NewWithClient(httpClient),
 	}
 }
 

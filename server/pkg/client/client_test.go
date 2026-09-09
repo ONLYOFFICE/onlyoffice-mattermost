@@ -27,6 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
@@ -39,8 +40,9 @@ func TestSendVersion(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager())
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
 	resp, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 2*time.Second)
+
 	require.NoError(t, err)
 	assert.Equal(t, 0, resp.Error)
 	assert.Equal(t, "8.2.0", resp.Version)
@@ -58,13 +60,14 @@ func TestSendConvert(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager())
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
 	resp, err := c.SendConvert(server.URL, ConvertRequest{
 		Key:        "k1",
 		Filetype:   "doc",
 		Outputtype: "docx",
 		URL:        "https://example.com/file.doc",
 	}, 2*time.Second)
+
 	require.NoError(t, err)
 	assert.Equal(t, 0, resp.Error)
 	assert.Equal(t, "docx", resp.FileType)
@@ -79,7 +82,8 @@ func TestSendVersionTimeout(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager())
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
 	_, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 50*time.Millisecond)
+
 	assert.Error(t, err)
 }
