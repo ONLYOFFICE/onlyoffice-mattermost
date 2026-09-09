@@ -37,6 +37,7 @@ func _saveFile(
 	ctx context.Context,
 	callback Callback,
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,
@@ -62,7 +63,11 @@ func _saveFile(
 		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix+"failed to create request")
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
+	resp, err := httpClient.Do(req)
 	if resp != nil {
 		defer resp.Body.Close()
 	}

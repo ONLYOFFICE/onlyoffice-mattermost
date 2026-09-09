@@ -363,7 +363,15 @@ func (p *Plugin) validateDocumentServer(config *configuration.Configuration) err
 
 	resp, err := p.sendVersionRequest(config, token)
 	if err != nil {
-		return p.handleConfigError(config, err, "Could not sign a JWT")
+		if client.IsBlockedDestination(err) {
+			return p.handleConfigError(
+				config,
+				&common.InvalidDocumentServerAddressError{Reason: "invalid Document Server address"},
+				"Configuration validation failed",
+			)
+		}
+
+		return p.handleConfigError(config, err, "Could not reach document server")
 	}
 
 	if resp.Error != 0 {

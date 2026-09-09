@@ -64,6 +64,7 @@ func newTestRouter(t *testing.T, api *plugintest.API) http.Handler {
 			DESJwtHeader: "AuthorizationJWT",
 			DESJwtPrefix: "Bearer ",
 		},
+		http.DefaultClient,
 		crypto.NewJwtManager(),
 		callback.New(&callback.Config{
 			PluginAPI: api,

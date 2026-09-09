@@ -58,6 +58,7 @@ var (
 type ConvertHandler struct {
 	api           plugin.API
 	configuration *configuration.Configuration
+	httpClient    *http.Client
 	formatManager public.FormatManager
 	jwtManager    crypto.JwtManager
 	commandClient client.CommandClient
@@ -66,13 +67,19 @@ type ConvertHandler struct {
 func NewConvertHandler(
 	api plugin.API,
 	configuration *configuration.Configuration,
+	httpClient *http.Client,
 	formatManager public.FormatManager,
 	jwtManager crypto.JwtManager,
 	commandClient client.CommandClient,
 ) ConvertHandler {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
 	return ConvertHandler{
 		api:           api,
 		configuration: configuration,
+		httpClient:    httpClient,
 		formatManager: formatManager,
 		jwtManager:    jwtManager,
 		commandClient: commandClient,
@@ -207,10 +214,11 @@ func (h *ConvertHandler) performConversion(convertReq *client.ConvertRequest, fi
 }
 
 func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
-	response, err := http.Get(fileURL) //nolint:gosec // G107: URL originates from Document Server conversion response
+	response, err := h.httpClient.Get(fileURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get converted file: %w", err)
 	}
+
 	defer response.Body.Close()
 
 	fileData, err := io.ReadAll(response.Body)

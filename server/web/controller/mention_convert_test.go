@@ -129,7 +129,7 @@ func TestConvertHandler(t *testing.T) {
 
 	t.Run("unauthorized", func(t *testing.T) {
 		api := loggingAPI()
-		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), &stubCommandClient{})
+		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), &stubCommandClient{})
 		recorder := httptest.NewRecorder()
 		handler.Handle(recorder, httptest.NewRequest(http.MethodPost, "/convert", bytes.NewBufferString("{}")))
 
@@ -138,7 +138,7 @@ func TestConvertHandler(t *testing.T) {
 
 	t.Run("bad body", func(t *testing.T) {
 		api := loggingAPI()
-		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), &stubCommandClient{})
+		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), &stubCommandClient{})
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewBufferString("{"))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
 		recorder := httptest.NewRecorder()
@@ -151,7 +151,7 @@ func TestConvertHandler(t *testing.T) {
 		api := loggingAPI()
 		api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{Id: "file-1", CreatorId: "owner", Extension: "doc"}, nil)
 		api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Locale: "en-US"}, nil)
-		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), &stubCommandClient{})
+		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), &stubCommandClient{})
 		body := []byte(`{"file_id":"file-1"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
@@ -170,7 +170,7 @@ func TestConvertHandler(t *testing.T) {
 		api.On("GetConfig").Return(siteURLConfig())
 
 		commandClient := &stubCommandClient{convertResp: client.ConvertResponse{Error: 5}}
-		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), commandClient)
+		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), commandClient)
 		body := []byte(`{"file_id":"file-1","output_type":"docx"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
@@ -207,7 +207,7 @@ func TestConvertHandler(t *testing.T) {
 			Error: 0, FileURL: download.URL, FileType: "docx",
 		}}
 
-		handler := NewConvertHandler(api, validDESConfig(), fm, crypto.NewJwtManager(), commandClient)
+		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), commandClient)
 		body := []byte(`{"file_id":"file-1","output_type":"docx"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")
