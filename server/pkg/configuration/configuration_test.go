@@ -44,7 +44,7 @@ func TestConfigurationClone(t *testing.T) {
 	source.DemoEnabled = true
 	source.Formats = "docx,xlsx"
 	source.OwnerProtected = true
-	source.AllowPrivateDocumentServer = true
+	source.DESAllowPrivate = true
 
 	clone := source.Clone()
 
@@ -52,7 +52,7 @@ func TestConfigurationClone(t *testing.T) {
 	assert.Equal(t, source.Formats, clone.Formats)
 	assert.True(t, clone.DemoEnabled)
 	assert.True(t, clone.OwnerProtected)
-	assert.True(t, clone.AllowPrivateDocumentServer)
+	assert.True(t, clone.DESAllowPrivate)
 
 	clone.DESAddress = "changed"
 

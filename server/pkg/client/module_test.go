@@ -36,7 +36,7 @@ func TestClientModuleProvidesCommandClient(t *testing.T) {
 		crypto.Module,
 		Module,
 		fx.Provide(func() *configuration.Configuration {
-			return &configuration.Configuration{AllowPrivateDocumentServer: true}
+			return &configuration.Configuration{DESAllowPrivate: true}
 		}),
 		fx.Populate(&commandClient),
 	)

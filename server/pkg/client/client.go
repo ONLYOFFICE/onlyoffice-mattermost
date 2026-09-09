@@ -47,7 +47,7 @@ type commandClientImpl struct {
 }
 
 func NewHTTPClient(config *configuration.Configuration) *http.Client {
-	allowPrivate := config != nil && config.AllowPrivateDocumentServer
+	allowPrivate := config != nil && config.DESAllowPrivate
 	return newHTTPClient(Options{
 		AllowPrivate: allowPrivate,
 	})

@@ -216,13 +216,13 @@ func newApplicationContext(t *testing.T) *applicationContext {
 	require.NoError(t, err)
 
 	config := &configuration.Configuration{
-		DESAddress:                 "https://docs.example.com",
-		DESJwt:                     "integration-secret",
-		DESJwtHeader:               "AuthorizationJWT",
-		DESJwtPrefix:               "Bearer ",
-		AllowPrivateDocumentServer: true,
-		PluginsEnabled:             true,
-		MacrosEnabled:              false,
+		DESAddress:      "https://docs.example.com",
+		DESJwt:          "integration-secret",
+		DESJwtHeader:    "AuthorizationJWT",
+		DESJwtPrefix:    "Bearer ",
+		DESAllowPrivate: true,
+		PluginsEnabled:  true,
+		MacrosEnabled:   false,
 	}
 
 	store := newIntegrationStore()

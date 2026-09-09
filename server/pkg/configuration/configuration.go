@@ -46,7 +46,7 @@ type Configuration struct {
 	DESJwt                     string
 	DESJwtHeader               string
 	DESJwtPrefix               string
-	AllowPrivateDocumentServer bool
+	DESAllowPrivate            bool
 	DemoEnabled                bool
 	DemoExpires                int64
 	DemoAddress                string
@@ -69,7 +69,7 @@ func (c *Configuration) Clone() *Configuration {
 		DESJwt:                     c.DESJwt,
 		DESJwtHeader:               c.DESJwtHeader,
 		DESJwtPrefix:               c.DESJwtPrefix,
-		AllowPrivateDocumentServer: c.AllowPrivateDocumentServer,
+		DESAllowPrivate:            c.DESAllowPrivate,
 		DemoEnabled:                c.DemoEnabled,
 		DemoExpires:                c.DemoExpires,
 		DemoAddress:                c.DemoAddress,

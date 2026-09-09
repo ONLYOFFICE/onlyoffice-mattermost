@@ -192,7 +192,7 @@ func TestSaveHandlerStatus2(t *testing.T) {
 			Users:  []string{"user-1"},
 		},
 		api,
-		client.NewHTTPClient(&configuration.Configuration{AllowPrivateDocumentServer: true}),
+		client.NewHTTPClient(&configuration.Configuration{DESAllowPrivate: true}),
 		converter.New(),
 		store,
 		bot,

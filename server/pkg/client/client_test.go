@@ -40,7 +40,7 @@ func TestSendVersion(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
 	resp, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 2*time.Second)
 
 	require.NoError(t, err)
@@ -60,7 +60,7 @@ func TestSendConvert(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
 	resp, err := c.SendConvert(server.URL, ConvertRequest{
 		Key:        "k1",
 		Filetype:   "doc",
@@ -82,7 +82,7 @@ func TestSendVersionTimeout(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{AllowPrivateDocumentServer: true})
+	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
 	_, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 50*time.Millisecond)
 
 	assert.Error(t, err)
