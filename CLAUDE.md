@@ -44,7 +44,7 @@ Settings deserialize into `server/pkg/configuration.Configuration` during `OnCon
 | `DESJwt` | Shared JWT secret key used for signing payloads and headers |
 | `DESJwtHeader` | Custom header name (**Must not** be `Authorization`; blocked by Mattermost) |
 | `DESJwtPrefix` | Authorization header prefix string (Defaults to `Bearer `) |
-| `DemoEnabled` | Forces 7-day cloud trial override tracked via KV store key `onlyoffice_demo_start` |
+| `AllowPrivateDocumentServer` | When true, allows loopback/private Docs URLs via safeurl allowlist; default rejects them including redirect hops |
 | `Formats` | Comma-separated extension allowlist; empty = all; `none` = block all |
 | `OwnerProtected` | Restricts editor document protection features exclusively to the post author |
 
