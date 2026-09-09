@@ -18,19 +18,83 @@
 package tools
 
 import (
+	"errors"
 	"net/url"
+	"strings"
 )
 
-func IsValidURL(toTest string) bool {
-	_, err := url.ParseRequestURI(toTest)
+var ErrInvalidServerURL = errors.New("invalid server address")
+
+func IsValidURL(address string) error {
+	address = strings.TrimSpace(address)
+	if address == "" {
+		return ErrInvalidServerURL
+	}
+
+	u, err := url.ParseRequestURI(address)
 	if err != nil {
-		return false
+		return ErrInvalidServerURL
 	}
 
-	u, err := url.Parse(toTest)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return false
+	scheme := strings.ToLower(u.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return ErrInvalidServerURL
 	}
 
-	return true
+	if u.Host == "" {
+		return ErrInvalidServerURL
+	}
+
+	if u.User != nil {
+		return ErrInvalidServerURL
+	}
+
+	if u.RawQuery != "" || u.ForceQuery {
+		return ErrInvalidServerURL
+	}
+
+	if u.Fragment != "" {
+		return ErrInvalidServerURL
+	}
+
+	return nil
+}
+
+func SanitizeURL(address string) (string, error) {
+	address = strings.TrimSpace(address)
+	if address == "" {
+		return "", nil
+	}
+
+	u, err := url.Parse(address)
+	if err != nil {
+		return "", ErrInvalidServerURL
+	}
+
+	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
+	if scheme != "http" && scheme != "https" {
+		return "", ErrInvalidServerURL
+	}
+
+	if u.Host == "" {
+		return "", ErrInvalidServerURL
+	}
+
+	path := u.EscapedPath()
+	for strings.HasSuffix(path, "/") {
+		path = strings.TrimSuffix(path, "/")
+	}
+
+	cleaned := &url.URL{
+		Scheme: scheme,
+		Host:   u.Host,
+		Path:   path,
+	}
+
+	out := cleaned.String()
+	if err := IsValidURL(out); err != nil {
+		return "", err
+	}
+
+	return out, nil
 }
