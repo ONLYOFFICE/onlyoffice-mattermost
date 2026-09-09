@@ -53,10 +53,10 @@ func NewHTTPClient(config *configuration.Configuration) *http.Client {
 	})
 }
 
-func New(jwtManager crypto.JwtManager, config *configuration.Configuration) CommandClient {
+func New(jwtManager crypto.JwtManager, httpClient *http.Client) CommandClient {
 	return &commandClientImpl{
 		jwtManager: jwtManager,
-		client:     resty.NewWithClient(NewHTTPClient(config)),
+		client:     resty.NewWithClient(httpClient),
 	}
 }
 

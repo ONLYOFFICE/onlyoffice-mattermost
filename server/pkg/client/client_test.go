@@ -31,6 +31,10 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
+func privateHTTPClient() *http.Client {
+	return NewHTTPClient(&configuration.Configuration{DESAllowPrivate: true})
+}
+
 func TestSendVersion(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
@@ -40,7 +44,7 @@ func TestSendVersion(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
+	c := New(crypto.NewJwtManager(), privateHTTPClient())
 	resp, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 2*time.Second)
 
 	require.NoError(t, err)
@@ -60,7 +64,7 @@ func TestSendConvert(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
+	c := New(crypto.NewJwtManager(), privateHTTPClient())
 	resp, err := c.SendConvert(server.URL, ConvertRequest{
 		Key:        "k1",
 		Filetype:   "doc",
@@ -82,7 +86,7 @@ func TestSendVersionTimeout(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	c := New(crypto.NewJwtManager(), &configuration.Configuration{DESAllowPrivate: true})
+	c := New(crypto.NewJwtManager(), privateHTTPClient())
 	_, err := c.SendVersion(server.URL, VersionRequest{Command: "version"}, 50*time.Millisecond)
 
 	assert.Error(t, err)
