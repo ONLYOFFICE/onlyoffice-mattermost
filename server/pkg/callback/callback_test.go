@@ -33,6 +33,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
@@ -191,7 +192,7 @@ func TestSaveHandlerStatus2(t *testing.T) {
 			Users:  []string{"user-1"},
 		},
 		api,
-		client.NewHttpClient(client.Options{AllowPrivate: true}),
+		client.NewHTTPClient(&configuration.Configuration{AllowPrivateDocumentServer: true}),
 		converter.New(),
 		store,
 		bot,

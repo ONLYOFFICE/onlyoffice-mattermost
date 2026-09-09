@@ -18,6 +18,7 @@
 package configuration
 
 import (
+	"net/url"
 	"testing"
 	"time"
 
@@ -78,8 +79,17 @@ func TestSanitizeConfigurationTrimsAndStripsTrailingSlash(t *testing.T) {
 }
 
 func TestSanitizeConfigurationStripsCredentialsQueryAndFragment(t *testing.T) {
+	desAddress := (&url.URL{
+		Scheme:   "https",
+		User:     url.UserPassword("user", "token"),
+		Host:     "docs.example.com:8443",
+		Path:     "/onlyoffice/",
+		RawQuery: "shard=1",
+		Fragment: "x",
+	}).String()
+
 	configuration := &Configuration{
-		DESAddress: "https://user:pass@docs.example.com:8443/onlyoffice/?shard=1#x",
+		DESAddress: desAddress,
 	}
 
 	configuration.SanitizeConfiguration()

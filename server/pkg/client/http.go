@@ -91,7 +91,7 @@ func ports() []int {
 	return allPorts
 }
 
-func NewHttpClient(opts Options) *http.Client {
+func newHTTPClient(opts Options) *http.Client {
 	maxRedirects := opts.MaxRedirects
 	if maxRedirects <= 0 {
 		maxRedirects = defaultMaxRedirects
@@ -172,7 +172,7 @@ func buildRedirectRequest(prev *http.Request, status int, location string) (*htt
 		}
 	}
 
-	next, err := http.NewRequestWithContext(prev.Context(), method, location, body)
+	next, err := http.NewRequestWithContext(prev.Context(), method, location, body) //nolint:gosec // G704: location is re-validated by safeurl.Do on the next hop
 	if err != nil {
 		return nil, err
 	}

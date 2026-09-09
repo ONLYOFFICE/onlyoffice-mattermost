@@ -48,20 +48,15 @@ type commandClientImpl struct {
 
 func NewHTTPClient(config *configuration.Configuration) *http.Client {
 	allowPrivate := config != nil && config.AllowPrivateDocumentServer
-	return NewHttpClient(Options{
+	return newHTTPClient(Options{
 		AllowPrivate: allowPrivate,
 	})
 }
 
 func New(jwtManager crypto.JwtManager, config *configuration.Configuration) CommandClient {
-	allowPrivate := config != nil && config.AllowPrivateDocumentServer
-	httpClient := NewHttpClient(Options{
-		AllowPrivate: allowPrivate,
-	})
-
 	return &commandClientImpl{
 		jwtManager: jwtManager,
-		client:     resty.NewWithClient(httpClient),
+		client:     resty.NewWithClient(NewHTTPClient(config)),
 	}
 }
 

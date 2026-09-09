@@ -34,7 +34,7 @@ func TestBlocksLoopbackWithoutAllowPrivate(t *testing.T) {
 
 	t.Cleanup(target.Close)
 
-	client := NewHttpClient(Options{})
+	client := newHTTPClient(Options{})
 	resp, err := client.Get(target.URL)
 	if resp != nil {
 		_ = resp.Body.Close()
@@ -51,7 +51,7 @@ func TestAllowsPrivateWhenSet(t *testing.T) {
 
 	t.Cleanup(target.Close)
 
-	client := NewHttpClient(Options{AllowPrivate: true})
+	client := newHTTPClient(Options{AllowPrivate: true})
 	resp, err := client.Get(target.URL)
 
 	require.NoError(t, err)
@@ -72,7 +72,7 @@ func TestRedirectHopIsRevalidated(t *testing.T) {
 	}))
 	t.Cleanup(public.Close)
 
-	client := NewHttpClient(Options{AllowPrivate: true, MaxRedirects: 5})
+	client := newHTTPClient(Options{AllowPrivate: true, MaxRedirects: 5})
 	resp, err := client.Get(public.URL)
 
 	require.NoError(t, err)
@@ -92,7 +92,7 @@ func TestRedirectToBlockedDestinationRejected(t *testing.T) {
 
 	t.Cleanup(first.Close)
 
-	client = NewHttpClient(Options{AllowPrivate: true})
+	client = newHTTPClient(Options{AllowPrivate: true})
 	resp, err := client.Get(first.URL)
 	if resp != nil {
 		_ = resp.Body.Close()
@@ -110,7 +110,7 @@ func TestTooManyRedirects(t *testing.T) {
 
 	t.Cleanup(server.Close)
 
-	client := NewHttpClient(Options{AllowPrivate: true, MaxRedirects: 2})
+	client := newHTTPClient(Options{AllowPrivate: true, MaxRedirects: 2})
 	resp, err := client.Get(server.URL)
 	if resp != nil {
 		_ = resp.Body.Close()

@@ -18,11 +18,25 @@
 package tools
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func credentialURL(scheme, user, password, host, path, rawQuery, fragment string) string {
+	u := &url.URL{
+		Scheme:   scheme,
+		User:     url.UserPassword(user, password),
+		Host:     host,
+		Path:     path,
+		RawQuery: rawQuery,
+		Fragment: fragment,
+	}
+
+	return u.String()
+}
 
 func TestIsValidURL(t *testing.T) {
 	tests := []struct {
@@ -36,7 +50,7 @@ func TestIsValidURL(t *testing.T) {
 		{name: "empty", input: "", wantErr: true},
 		{name: "relative", input: "/onlyoffice", wantErr: true},
 		{name: "ftp", input: "ftp://docs.example.com", wantErr: true},
-		{name: "credentials", input: "https://user:pass@docs.example.com", wantErr: true},
+		{name: "credentials", input: credentialURL("https", "user", "token", "docs.example.com", "", "", ""), wantErr: true},
 		{name: "query", input: "https://docs.example.com?x=1", wantErr: true},
 		{name: "fragment", input: "https://docs.example.com#frag", wantErr: true},
 	}
@@ -62,10 +76,10 @@ func TestSanitizeURL(t *testing.T) {
 	}{
 		{name: "trim and strip slashes", input: "  https://docs.example.com///  ", want: "https://docs.example.com"},
 		{name: "keep path", input: "https://docs.example.com/onlyoffice/", want: "https://docs.example.com/onlyoffice"},
-		{name: "strip credentials", input: "https://user:secret@docs.example.com/path", want: "https://docs.example.com/path"},
+		{name: "strip credentials", input: credentialURL("https", "user", "token", "docs.example.com", "/path", "", ""), want: "https://docs.example.com/path"},
 		{name: "strip query", input: "https://docs.example.com/path?foo=bar&a=1", want: "https://docs.example.com/path"},
 		{name: "strip fragment", input: "https://docs.example.com/path#section", want: "https://docs.example.com/path"},
-		{name: "strip all extras", input: "http://user:pass@docs.example.com:8080/oo/?q=1#f", want: "http://docs.example.com:8080/oo"},
+		{name: "strip all extras", input: credentialURL("http", "user", "token", "docs.example.com:8080", "/oo/", "q=1", "f"), want: "http://docs.example.com:8080/oo"},
 		{name: "empty", input: "   ", want: ""},
 		{name: "ftp rejected", input: "ftp://docs.example.com", wantErr: true},
 		{name: "missing scheme", input: "docs.example.com", wantErr: true},
