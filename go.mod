@@ -3,6 +3,7 @@ module github.com/ONLYOFFICE/onlyoffice-mattermost
 go 1.26.7
 
 require (
+	github.com/doyensec/safeurl v0.2.5
 	github.com/go-git/go-git/v5 v5.19.2
 	github.com/go-playground/validator/v10 v10.30.3
 	github.com/go-resty/resty/v2 v2.17.2

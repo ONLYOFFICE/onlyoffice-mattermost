@@ -24,6 +24,7 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
@@ -34,6 +35,9 @@ func TestClientModuleProvidesCommandClient(t *testing.T) {
 		fx.NopLogger,
 		crypto.Module,
 		Module,
+		fx.Provide(func() *configuration.Configuration {
+			return &configuration.Configuration{DESAllowPrivate: true}
+		}),
 		fx.Populate(&commandClient),
 	)
 

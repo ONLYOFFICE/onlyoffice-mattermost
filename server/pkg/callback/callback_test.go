@@ -32,6 +32,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
@@ -130,7 +132,8 @@ func TestRegistryRunHandlerKnownStatuses(t *testing.T) {
 	ctx := context.Background()
 
 	for _, status := range []int{1, 3, 4, 7} {
-		err := registryContainer.RunHandler(ctx, status, Callback{FileID: "f1", Status: status}, api, converter, store, bot)
+		err := registryContainer.RunHandler(ctx, status, Callback{FileID: "f1", Status: status}, api, nil, converter, store, bot)
+
 		assert.NoError(t, err, "status %d", status)
 	}
 }
@@ -142,12 +145,14 @@ func TestRegistryRunHandlerUnknownStatus(t *testing.T) {
 		99,
 		Callback{FileID: "f1"},
 		api,
+		nil,
 		converter.New(),
 		&stubFileBackend{},
 		&stubBot{},
 	)
 
 	var missing *HandlerDoesNotExistError
+
 	require.ErrorAs(t, err, &missing)
 	assert.Equal(t, 99, missing.Code)
 }
@@ -187,6 +192,7 @@ func TestSaveHandlerStatus2(t *testing.T) {
 			Users:  []string{"user-1"},
 		},
 		api,
+		client.NewHTTPClient(&configuration.Configuration{DESAllowPrivate: true}),
 		converter.New(),
 		store,
 		bot,
@@ -209,20 +215,50 @@ func TestSaveHandlerEmptyURL(t *testing.T) {
 		6,
 		Callback{FileID: "file-1", Status: 6, URL: ""},
 		api,
+		nil,
 		converter.New(),
 		&stubFileBackend{},
 		&stubBot{},
 	)
 
 	var invalidErr *InvalidFileDownloadURLError
+
 	require.ErrorAs(t, err, &invalidErr)
+}
+
+func TestSaveHandlerNilHTTPClientFailsClosed(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("LogDebug", mock.Anything).Return().Maybe()
+	api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{
+		Id: "file-1", PostId: "post-1", Path: "files/file-1.docx", Name: "file-1.docx",
+	}, nil)
+
+	err := registryContainer.RunHandler(
+		context.Background(),
+		2,
+		Callback{
+			FileID: "file-1",
+			Status: 2,
+			URL:    "https://docs.example.com/file",
+			Users:  []string{"user-1"},
+		},
+		api,
+		nil,
+		converter.New(),
+		&stubFileBackend{},
+		&stubBot{},
+	)
+
+	assert.ErrorIs(t, err, ErrHTTPClientRequired)
 }
 
 func TestHandlerHandleReturnsMissingHandlerError(t *testing.T) {
 	api := &plugintest.API{}
-	handler := newHandler(api, converter.New(), &stubFileBackend{}, &stubBot{})
+	handler := newHandler(api, nil, converter.New(), &stubFileBackend{}, &stubBot{})
 	err := handler.Handle(context.Background(), Callback{Status: 99, FileID: "f", Key: "k"})
+
 	var missing *HandlerDoesNotExistError
+
 	require.ErrorAs(t, err, &missing)
 	assert.Equal(t, 99, missing.Code)
 }

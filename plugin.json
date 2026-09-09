@@ -55,6 +55,13 @@
                 "default": "Bearer "
             },
             {
+                "key": "DESAllowPrivate",
+                "display_name": "Allow private Document Server address: ",
+                "type": "bool",
+                "help_text": "When enabled, loopback and private-network addresses are allowed. When disabled (default), those destinations are rejected.",
+                "default": false
+            },
+            {
                 "key": "DemoEnabled",
                 "display_name": "Connection to demo ONLYOFFICE Docs server enabled: ",
                 "type": "bool",

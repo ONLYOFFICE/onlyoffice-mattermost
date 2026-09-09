@@ -216,12 +216,13 @@ func newApplicationContext(t *testing.T) *applicationContext {
 	require.NoError(t, err)
 
 	config := &configuration.Configuration{
-		DESAddress:     "https://docs.example.com",
-		DESJwt:         "integration-secret",
-		DESJwtHeader:   "AuthorizationJWT",
-		DESJwtPrefix:   "Bearer ",
-		PluginsEnabled: true,
-		MacrosEnabled:  false,
+		DESAddress:      "https://docs.example.com",
+		DESJwt:          "integration-secret",
+		DESJwtHeader:    "AuthorizationJWT",
+		DESJwtPrefix:    "Bearer ",
+		DESAllowPrivate: true,
+		PluginsEnabled:  true,
+		MacrosEnabled:   false,
 	}
 
 	store := newIntegrationStore()
@@ -240,6 +241,9 @@ func newApplicationContext(t *testing.T) *applicationContext {
 			func() bot.Bot { return botInstance },
 			func() filestore.FileBackend { return store },
 			func() client.CommandClient { return commands },
+			func() *http.Client {
+				return client.NewHTTPClient(config)
+			},
 			controller.NewMentionsHandler,
 			controller.NewHealthHandler,
 		),

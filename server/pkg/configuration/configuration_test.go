@@ -18,6 +18,7 @@
 package configuration
 
 import (
+	"net/url"
 	"testing"
 	"time"
 
@@ -43,6 +44,7 @@ func TestConfigurationClone(t *testing.T) {
 	source.DemoEnabled = true
 	source.Formats = "docx,xlsx"
 	source.OwnerProtected = true
+	source.DESAllowPrivate = true
 
 	clone := source.Clone()
 
@@ -50,6 +52,7 @@ func TestConfigurationClone(t *testing.T) {
 	assert.Equal(t, source.Formats, clone.Formats)
 	assert.True(t, clone.DemoEnabled)
 	assert.True(t, clone.OwnerProtected)
+	assert.True(t, clone.DESAllowPrivate)
 
 	clone.DESAddress = "changed"
 
@@ -73,6 +76,46 @@ func TestSanitizeConfigurationTrimsAndStripsTrailingSlash(t *testing.T) {
 	assert.Equal(t, "Bearer", configuration.DESJwtPrefix)
 	assert.Equal(t, "docx", configuration.Formats)
 	assert.Equal(t, "https://onlinedocs.docs.onlyoffice.com", configuration.DemoAddress)
+}
+
+func TestSanitizeConfigurationStripsCredentialsQueryAndFragment(t *testing.T) {
+	desAddress := (&url.URL{
+		Scheme:   "https",
+		User:     url.UserPassword("user", "token"),
+		Host:     "docs.example.com:8443",
+		Path:     "/onlyoffice/",
+		RawQuery: "shard=1",
+		Fragment: "x",
+	}).String()
+
+	configuration := &Configuration{
+		DESAddress: desAddress,
+	}
+
+	configuration.SanitizeConfiguration()
+
+	assert.Equal(t, "https://docs.example.com:8443/onlyoffice", configuration.DESAddress)
+}
+
+func TestSanitizeConfigurationLeavesInvalidSchemeForValidation(t *testing.T) {
+	configuration := &Configuration{
+		DESAddress:   "ftp://docs.example.com",
+		DESJwt:       "secret",
+		DESJwtHeader: "AuthorizationJWT",
+		DESJwtPrefix: "Bearer ",
+	}
+
+	configuration.SanitizeConfiguration()
+
+	assert.Equal(t, "ftp://docs.example.com", configuration.DESAddress)
+
+	err := configuration.IsValid()
+
+	require.Error(t, err)
+
+	var inv *common.InvalidDocumentServerAddressError
+
+	assert.ErrorAs(t, err, &inv)
 }
 
 func TestSanitizeConfigurationClearsExpiredDemoCredentials(t *testing.T) {
