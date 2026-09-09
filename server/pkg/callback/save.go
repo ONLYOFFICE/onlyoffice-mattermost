@@ -64,7 +64,7 @@ func _saveFile(
 	}
 
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		return ErrHTTPClientRequired
 	}
 
 	resp, err := httpClient.Do(req)

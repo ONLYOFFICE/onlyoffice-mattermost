@@ -24,6 +24,7 @@ import (
 
 var ErrHandlerAlreadyRegistered = errors.New(onlyofficeLoggerCallbackPrefix + "handler with this code has already been registered")
 var ErrInvalidUserID = errors.New(onlyofficeLoggerCallbackPrefix + "invalid callback user")
+var ErrHTTPClientRequired = errors.New(onlyofficeLoggerCallbackPrefix + "http client is required")
 
 type FilePersistenceError struct {
 	FileID string

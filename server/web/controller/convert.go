@@ -53,6 +53,7 @@ var (
 	errUserNullPointer    = errors.New("user is nil after retrieval")
 	errUserNotOwner       = errors.New("user is not the owner of the file")
 	errUnsupportedFormat  = errors.New("unsupported file format")
+	errHTTPClientRequired = errors.New("http client is required")
 )
 
 type ConvertHandler struct {
@@ -72,10 +73,6 @@ func NewConvertHandler(
 	jwtManager crypto.JwtManager,
 	commandClient client.CommandClient,
 ) ConvertHandler {
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-
 	return ConvertHandler{
 		api:           api,
 		configuration: configuration,
@@ -214,6 +211,10 @@ func (h *ConvertHandler) performConversion(convertReq *client.ConvertRequest, fi
 }
 
 func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
+	if h.httpClient == nil {
+		return nil, errHTTPClientRequired
+	}
+
 	response, err := h.httpClient.Get(fileURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get converted file: %w", err)

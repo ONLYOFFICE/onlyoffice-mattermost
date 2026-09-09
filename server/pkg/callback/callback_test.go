@@ -226,6 +226,32 @@ func TestSaveHandlerEmptyURL(t *testing.T) {
 	require.ErrorAs(t, err, &invalidErr)
 }
 
+func TestSaveHandlerNilHTTPClientFailsClosed(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("LogDebug", mock.Anything).Return().Maybe()
+	api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{
+		Id: "file-1", PostId: "post-1", Path: "files/file-1.docx", Name: "file-1.docx",
+	}, nil)
+
+	err := registryContainer.RunHandler(
+		context.Background(),
+		2,
+		Callback{
+			FileID: "file-1",
+			Status: 2,
+			URL:    "https://docs.example.com/file",
+			Users:  []string{"user-1"},
+		},
+		api,
+		nil,
+		converter.New(),
+		&stubFileBackend{},
+		&stubBot{},
+	)
+
+	assert.ErrorIs(t, err, ErrHTTPClientRequired)
+}
+
 func TestHandlerHandleReturnsMissingHandlerError(t *testing.T) {
 	api := &plugintest.API{}
 	handler := newHandler(api, nil, converter.New(), &stubFileBackend{}, &stubBot{})

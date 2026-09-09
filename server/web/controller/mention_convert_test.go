@@ -30,6 +30,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
@@ -207,7 +208,7 @@ func TestConvertHandler(t *testing.T) {
 			Error: 0, FileURL: download.URL, FileType: "docx",
 		}}
 
-		handler := NewConvertHandler(api, validDESConfig(), nil, fm, crypto.NewJwtManager(), commandClient)
+		handler := NewConvertHandler(api, validDESConfig(), client.NewHTTPClient(&configuration.Configuration{DESAllowPrivate: true}), fm, crypto.NewJwtManager(), commandClient)
 		body := []byte(`{"file_id":"file-1","output_type":"docx"}`)
 		req := httptest.NewRequest(http.MethodPost, "/convert", bytes.NewReader(body))
 		req.Header.Set(tools.MMAuthHeader, "user-1")

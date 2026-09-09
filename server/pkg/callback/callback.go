@@ -47,10 +47,6 @@ func newHandler(
 	filestore filestore.FileBackend,
 	bot bot.Bot,
 ) Handler {
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-
 	return &handlerImpl{
 		api:        api,
 		httpClient: httpClient,
