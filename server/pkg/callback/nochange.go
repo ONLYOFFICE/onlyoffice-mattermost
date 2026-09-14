@@ -19,6 +19,7 @@ package callback
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
@@ -31,6 +32,7 @@ var _ = registryContainer.RegisterHandler(4, func(
 	ctx context.Context,
 	callback Callback,
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,

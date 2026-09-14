@@ -46,6 +46,7 @@ type Configuration struct {
 	DESJwt                     string
 	DESJwtHeader               string
 	DESJwtPrefix               string
+	DESAllowPrivate            bool
 	DemoEnabled                bool
 	DemoExpires                int64
 	DemoAddress                string
@@ -68,6 +69,7 @@ func (c *Configuration) Clone() *Configuration {
 		DESJwt:                     c.DESJwt,
 		DESJwtHeader:               c.DESJwtHeader,
 		DESJwtPrefix:               c.DESJwtPrefix,
+		DESAllowPrivate:            c.DESAllowPrivate,
 		DemoEnabled:                c.DemoEnabled,
 		DemoExpires:                c.DemoExpires,
 		DemoAddress:                c.DemoAddress,
@@ -89,6 +91,10 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
 	c.Formats = strings.TrimSpace(c.Formats)
 
+	if sanitized, err := tools.SanitizeURL(c.DESAddress); err == nil {
+		c.DESAddress = sanitized
+	}
+
 	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
 	c.DemoHeader = "AuthorizationJWT"
 	c.DemoPrefix = "Bearer "
@@ -100,15 +106,6 @@ func (c *Configuration) SanitizeConfiguration() {
 			c.DESJwt = ""
 			c.DESJwtHeader = ""
 			c.DESJwtPrefix = ""
-		}
-	}
-
-	if strings.HasSuffix(c.DESAddress, "/") {
-		for {
-			c.DESAddress = strings.TrimSuffix(c.DESAddress, "/")
-			if !strings.HasSuffix(c.DESAddress, "/") {
-				break
-			}
 		}
 	}
 }
@@ -257,9 +254,9 @@ func (c *Configuration) IsValid() error {
 		}
 	}
 
-	if !tools.IsValidURL(c.DESAddress) {
+	if err := tools.IsValidURL(c.DESAddress); err != nil {
 		return &common.InvalidDocumentServerAddressError{
-			Reason: "Document server address must match the following pattern: http(s)://<domain>.<domain_zone> or http(s)://<domain>.<domain_zone>/",
+			Reason: "Invalid Document Server address",
 		}
 	}
 

@@ -19,6 +19,7 @@ package callback
 
 import (
 	"io"
+	"net/http"
 	"testing"
 	"time"
 
@@ -97,6 +98,7 @@ func TestCallbackModuleProvidesHandler(t *testing.T) {
 			func() plugin.API { return api },
 			func() bot.Bot { return &fxStubBot{} },
 			func() filestore.FileBackend { return &fxStubFileBackend{} },
+			func() *http.Client { return http.DefaultClient },
 		),
 		converter.Module,
 		Module,

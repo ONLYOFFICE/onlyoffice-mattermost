@@ -528,12 +528,13 @@ func TestOnConfigurationChangeSuccess(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			cfg := args.Get(0).(*configuration.Configuration)
 			*cfg = configuration.Configuration{
-				DESAddress:     docs.URL,
-				DESJwt:         "secret",
-				DESJwtHeader:   "AuthorizationJWT",
-				DESJwtPrefix:   "Bearer ",
-				Formats:        "docx",
-				OwnerProtected: true,
+				DESAddress:      docs.URL,
+				DESJwt:          "secret",
+				DESJwtHeader:    "AuthorizationJWT",
+				DESJwtPrefix:    "Bearer ",
+				DESAllowPrivate: true,
+				Formats:         "docx",
+				OwnerProtected:  true,
 			}
 		}).
 		Return(nil)
@@ -541,11 +542,12 @@ func TestOnConfigurationChangeSuccess(t *testing.T) {
 	plugin := &Plugin{}
 	plugin.API = api
 	plugin.configuration = &configuration.Configuration{
-		DESAddress:   docs.URL,
-		DESJwt:       "secret",
-		DESJwtHeader: "AuthorizationJWT",
-		DESJwtPrefix: "Bearer ",
-		Formats:      "",
+		DESAddress:      docs.URL,
+		DESJwt:          "secret",
+		DESJwtHeader:    "AuthorizationJWT",
+		DESJwtPrefix:    "Bearer ",
+		DESAllowPrivate: true,
+		Formats:         "",
 	}
 
 	require.NoError(t, plugin.OnConfigurationChange())

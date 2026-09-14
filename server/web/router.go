@@ -78,6 +78,7 @@ func timeoutRoutes(timeout time.Duration) func(next http.HandlerFunc) http.Handl
 func NewRouter(
 	api plugin.API,
 	configuration *configuration.Configuration,
+	httpClient *http.Client,
 	jwtManager crypto.JwtManager,
 	callbackHandler callback.Handler,
 	mentionsHandler controller.MentionsHandler,
@@ -110,7 +111,7 @@ func NewRouter(
 	rfh := controller.NewRefreshHandler(api, configuration, fileHelper, encoder, jwtManager)
 	ph := controller.NewPermissionsHandler(api, configuration, fileHelper, bot)
 	crh := controller.NewCreateHandler(api, configuration)
-	cvh := controller.NewConvertHandler(api, configuration, formatManager, jwtManager, commandClient)
+	cvh := controller.NewConvertHandler(api, configuration, httpClient, formatManager, jwtManager, commandClient)
 	cdh := controller.NewCodeHandler(api, fileHelper)
 	cfh := controller.NewConfigHandler(api, configuration, formatManager)
 
