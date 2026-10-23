@@ -287,11 +287,18 @@ func TestValidateServerVersion(t *testing.T) {
 		err := plugin.validateServerVersion(validPluginConfig(), "7.5.0")
 		assert.ErrorIs(t, err, common.ErrDeprecatedDocumentServerVersion)
 		time.Sleep(150 * time.Millisecond)
+
+		err = plugin.validateServerVersion(validPluginConfig(), "8.1.9")
+		assert.ErrorIs(t, err, common.ErrDeprecatedDocumentServerVersion)
+		time.Sleep(150 * time.Millisecond)
 	})
 
 	t.Run("supported", func(t *testing.T) {
 		require.NoError(t, plugin.validateServerVersion(validPluginConfig(), "8.2.0"))
 		require.NoError(t, plugin.validateServerVersion(validPluginConfig(), "9.0.1"))
+		require.NoError(t, plugin.validateServerVersion(validPluginConfig(), "10.0.0"))
+		require.NoError(t, plugin.validateServerVersion(validPluginConfig(), "10.1.0.42"))
+		require.NoError(t, plugin.validateServerVersion(validPluginConfig(), "12"))
 	})
 }
 

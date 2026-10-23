@@ -25,6 +25,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -416,7 +417,13 @@ func (p *Plugin) validateServerVersion(config *configuration.Configuration, vers
 		)
 	}
 
-	version, err := strconv.ParseInt(versionStr[0:1], 10, 64)
+	parts := strings.SplitN(strings.TrimSpace(versionStr), ".", 3)
+	major, err := strconv.Atoi(parts[0])
+	minor := 0
+	if err == nil && len(parts) > 1 {
+		minor, err = strconv.Atoi(parts[1])
+	}
+
 	if err != nil {
 		return p.handleConfigError(
 			config,
@@ -425,7 +432,7 @@ func (p *Plugin) validateServerVersion(config *configuration.Configuration, vers
 		)
 	}
 
-	if version < 8 {
+	if major < 8 || (major == 8 && minor < 2) {
 		return p.handleConfigError(
 			config,
 			common.ErrDeprecatedDocumentServerVersion,
