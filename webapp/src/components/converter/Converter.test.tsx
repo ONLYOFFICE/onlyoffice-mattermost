@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {render, screen, waitFor} from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as api from 'api';
 import React from 'react';
@@ -56,7 +56,9 @@ describe('Converter', () => {
         await user.click(screen.getByRole('button', {name: /convert/i}));
         await waitFor(() => expect(api.post).toHaveBeenCalled());
 
-        jest.advanceTimersByTime(300);
+        act(() => {
+            jest.advanceTimersByTime(300);
+        });
 
         await waitFor(() => expect(close).toHaveBeenCalled());
 

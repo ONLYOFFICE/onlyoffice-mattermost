@@ -25,7 +25,7 @@ import {bindActionCreators} from 'redux';
 import {closeManager} from 'redux/actions';
 import {getCurrentDarkTheme, getCurrentTheme, managerModalVisible} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
 import Manager from 'components/manager/Manager';
 

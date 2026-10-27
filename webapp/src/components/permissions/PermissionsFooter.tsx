@@ -29,7 +29,7 @@ import {get, post, ONLYOFFICE_PLUGIN_GET_CODE, ONLYOFFICE_PLUGIN_PERMISSIONS} fr
 import React from 'react';
 import {Button} from 'react-bootstrap';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 type Props = {
     fileInfo: FileInfo;

@@ -25,7 +25,7 @@ import React, {useCallback, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import type {Dispatch} from 'redux';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import EditorLoader from 'components/editor/EditorLoader';
 

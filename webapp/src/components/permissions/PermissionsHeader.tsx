@@ -30,8 +30,8 @@ import {Button} from 'react-bootstrap';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
 
 type Props = {
     loading: boolean;

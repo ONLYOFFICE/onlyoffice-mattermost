@@ -30,8 +30,8 @@ import {openConverter, openEditor, openManager, openPermissions, updateHealthSta
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {FileInfo} from '@mattermost/types/files';
+import type {GlobalState} from '@mattermost/types/store';
 
 import OnlyofficeFileConverter from 'components/converter';
 import OnlyofficeEditor from 'components/editor';
@@ -45,7 +45,7 @@ import 'public/scss/icons.scss';
 import 'public/scss/editor.scss';
 
 export default class Plugin {
-    public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
+    public async initialize(registry: any, store: Store<GlobalState, Action>) {
         const dispatch: ThunkDispatch<GlobalState, undefined, AnyAction> = store.dispatch;
 
         try {

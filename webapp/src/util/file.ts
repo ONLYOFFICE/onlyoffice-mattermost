@@ -26,7 +26,7 @@ import pdf from 'public/images/pdf.svg';
 import pptx from 'public/images/pptx.svg';
 import xlsx from 'public/images/xlsx.svg';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import {getCookie} from './cookie';
 import {formatManager, formatHelpers} from './formats';

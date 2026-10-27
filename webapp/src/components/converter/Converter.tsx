@@ -26,7 +26,7 @@ import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import type {Dispatch} from 'redux';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import ConverterActions from 'components/converter/ConverterActions';
 import ConverterError from 'components/converter/ConverterError';

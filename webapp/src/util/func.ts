@@ -21,15 +21,16 @@
 
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
+
 import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
 
 import type {MattermostUser} from './user';
 import {getUniqueMattermostUsers} from './user';
 
 export function debounce(cb: (...args: any[]) => void, delay: number) {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     return (...args: any[]) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {

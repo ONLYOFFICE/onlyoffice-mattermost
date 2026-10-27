@@ -3,7 +3,7 @@
 
 import {ONLYOFFICE_ERROR_EVENT, ONLYOFFICE_READY_EVENT} from 'util/const';
 
-import {render, screen} from '@testing-library/react';
+import {act, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -15,16 +15,21 @@ describe('EditorLoader', () => {
         const {container} = render(<EditorLoader theme='light'/>);
         expect(screen.getByRole('button', {name: /close/i})).toBeInTheDocument();
 
-        window.dispatchEvent(new Event(ONLYOFFICE_READY_EVENT));
+        act(() => {
+            window.dispatchEvent(new Event(ONLYOFFICE_READY_EVENT));
+        });
+
         expect(container).toBeEmptyDOMElement();
     });
 
     it('shows error message from event detail', async () => {
         render(<EditorLoader theme='light'/>);
 
-        window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT, {
-            detail: {messageKey: 'editor.events.unauthorized'},
-        }));
+        act(() => {
+            window.dispatchEvent(new CustomEvent(ONLYOFFICE_ERROR_EVENT, {
+                detail: {messageKey: 'editor.events.unauthorized'},
+            }));
+        });
 
         expect(await screen.findByText(/unauthorized/i)).toBeInTheDocument();
     });
