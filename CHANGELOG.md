@@ -1,5 +1,14 @@
 # Change Log
 
+## 3.0.0
+### Changed
+- removed `propTypes` generation and `PropTypes` global dependency
+- migrated Mattermost types to `@mattermost/types`
+- updated dependencies (`react` 19, `react-redux` 9, `redux` 5, `mattermost-redux` 11)
+
+### Fixed
+- dark theme detection for Indigo and Onyx themes
+
 ## 2.4.0
 ### Added
 - `Allow private Document Server address` setting (`DESAllowPrivate`)
