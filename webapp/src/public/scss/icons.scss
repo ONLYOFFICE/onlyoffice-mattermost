@@ -64,10 +64,16 @@ $word-exts: doc, docm, docx, dot, dotm, dotx, epub, fb2, fodt, htm, html, hwp, h
   }
 }
 
-$cell-exts: csv, et, ett, fods, numbers, ods, ots, sxc, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx;
+$cell-exts: csv, et, ett, fods, numbers, ods, ots, sxc, tsv, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx;
 @each $ext in $cell-exts {
   a[aria-label$='.#{$ext}'] .file-icon.excel, a[aria-label$='.#{$ext}'] .file-icon.generic {
     background-image: url("../images/xlsx_icon.svg") !important;
+  }
+
+  @if $ext == tsv {
+    a[aria-label$='.tsv'] .file-icon.text, a[aria-label$='.tsv'] .file-icon.code {
+      background-image: url("../images/xlsx_icon.svg") !important;
+    }
   }
 }
 
