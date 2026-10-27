@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.4.0
+### Added
+- `Allow private Document Server address` setting (`DESAllowPrivate`)
+
+### Changed
+- loopback and private-network Document Server addresses are now rejected by default, including redirect hops
+- stricter Document Server URL sanitizing
+- updated dependencies
+
+### Fixed
+- outgoing requests no longer fall back to the default http client
+
 ## 2.3.0
 ### Added
 - configuration flag to toggle health-check notifications.
