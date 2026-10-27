@@ -26,8 +26,6 @@ jobs:
     steps:
       - name: Checkout plugin
         uses: actions/checkout@v7
-        with:
-          submodules: recursive
 
       - name: Set up Go
         uses: actions/setup-go@v7
