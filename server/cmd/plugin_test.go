@@ -119,6 +119,15 @@ func (c *stubCommandClient) SendConvert(commandURL string, request client.Conver
 	return client.ConvertResponse{}, nil
 }
 
+func configWithPluginSettings(settings map[string]any) *model.Config {
+	config := &model.Config{}
+	config.SetDefaults()
+	if settings != nil {
+		config.PluginSettings.Plugins[PluginID] = settings
+	}
+	return config
+}
+
 func TestInitializeContainerWiresDependencies(t *testing.T) {
 	api := containerAPI(t)
 	p := &Plugin{}
@@ -574,6 +583,78 @@ func TestOnConfigurationChangePrepareFails(t *testing.T) {
 	err := plugin.OnConfigurationChange()
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to load plugin configuration")
+}
+
+func TestConfigurationWillBeSavedRestoresMissingSettings(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("GetUnsanitizedConfig").Return(configWithPluginSettings(map[string]any{
+		"desaddress": "https://docs.example.com",
+		"desjwt":     "secret",
+		"formats":    "docx",
+	}))
+	api.On("LogWarn", mock.Anything, mock.Anything, mock.Anything).Return()
+
+	plugin := &Plugin{}
+	plugin.API = api
+
+	saved, err := plugin.ConfigurationWillBeSaved(configWithPluginSettings(map[string]any{
+		"formats": "docx, xlsx",
+	}))
+	require.NoError(t, err)
+	require.NotNil(t, saved)
+
+	settings := saved.PluginSettings.Plugins[PluginID]
+	assert.Equal(t, "https://docs.example.com", settings["desaddress"])
+	assert.Equal(t, "secret", settings["desjwt"])
+	assert.Equal(t, "docx, xlsx", settings["formats"])
+	api.AssertCalled(t, "LogWarn", mock.Anything, "settings", mock.Anything)
+}
+
+func TestConfigurationWillBeSavedKeepsClearedSettings(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("GetUnsanitizedConfig").Return(configWithPluginSettings(map[string]any{
+		"desaddress": "https://docs.example.com",
+		"desjwt":     "secret",
+	}))
+
+	plugin := &Plugin{}
+	plugin.API = api
+
+	saved, err := plugin.ConfigurationWillBeSaved(configWithPluginSettings(map[string]any{
+		"desaddress": "",
+		"desjwt":     "new-secret",
+	}))
+	require.NoError(t, err)
+	assert.Nil(t, saved)
+	api.AssertNotCalled(t, "LogWarn", mock.Anything, mock.Anything, mock.Anything)
+}
+
+func TestConfigurationWillBeSavedRestoresRemovedBlock(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("GetUnsanitizedConfig").Return(configWithPluginSettings(map[string]any{
+		"desaddress": "https://docs.example.com",
+	}))
+	api.On("LogWarn", mock.Anything, mock.Anything, mock.Anything).Return()
+
+	plugin := &Plugin{}
+	plugin.API = api
+
+	saved, err := plugin.ConfigurationWillBeSaved(configWithPluginSettings(nil))
+	require.NoError(t, err)
+	require.NotNil(t, saved)
+	assert.Equal(t, "https://docs.example.com", saved.PluginSettings.Plugins[PluginID]["desaddress"])
+}
+
+func TestConfigurationWillBeSavedWithoutStoredSettings(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("GetUnsanitizedConfig").Return(configWithPluginSettings(nil))
+
+	plugin := &Plugin{}
+	plugin.API = api
+
+	saved, err := plugin.ConfigurationWillBeSaved(configWithPluginSettings(map[string]any{"formats": "docx"}))
+	require.NoError(t, err)
+	assert.Nil(t, saved)
 }
 
 func TestSendVersionRequestUsesStubClient(t *testing.T) {

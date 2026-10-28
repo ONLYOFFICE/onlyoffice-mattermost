@@ -265,6 +265,51 @@ func (p *Plugin) OnConfigurationChange() error {
 	return nil
 }
 
+func (p *Plugin) ConfigurationWillBeSaved(newConfig *model.Config) (*model.Config, error) {
+	if newConfig == nil || p.API == nil {
+		return nil, nil
+	}
+
+	current := p.API.GetUnsanitizedConfig()
+	if current == nil {
+		return nil, nil
+	}
+
+	currentSettings := current.PluginSettings.Plugins[PluginID]
+	if len(currentSettings) == 0 {
+		return nil, nil
+	}
+
+	if newConfig.PluginSettings.Plugins == nil {
+		newConfig.PluginSettings.Plugins = make(map[string]map[string]any)
+	}
+
+	newSettings := newConfig.PluginSettings.Plugins[PluginID]
+	if newSettings == nil {
+		newSettings = make(map[string]any)
+	}
+
+	restored := make([]string, 0)
+	for key, value := range currentSettings {
+		if _, exists := newSettings[key]; !exists {
+			newSettings[key] = value
+			restored = append(restored, key)
+		}
+	}
+
+	if len(restored) == 0 {
+		return nil, nil
+	}
+
+	newConfig.PluginSettings.Plugins[PluginID] = newSettings
+	p.API.LogWarn(
+		common.OnlyofficeLoggerCmdPrefix+"Restored plugin settings missing from the saved configuration",
+		"settings", strings.Join(restored, ", "),
+	)
+
+	return newConfig, nil
+}
+
 func (p *Plugin) reinitializeContainer(config *configuration.Configuration) error {
 	if p.healthChecker != nil {
 		p.healthChecker.Stop()
