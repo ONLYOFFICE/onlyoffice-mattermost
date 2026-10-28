@@ -206,6 +206,24 @@ func TestValidateFormatsInvalidName(t *testing.T) {
 	assert.ErrorAs(t, err, &bad)
 }
 
+func TestReconcileFormatsDropsRemovedFormats(t *testing.T) {
+	configuration := validCredentials()
+	configuration.Formats = "docx, docxf, OFORM, xlsx"
+	configuration.SanitizeConfiguration()
+
+	assert.Equal(t, "docx, xlsx", configuration.Formats)
+	require.NoError(t, configuration.IsValid())
+}
+
+func TestReconcileFormatsOnlyRemovedFormats(t *testing.T) {
+	configuration := validCredentials()
+	configuration.Formats = "docxf, oform"
+	configuration.SanitizeConfiguration()
+
+	assert.Equal(t, EmptyFormats, configuration.Formats)
+	require.NoError(t, configuration.IsValid())
+}
+
 func TestHandleDemoConfigurationSetsCredentials(t *testing.T) {
 	api := &plugintest.API{}
 	now := time.Now().UnixMilli()

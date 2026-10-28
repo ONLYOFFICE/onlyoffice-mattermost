@@ -61,6 +61,34 @@ type Configuration struct {
 	Error                      error
 }
 
+// Removes deprecated formats from the selection
+func reconcileFormats(formats string) string {
+	formats = strings.TrimSpace(formats)
+	if formats == "" || strings.EqualFold(formats, EmptyFormats) {
+		return formats
+	}
+
+	formatManager, err := public.NewMapFormatManager()
+	if err != nil {
+		return formats
+	}
+
+	allFormats := formatManager.GetAllFormats()
+	known := make([]string, 0)
+	for _, name := range strings.Split(formats, ",") {
+		formatName := strings.TrimSpace(strings.ToLower(name))
+		if _, exists := allFormats[formatName]; exists {
+			known = append(known, formatName)
+		}
+	}
+
+	if len(known) == 0 {
+		return EmptyFormats
+	}
+
+	return strings.Join(known, ", ")
+}
+
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
 // your configuration has reference types.
 func (c *Configuration) Clone() *Configuration {
@@ -89,7 +117,7 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
-	c.Formats = strings.TrimSpace(c.Formats)
+	c.Formats = reconcileFormats(c.Formats)
 
 	if sanitized, err := tools.SanitizeURL(c.DESAddress); err == nil {
 		c.DESAddress = sanitized
