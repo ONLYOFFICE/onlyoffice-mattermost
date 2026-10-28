@@ -359,7 +359,13 @@ func (p *Plugin) prepareConfiguration() (*configuration.Configuration, error) {
 		return nil, errors.Wrap(err, "failed to load plugin configuration")
 	}
 
-	config.SanitizeConfiguration()
+	if dropped := config.SanitizeConfiguration(); len(dropped) > 0 {
+		p.API.LogWarn(
+			common.OnlyofficeLoggerCmdPrefix+"Ignoring unknown formats in the configuration",
+			"formats", strings.Join(dropped, ", "),
+		)
+	}
+
 	config.HandleDemoConfiguration(p.API)
 	return config, nil
 }

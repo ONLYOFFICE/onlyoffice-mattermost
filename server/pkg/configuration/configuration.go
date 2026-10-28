@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mattermost/mattermost/server/public/plugin"
@@ -61,32 +62,47 @@ type Configuration struct {
 	Error                      error
 }
 
-// Removes deprecated formats from the selection
-func reconcileFormats(formats string) string {
-	formats = strings.TrimSpace(formats)
-	if formats == "" || strings.EqualFold(formats, EmptyFormats) {
-		return formats
-	}
-
+var loadFormats = sync.OnceValues(func() (map[string]public.Format, error) {
 	formatManager, err := public.NewMapFormatManager()
 	if err != nil {
-		return formats
+		return nil, err
 	}
 
-	allFormats := formatManager.GetAllFormats()
+	return formatManager.GetAllFormats(), nil
+})
+
+// Removes deprecated formats from the selection and returns the dropped names
+func reconcileFormats(formats string) (string, []string) {
+	formats = strings.TrimSpace(formats)
+	if formats == "" || strings.EqualFold(formats, EmptyFormats) {
+		return formats, nil
+	}
+
+	allFormats, err := loadFormats()
+	if err != nil {
+		return formats, nil
+	}
+
 	known := make([]string, 0)
+	dropped := make([]string, 0)
 	for _, name := range strings.Split(formats, ",") {
 		formatName := strings.TrimSpace(strings.ToLower(name))
+		if formatName == "" {
+			continue
+		}
+
 		if _, exists := allFormats[formatName]; exists {
 			known = append(known, formatName)
+		} else {
+			dropped = append(dropped, formatName)
 		}
 	}
 
 	if len(known) == 0 {
-		return EmptyFormats
+		return EmptyFormats, dropped
 	}
 
-	return strings.Join(known, ", ")
+	return strings.Join(known, ", "), dropped
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
@@ -112,12 +128,16 @@ func (c *Configuration) Clone() *Configuration {
 	}
 }
 
-func (c *Configuration) SanitizeConfiguration() {
+// SanitizeConfiguration normalizes the settings and returns the formats dropped from the
+// selection because they are unknown (removed upstream or mistyped).
+func (c *Configuration) SanitizeConfiguration() []string {
 	c.DESAddress = strings.TrimSpace(c.DESAddress)
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
-	c.Formats = reconcileFormats(c.Formats)
+
+	var dropped []string
+	c.Formats, dropped = reconcileFormats(c.Formats)
 
 	if sanitized, err := tools.SanitizeURL(c.DESAddress); err == nil {
 		c.DESAddress = sanitized
@@ -136,6 +156,8 @@ func (c *Configuration) SanitizeConfiguration() {
 			c.DESJwtPrefix = ""
 		}
 	}
+
+	return dropped
 }
 
 func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
@@ -186,7 +208,7 @@ func (c *Configuration) validateFormats() error {
 		return nil
 	}
 
-	formatManager, err := public.NewMapFormatManager()
+	allFormats, err := loadFormats()
 	if err != nil {
 		return &common.BadConfigurationError{
 			Property: "Format Configuration",
@@ -194,7 +216,6 @@ func (c *Configuration) validateFormats() error {
 		}
 	}
 
-	allFormats := formatManager.GetAllFormats()
 	for _, name := range strings.Split(c.Formats, ",") {
 		formatName := strings.TrimSpace(strings.ToLower(name))
 		if formatName == "" {

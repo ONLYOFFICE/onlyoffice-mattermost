@@ -464,6 +464,25 @@ func TestPrepareConfiguration(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "https://docs.example.com", cfg.DESAddress)
 	})
+
+	t.Run("warns about unknown formats", func(t *testing.T) {
+		api := baseAPI(t)
+		api.On("LoadPluginConfiguration", mock.AnythingOfType("*configuration.Configuration")).
+			Run(func(args mock.Arguments) {
+				cfg := args.Get(0).(*configuration.Configuration)
+				*cfg = *validPluginConfig()
+				cfg.Formats = "docx, docxf, dcox"
+			}).
+			Return(nil)
+		api.On("LogWarn", mock.Anything, "formats", "docxf, dcox").Return().Once()
+
+		plugin := &Plugin{}
+		plugin.API = api
+		cfg, err := plugin.prepareConfiguration()
+		require.NoError(t, err)
+		assert.Equal(t, "docx", cfg.Formats)
+		api.AssertCalled(t, "LogWarn", mock.Anything, "formats", "docxf, dcox")
+	})
 }
 
 func TestValidateConfiguration(t *testing.T) {

@@ -209,19 +209,38 @@ func TestValidateFormatsInvalidName(t *testing.T) {
 func TestReconcileFormatsDropsRemovedFormats(t *testing.T) {
 	configuration := validCredentials()
 	configuration.Formats = "docx, docxf, OFORM, xlsx"
-	configuration.SanitizeConfiguration()
+	dropped := configuration.SanitizeConfiguration()
 
 	assert.Equal(t, "docx, xlsx", configuration.Formats)
+	assert.Equal(t, []string{"docxf", "oform"}, dropped)
 	require.NoError(t, configuration.IsValid())
 }
 
 func TestReconcileFormatsOnlyRemovedFormats(t *testing.T) {
 	configuration := validCredentials()
 	configuration.Formats = "docxf, oform"
-	configuration.SanitizeConfiguration()
+	dropped := configuration.SanitizeConfiguration()
 
 	assert.Equal(t, EmptyFormats, configuration.Formats)
+	assert.Equal(t, []string{"docxf", "oform"}, dropped)
 	require.NoError(t, configuration.IsValid())
+}
+
+func TestReconcileFormatsReportsTypos(t *testing.T) {
+	configuration := validCredentials()
+	configuration.Formats = "docx, dcox,, xslx"
+	dropped := configuration.SanitizeConfiguration()
+
+	assert.Equal(t, "docx", configuration.Formats)
+	assert.Equal(t, []string{"dcox", "xslx"}, dropped)
+}
+
+func TestReconcileFormatsNothingDropped(t *testing.T) {
+	for _, formats := range []string{"", EmptyFormats, "docx, xlsx"} {
+		configuration := validCredentials()
+		configuration.Formats = formats
+		assert.Empty(t, configuration.SanitizeConfiguration(), formats)
+	}
 }
 
 func TestHandleDemoConfigurationSetsCredentials(t *testing.T) {
