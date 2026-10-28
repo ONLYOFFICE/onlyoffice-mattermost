@@ -19,17 +19,20 @@ package callback
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 )
 
 var _ = registryContainer.RegisterHandler(3, func(
 	ctx context.Context,
 	callback Callback,
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,

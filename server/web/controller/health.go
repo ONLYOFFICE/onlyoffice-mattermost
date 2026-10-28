@@ -22,13 +22,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/health"
 	"github.com/mattermost/mattermost/server/public/plugin"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/health"
 )
 
 type HealthHandler struct {
 	api           plugin.API
-	healthChecker health.HealthChecker
+	healthChecker health.Checker
 }
 
 type HealthStatusResponse struct {
@@ -38,7 +39,7 @@ type HealthStatusResponse struct {
 
 func NewHealthHandler(
 	api plugin.API,
-	healthChecker health.HealthChecker,
+	healthChecker health.Checker,
 ) HealthHandler {
 	return HealthHandler{
 		api:           api,

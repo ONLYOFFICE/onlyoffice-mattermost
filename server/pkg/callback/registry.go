@@ -19,34 +19,36 @@ package callback
 
 import (
 	"context"
+	"net/http"
 	"sync"
+
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 )
 
+type handlerFunc func(
+	ctx context.Context,
+	callback Callback,
+	api plugin.API,
+	httpClient *http.Client,
+	converter converter.TimeConverter,
+	filestore filestore.FileBackend,
+	bot bot.Bot,
+) error
+
 var registryContainer = registry{
-	handlers: make(map[int]func(context.Context, Callback, plugin.API, converter.TimeConverter, filestore.FileBackend, bot.Bot) error),
+	handlers: make(map[int]handlerFunc),
 }
 
 type registry struct {
-	handlers map[int]func(context.Context, Callback, plugin.API, converter.TimeConverter, filestore.FileBackend, bot.Bot) error
+	handlers map[int]handlerFunc
 	locker   sync.Mutex
 }
 
-func (r *registry) RegisterHandler(
-	code int,
-	processor func(
-		ctx context.Context,
-		callback Callback,
-		api plugin.API,
-		converter converter.TimeConverter,
-		filestore filestore.FileBackend,
-		bot bot.Bot,
-	) error,
-) error {
+func (r *registry) RegisterHandler(code int, processor handlerFunc) error {
 	r.locker.Lock()
 	defer r.locker.Unlock()
 	if _, exists := r.handlers[code]; exists {
@@ -62,15 +64,16 @@ func (r *registry) RunHandler(
 	code int,
 	callback Callback,
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,
 ) error {
 	if handler, exists := r.handlers[code]; exists {
-		return handler(ctx, callback, api, converter, filestore, bot)
+		return handler(ctx, callback, api, httpClient, converter, filestore, bot)
 	}
 
-	return &CallbackHandlerDoesNotExistError{
+	return &HandlerDoesNotExistError{
 		Code: code,
 	}
 }

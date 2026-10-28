@@ -22,10 +22,11 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 type DownloadHandler struct {

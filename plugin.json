@@ -6,7 +6,7 @@
     "support_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/issues",
     "release_notes_url": "https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/latest",
     "icon_path": "assets/logo.svg",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "min_server_version": "9.11.0",
     "server": {
         "executables": {
@@ -53,6 +53,13 @@
                 "type": "text",
                 "placeholder": "Enter your JWT header prefix",
                 "default": "Bearer "
+            },
+            {
+                "key": "DESAllowPrivate",
+                "display_name": "Allow private Document Server address: ",
+                "type": "bool",
+                "help_text": "When enabled, loopback and private-network addresses are allowed. When disabled (default), those destinations are rejected.",
+                "default": false
             },
             {
                 "key": "DemoEnabled",

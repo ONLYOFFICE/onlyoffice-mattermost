@@ -18,18 +18,20 @@
 package health
 
 import (
+	"strconv"
 	"sync"
 	"time"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	cron "github.com/robfig/cron/v3"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 )
 
 const (
@@ -37,7 +39,7 @@ const (
 	onlyofficeLoggerPrefix = "[ONLYOFFICE] "
 )
 
-type HealthChecker interface {
+type Checker interface {
 	Start()
 	Stop()
 	IsHealthy() bool
@@ -65,7 +67,7 @@ func NewHealthChecker(
 	bot bot.Bot,
 	commandClient client.CommandClient,
 	jwtManager crypto.JwtManager,
-) HealthChecker {
+) Checker {
 	return &healthChecker{
 		configuration: configuration,
 		api:           api,
@@ -194,7 +196,7 @@ func (h *healthChecker) checkHealth() {
 	}
 
 	if resp.Error != 0 {
-		h.api.LogError(onlyofficeLoggerPrefix + "Document server returned error code: " + string(rune(resp.Error)))
+		h.api.LogError(onlyofficeLoggerPrefix + "Document server returned error code: " + strconv.Itoa(resp.Error))
 		h.handleUnhealthy()
 		return
 	}

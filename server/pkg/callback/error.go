@@ -24,6 +24,7 @@ import (
 
 var ErrHandlerAlreadyRegistered = errors.New(onlyofficeLoggerCallbackPrefix + "handler with this code has already been registered")
 var ErrInvalidUserID = errors.New(onlyofficeLoggerCallbackPrefix + "invalid callback user")
+var ErrHTTPClientRequired = errors.New(onlyofficeLoggerCallbackPrefix + "http client is required")
 
 type FilePersistenceError struct {
 	FileID string
@@ -51,10 +52,10 @@ func (e *InvalidFileDownloadURLError) Error() string {
 	return fmt.Sprintf(onlyofficeLoggerCallbackPrefix+"could not find a callback file %s url", e.FileID)
 }
 
-type CallbackHandlerDoesNotExistError struct {
+type HandlerDoesNotExistError struct {
 	Code int
 }
 
-func (e *CallbackHandlerDoesNotExistError) Error() string {
+func (e *HandlerDoesNotExistError) Error() string {
 	return fmt.Sprintf(onlyofficeLoggerCallbackPrefix+"callback handler for code (%d) does not exist", e.Code)
 }

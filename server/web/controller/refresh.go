@@ -32,7 +32,7 @@ import (
 type RefreshHandler struct {
 	api           plugin.API
 	configuration *configuration.Configuration
-	fileHelper    file.FileHelper
+	fileHelper    file.Helper
 	encoder       crypto.Encoder
 	jwtManager    crypto.JwtManager
 }
@@ -40,7 +40,7 @@ type RefreshHandler struct {
 func NewRefreshHandler(
 	api plugin.API,
 	configuration *configuration.Configuration,
-	fileHelper file.FileHelper,
+	fileHelper file.Helper,
 	encoder crypto.Encoder,
 	jwtManager crypto.JwtManager,
 ) RefreshHandler {

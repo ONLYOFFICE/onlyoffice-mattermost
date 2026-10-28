@@ -19,11 +19,13 @@ package callback
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 )
 
 type Handler interface {
@@ -31,27 +33,38 @@ type Handler interface {
 }
 
 type handlerImpl struct {
-	api       plugin.API
-	converter converter.TimeConverter
-	filestore filestore.FileBackend
-	bot       bot.Bot
+	api        plugin.API
+	httpClient *http.Client
+	converter  converter.TimeConverter
+	filestore  filestore.FileBackend
+	bot        bot.Bot
 }
 
 func newHandler(
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,
 ) Handler {
 	return &handlerImpl{
-		api:       api,
-		converter: converter,
-		filestore: filestore,
-		bot:       bot,
+		api:        api,
+		httpClient: httpClient,
+		converter:  converter,
+		filestore:  filestore,
+		bot:        bot,
 	}
 }
 
 func (h *handlerImpl) Handle(ctx context.Context, callback Callback) error {
-	registryContainer.RunHandler(ctx, callback.Status, callback, h.api, h.converter, h.filestore, h.bot)
-	return nil
+	return registryContainer.RunHandler(
+		ctx,
+		callback.Status,
+		callback,
+		h.api,
+		h.httpClient,
+		h.converter,
+		h.filestore,
+		h.bot,
+	)
 }

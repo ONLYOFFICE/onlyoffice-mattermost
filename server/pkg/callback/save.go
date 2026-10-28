@@ -22,11 +22,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
 var _ = registryContainer.RegisterHandler(2, _saveFile)
@@ -36,6 +37,7 @@ func _saveFile(
 	ctx context.Context,
 	callback Callback,
 	api plugin.API,
+	httpClient *http.Client,
 	converter converter.TimeConverter,
 	filestore filestore.FileBackend,
 	bot bot.Bot,
@@ -61,7 +63,11 @@ func _saveFile(
 		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix+"failed to create request")
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	if httpClient == nil {
+		return ErrHTTPClientRequired
+	}
+
+	resp, err := httpClient.Do(req)
 	if resp != nil {
 		defer resp.Body.Close()
 	}

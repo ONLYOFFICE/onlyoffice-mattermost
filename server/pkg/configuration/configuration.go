@@ -23,10 +23,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 // Configuration captures the plugin's external configuration as exposed in the Mattermost server
@@ -45,6 +46,7 @@ type Configuration struct {
 	DESJwt                     string
 	DESJwtHeader               string
 	DESJwtPrefix               string
+	DESAllowPrivate            bool
 	DemoEnabled                bool
 	DemoExpires                int64
 	DemoAddress                string
@@ -67,6 +69,7 @@ func (c *Configuration) Clone() *Configuration {
 		DESJwt:                     c.DESJwt,
 		DESJwtHeader:               c.DESJwtHeader,
 		DESJwtPrefix:               c.DESJwtPrefix,
+		DESAllowPrivate:            c.DESAllowPrivate,
 		DemoEnabled:                c.DemoEnabled,
 		DemoExpires:                c.DemoExpires,
 		DemoAddress:                c.DemoAddress,
@@ -88,6 +91,10 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
 	c.Formats = strings.TrimSpace(c.Formats)
 
+	if sanitized, err := tools.SanitizeURL(c.DESAddress); err == nil {
+		c.DESAddress = sanitized
+	}
+
 	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
 	c.DemoHeader = "AuthorizationJWT"
 	c.DemoPrefix = "Bearer "
@@ -99,15 +106,6 @@ func (c *Configuration) SanitizeConfiguration() {
 			c.DESJwt = ""
 			c.DESJwtHeader = ""
 			c.DESJwtPrefix = ""
-		}
-	}
-
-	if strings.HasSuffix(c.DESAddress, "/") {
-		for {
-			c.DESAddress = strings.TrimSuffix(c.DESAddress, "/")
-			if !strings.HasSuffix(c.DESAddress, "/") {
-				break
-			}
 		}
 	}
 }
@@ -143,13 +141,11 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 		c.DESJwt = c.DemoSecret
 		c.DESJwtHeader = c.DemoHeader
 		c.DESJwtPrefix = c.DemoPrefix
-	} else {
-		if strings.EqualFold(c.DESAddress, c.DemoAddress) {
-			c.DESAddress = ""
-			c.DESJwt = ""
-			c.DESJwtHeader = ""
-			c.DESJwtPrefix = ""
-		}
+	} else if strings.EqualFold(c.DESAddress, c.DemoAddress) {
+		c.DESAddress = ""
+		c.DESJwt = ""
+		c.DESJwtHeader = ""
+		c.DESJwtPrefix = ""
 	}
 }
 
@@ -258,9 +254,9 @@ func (c *Configuration) IsValid() error {
 		}
 	}
 
-	if !tools.IsValidURL(c.DESAddress) {
+	if err := tools.IsValidURL(c.DESAddress); err != nil {
 		return &common.InvalidDocumentServerAddressError{
-			Reason: "Document server address must match the following pattern: http(s)://<domain>.<domain_zone> or http(s)://<domain>.<domain_zone>/",
+			Reason: "Invalid Document Server address",
 		}
 	}
 

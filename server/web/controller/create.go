@@ -23,13 +23,14 @@ import (
 	"net/http"
 	"path"
 
+	"github.com/mattermost/mattermost/server/public/model"
+	"github.com/mattermost/mattermost/server/public/plugin"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
-	"github.com/mattermost/mattermost/server/public/model"
-	"github.com/mattermost/mattermost/server/public/plugin"
-	"golang.org/x/sync/errgroup"
 )
 
 type CreateHandler struct {

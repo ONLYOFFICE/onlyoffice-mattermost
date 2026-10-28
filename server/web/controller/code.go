@@ -20,18 +20,19 @@ package controller
 import (
 	"net/http"
 
+	"github.com/mattermost/mattermost/server/public/plugin"
+
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
-	"github.com/mattermost/mattermost/server/public/plugin"
 )
 
 type CodeHandler struct {
 	api        plugin.API
-	fileHelper file.FileHelper
+	fileHelper file.Helper
 }
 
-func NewCodeHandler(api plugin.API, fileHelper file.FileHelper) CodeHandler {
+func NewCodeHandler(api plugin.API, fileHelper file.Helper) CodeHandler {
 	return CodeHandler{
 		api:        api,
 		fileHelper: fileHelper,

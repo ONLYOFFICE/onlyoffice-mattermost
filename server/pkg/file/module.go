@@ -18,8 +18,9 @@
 package file
 
 import (
-	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"go.uber.org/fx"
+
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 )
 
 type Config struct {
