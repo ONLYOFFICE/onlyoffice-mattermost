@@ -18,29 +18,41 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/doyensec/safeurl"
 )
 
-const defaultMaxRedirects = 10
+const (
+	defaultMaxRedirects  = 10
+	proxiedLookupTimeout = 2 * time.Second
+)
 
 var (
-	ErrTooManyRedirects = errors.New("stopped after too many redirects")
+	ErrTooManyRedirects   = errors.New("stopped after too many redirects")
+	ErrBlockedDestination = errors.New("destination blocked")
 
 	allPorts     []int
 	allPortsOnce sync.Once
+
+	privateNetworks     []*net.IPNet
+	privateNetworksOnce sync.Once
 )
 
 type Options struct {
 	AllowPrivate bool
 	Timeout      time.Duration
 	MaxRedirects int
+	Proxy        func(*http.Request) (*url.URL, error)
 }
 
 var privateAllowCIDRs = []string{
@@ -91,10 +103,39 @@ func ports() []int {
 	return allPorts
 }
 
+func private() []*net.IPNet {
+	privateNetworksOnce.Do(func() {
+		for _, cidr := range privateAllowCIDRs {
+			_, network, err := net.ParseCIDR(cidr)
+			if err != nil {
+				panic(fmt.Sprintf("invalid private CIDR %q: %v", cidr, err))
+			}
+			privateNetworks = append(privateNetworks, network)
+		}
+	})
+
+	return privateNetworks
+}
+
+func isPrivateIP(ip net.IP) bool {
+	for _, network := range private() {
+		if network.Contains(ip) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func newHTTPClient(opts Options) *http.Client {
 	maxRedirects := opts.MaxRedirects
 	if maxRedirects <= 0 {
 		maxRedirects = defaultMaxRedirects
+	}
+
+	proxy := opts.Proxy
+	if proxy == nil {
+		proxy = http.ProxyFromEnvironment
 	}
 
 	builder := safeurl.GetConfigBuilder().
@@ -110,15 +151,25 @@ func newHTTPClient(opts Options) *http.Client {
 	}
 
 	if opts.AllowPrivate {
-		builder.SetAllowedIPsCIDR(privateAllowCIDRs...)
+		builder.SetAllowedIPsCIDR("0.0.0.0/0", "::/0")
 	}
 
-	wrapped := safeurl.Client(builder.Build())
+	proxiedTransport := http.DefaultTransport.(*http.Transport).Clone()
+	proxiedTransport.Proxy = proxy
 
 	return &http.Client{
 		Timeout: opts.Timeout,
 		Transport: &redirectValidatingTransport{
-			wrapped:      wrapped,
+			direct: safeurl.Client(builder.Build()),
+			proxied: &http.Client{
+				Timeout:   opts.Timeout,
+				Transport: proxiedTransport,
+				CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+					return http.ErrUseLastResponse
+				},
+			},
+			proxy:        proxy,
+			allowPrivate: opts.AllowPrivate,
 			maxRedirects: maxRedirects,
 		},
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
@@ -128,8 +179,73 @@ func newHTTPClient(opts Options) *http.Client {
 }
 
 type redirectValidatingTransport struct {
-	wrapped      *safeurl.WrappedClient
+	direct       *safeurl.WrappedClient
+	proxied      *http.Client
+	proxy        func(*http.Request) (*url.URL, error)
+	allowPrivate bool
 	maxRedirects int
+}
+
+func (t *redirectValidatingTransport) validateProxiedDestination(req *http.Request) error {
+	target := req.URL
+	scheme := strings.ToLower(target.Scheme)
+	if scheme != "http" && scheme != "https" {
+		return fmt.Errorf("%w: scheme %q", ErrBlockedDestination, target.Scheme)
+	}
+
+	if target.User != nil {
+		return fmt.Errorf("%w: credentials in URL", ErrBlockedDestination)
+	}
+
+	host := target.Hostname()
+	if host == "" {
+		return fmt.Errorf("%w: empty host", ErrBlockedDestination)
+	}
+
+	if t.allowPrivate {
+		return nil
+	}
+
+	if ip := net.ParseIP(host); ip != nil {
+		if isPrivateIP(ip) {
+			return fmt.Errorf("%w: ip %s", ErrBlockedDestination, ip)
+		}
+
+		return nil
+	}
+
+	ctx, cancel := context.WithTimeout(req.Context(), proxiedLookupTimeout)
+	defer cancel()
+
+	addrs, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+	if err != nil {
+		return nil //nolint:nilerr // unresolvable locally: resolution is delegated to the proxy
+	}
+
+	for _, addr := range addrs {
+		if isPrivateIP(addr.IP) {
+			return fmt.Errorf("%w: host %s resolves to %s", ErrBlockedDestination, host, addr.IP)
+		}
+	}
+
+	return nil
+}
+
+func (t *redirectValidatingTransport) do(req *http.Request) (*http.Response, error) {
+	proxyURL, err := t.proxy(req)
+	if err != nil {
+		return nil, fmt.Errorf("resolve proxy: %w", err)
+	}
+
+	if proxyURL == nil {
+		return t.direct.Do(req)
+	}
+
+	if err := t.validateProxiedDestination(req); err != nil {
+		return nil, err
+	}
+
+	return t.proxied.Do(req) //nolint:gosec // G704: destination validated by validateProxiedDestination
 }
 
 func isRedirect(code int) bool {
@@ -184,7 +300,7 @@ func buildRedirectRequest(prev *http.Request, status int, location string) (*htt
 func (t *redirectValidatingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	current := req
 	for redirects := 0; ; redirects++ {
-		resp, err := t.wrapped.Do(current)
+		resp, err := t.do(current)
 		if err != nil {
 			return nil, err
 		}
@@ -235,5 +351,6 @@ func IsBlockedDestination(err error) bool {
 		errors.As(err, &invalidHost) ||
 		errors.As(err, &ipv6Blocked) ||
 		errors.As(err, &credentials) ||
+		errors.Is(err, ErrBlockedDestination) ||
 		errors.Is(err, ErrTooManyRedirects)
 }
