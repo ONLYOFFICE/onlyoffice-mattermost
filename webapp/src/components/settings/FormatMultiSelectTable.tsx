@@ -149,7 +149,10 @@ export default function FormatMultiSelectTable({
 
         setTimeout(() => {
             if (value && value.trim() !== '' && value.trim().toLowerCase() !== 'none') {
-                const formats = value.split(',').map((format) => format.trim());
+                const known = new Set(options.map((option) => option.value));
+                const formats = value.split(',').
+                    map((format) => format.trim().toLowerCase()).
+                    filter((format) => known.has(format));
                 setSelectedFormats(formats);
                 setSelectAll(formats.length === options.length);
             } else if (value && value.trim().toLowerCase() === 'none') {

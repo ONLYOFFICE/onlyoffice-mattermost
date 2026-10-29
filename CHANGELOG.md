@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.4.1
+## Fixed
+- requests now get proxied via `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`
+- partial configuration saves no longer drop plugin settings
+- unknown formats in settings are ignored and logged instead of failing activation
+
 ## 2.4.0
 ### Added
 - `Allow private Document Server address` setting (`DESAllowPrivate`)
