@@ -121,17 +121,24 @@ func (p *Plugin) provideFormatManager() public.FormatManager {
 func (p *Plugin) provideFileBackend() filestore.FileBackend {
 	license := p.MattermostPlugin.API.GetLicense()
 	serverConfig := p.MattermostPlugin.API.GetUnsanitizedConfig()
+	// false booleans are lost over the plugin RPC (gob); restore them before
+	// SetDefaults turns them into their (often true) defaults.
+	tools.RestoreFalseBools(&serverConfig.FileSettings)
+	tools.RestoreFalseBools(&serverConfig.ServiceSettings)
 	serverConfig.FileSettings.SetDefaults(true)
+	// Mirror how Mattermost itself builds its file backend: TLS verification
+	// is skipped only when the admin enabled insecure outgoing connections.
 	fs, err := filestore.NewFileBackend(
 		filestore.NewFileBackendSettingsFromConfig(
 			&serverConfig.FileSettings,
 			license != nil && license.Features.Compliance != nil && *license.Features.Compliance,
-			true,
+			model.SafeDereference(serverConfig.ServiceSettings.EnableInsecureOutgoingConnections),
+			model.SafeDereference(serverConfig.ServiceSettings.AllowedUntrustedInternalConnections),
 		),
 	)
 
 	if err != nil {
-		p.logError(common.OnlyofficeLoggerCmdPrefix + "Failed to parse editor template: " + err.Error())
+		p.logError(common.OnlyofficeLoggerCmdPrefix + "Failed to initialize file backend: " + err.Error())
 		return nil
 	}
 
