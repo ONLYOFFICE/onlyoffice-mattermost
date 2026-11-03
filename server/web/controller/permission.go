@@ -109,7 +109,19 @@ func (h *PermissionsHandler) SetPermissions(rw http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	newPermissions := h.fileHelper.SetPostFilePermissions(post, postPermissions)
+	// Only channel members (or users who can read the channel) may be granted
+	// individual permissions; otherwise the bot would DM file names and links
+	// to arbitrary users.
+	allowedPermissions := make([]model.PostPermission, 0, len(postPermissions))
+	for _, permission := range postPermissions {
+		if permission.UserID == h.fileHelper.GetWildcardUser() || common.CanReadChannel(h.api, permission.UserID, channel) {
+			allowedPermissions = append(allowedPermissions, permission)
+			continue
+		}
+		h.api.LogWarn(onlyofficeLoggerPrefix + "ignoring permissions for user without channel access: " + permission.UserID)
+	}
+
+	newPermissions := h.fileHelper.SetPostFilePermissions(post, allowedPermissions)
 	_, err := h.api.UpdatePost(post)
 
 	if err != nil {
@@ -131,7 +143,7 @@ func (h *PermissionsHandler) SetPermissions(rw http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	common.WriteJSON(rw, callbackErr)
+	common.WriteJSON(rw, callbackOK)
 }
 
 func (h *PermissionsHandler) GetPermissions(rw http.ResponseWriter, r *http.Request) {

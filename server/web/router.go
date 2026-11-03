@@ -18,7 +18,6 @@
 package web
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -42,7 +41,8 @@ func recoverRoutes(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				fmt.Printf("recovering from %v with url: %s", err, r.URL.String())
+				fmt.Printf("recovering from %v with url: %s\n", err, r.URL.Path)
+				w.WriteHeader(http.StatusInternalServerError)
 			}
 		}()
 
@@ -51,26 +51,10 @@ func recoverRoutes(next http.Handler) http.Handler {
 }
 
 func timeoutRoutes(timeout time.Duration) func(next http.HandlerFunc) http.Handler {
+	// http.TimeoutHandler buffers the response, so a slow handler can never write
+	// to the ResponseWriter after the timeout response has been sent.
 	return func(next http.HandlerFunc) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx, cancel := context.WithTimeout(r.Context(), timeout)
-			defer cancel()
-
-			done := make(chan struct{})
-			go func() {
-				next(w, r.WithContext(ctx))
-				close(done)
-			}()
-
-			select {
-			case <-ctx.Done():
-				w.WriteHeader(http.StatusGatewayTimeout)
-				w.Write([]byte("request timeout"))
-				return
-			case <-done:
-				return
-			}
-		})
+		return http.TimeoutHandler(next, timeout, "request timeout")
 	}
 }
 

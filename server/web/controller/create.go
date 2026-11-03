@@ -26,6 +26,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
@@ -112,6 +113,12 @@ func (h *CreateHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	if user == nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "user is nil after retrieval")
 		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !common.CanPostFileToChannel(h.api, userID, channel) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + userID + " is not allowed to post files to channel " + channel.Id)
+		rw.WriteHeader(http.StatusForbidden)
 		return
 	}
 

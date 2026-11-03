@@ -25,6 +25,7 @@ import (
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	mmModel "github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
@@ -99,26 +100,14 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fileInfo, fileInfoErr := h.api.GetFileInfo(fileID)
-	if fileInfoErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not access file info " + fileID + " Reason: " + fileInfoErr.Message)
-		rw.WriteHeader(http.StatusBadRequest)
+	currentUserID := r.Header.Get(tools.MMAuthHeader)
+	fileCtx, status, accessErr := common.ResolveFileForUser(h.api, currentUserID, fileID)
+	if accessErr != nil {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "mentions: " + accessErr.Error())
+		rw.WriteHeader(status)
 		return
 	}
-
-	post, postErr := h.api.GetPost(fileInfo.PostId)
-	if postErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + " Reason: " + postErr.Message)
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	channel, channelErr := h.api.GetChannel(post.ChannelId)
-	if channelErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel with id " + post.ChannelId + " Reason: " + channelErr.Message)
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	channel := fileCtx.Channel
 
 	channelMembers, membersErr := h.api.GetUsersInChannel(channel.Id, "username", 0, 200)
 	if membersErr != nil {
@@ -136,7 +125,6 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		channelMembers = []*mmModel.User{}
 	}
 
-	currentUserID := r.Header.Get(tools.MMAuthHeader)
 	filteredUsers := make([]model.MentionUser, 0, len(channelMembers))
 	for _, user := range channelMembers {
 		if user == nil {
@@ -217,26 +205,14 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	fileInfo, fileInfoErr := h.api.GetFileInfo(payload.FileID)
-	if fileInfoErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not access file info " + payload.FileID + " Reason: " + fileInfoErr.Message)
-		h.writeErrorResponse(rw, "file not found", http.StatusBadRequest)
+	currentUserID := r.Header.Get(tools.MMAuthHeader)
+	fileCtx, status, accessErr := common.ResolveFileForUser(h.api, currentUserID, payload.FileID)
+	if accessErr != nil {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "mention notify: " + accessErr.Error())
+		h.writeErrorResponse(rw, http.StatusText(status), status)
 		return
 	}
-
-	post, postErr := h.api.GetPost(fileInfo.PostId)
-	if postErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not access post " + fileInfo.PostId + " Reason: " + postErr.Message)
-		h.writeErrorResponse(rw, "post not found", http.StatusBadRequest)
-		return
-	}
-
-	channel, channelErr := h.api.GetChannel(post.ChannelId)
-	if channelErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel with id " + post.ChannelId + " Reason: " + channelErr.Message)
-		h.writeErrorResponse(rw, "channel not found", http.StatusBadRequest)
-		return
-	}
+	fileInfo, post, channel := fileCtx.File, fileCtx.Post, fileCtx.Channel
 
 	team, teamErr := h.api.GetTeam(channel.TeamId)
 	if teamErr != nil {
@@ -251,7 +227,7 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 	}
 
 	documentLink := *h.api.GetConfig().ServiceSettings.SiteURL + "/" + team.Name + "/pl/" + postID
-	currentUser, _ := h.api.GetUser(r.Header.Get(tools.MMAuthHeader))
+	currentUser, _ := h.api.GetUser(currentUserID)
 	mentionedByMention := "@Someone"
 	if currentUser != nil {
 		mentionedByMention = "@" + currentUser.Username
@@ -262,6 +238,12 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 		user, userErr := h.api.GetUserByEmail(email)
 		if userErr != nil {
 			h.api.LogDebug(onlyofficeLoggerPrefix + "could not find user with email " + email + ": " + userErr.Message)
+			continue
+		}
+
+		// Never leak document names/links to users who cannot see the channel.
+		if !common.CanReadChannel(h.api, user.Id, channel) {
+			h.api.LogDebug(onlyofficeLoggerPrefix + "skipping mention notification for user without channel access: " + user.Id)
 			continue
 		}
 

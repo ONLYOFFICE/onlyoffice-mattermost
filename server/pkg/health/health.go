@@ -18,6 +18,7 @@
 package health
 
 import (
+	"strconv"
 	"sync"
 	"time"
 
@@ -194,7 +195,7 @@ func (h *healthChecker) checkHealth() {
 	}
 
 	if resp.Error != 0 {
-		h.api.LogError(onlyofficeLoggerPrefix + "Document server returned error code: " + string(rune(resp.Error)))
+		h.api.LogError(onlyofficeLoggerPrefix + "Document server returned error code: " + strconv.Itoa(resp.Error))
 		h.handleUnhealthy()
 		return
 	}

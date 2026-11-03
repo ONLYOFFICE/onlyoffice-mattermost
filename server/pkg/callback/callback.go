@@ -19,6 +19,7 @@ package callback
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
@@ -51,7 +52,18 @@ func newHandler(
 	}
 }
 
+// Handle dispatches a Document Server callback to the handler registered for
+// its status. Errors are propagated so that Document Server receives
+// {"error": 1} and retries instead of assuming the document was saved.
+// Unknown statuses are logged and acknowledged.
 func (h *handlerImpl) Handle(ctx context.Context, callback Callback) error {
-	registryContainer.RunHandler(ctx, callback.Status, callback, h.api, h.converter, h.filestore, h.bot)
-	return nil
+	err := registryContainer.RunHandler(ctx, callback.Status, callback, h.api, h.converter, h.filestore, h.bot)
+
+	var unknown *CallbackHandlerDoesNotExistError
+	if errors.As(err, &unknown) {
+		h.api.LogWarn(err.Error())
+		return nil
+	}
+
+	return err
 }

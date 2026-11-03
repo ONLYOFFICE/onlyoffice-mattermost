@@ -32,6 +32,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 	"github.com/google/uuid"
 	"github.com/mattermost/mattermost/server/public/model"
@@ -43,7 +44,9 @@ import (
 const (
 	defaultOutputType = "ooxml"
 	convertTimeout    = 4 * time.Second
-	logPrefix         = onlyofficeLoggerPrefix
+	// Downloading the converted result can take much longer than the command itself.
+	convertDownloadTimeout = 2 * time.Minute
+	logPrefix              = onlyofficeLoggerPrefix
 )
 
 var (
@@ -206,11 +209,16 @@ func (h *ConvertHandler) performConversion(convertReq *client.ConvertRequest, fi
 }
 
 func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
-	response, err := http.Get(fileURL)
+	client := http.Client{Timeout: convertDownloadTimeout}
+	response, err := client.Get(fileURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get converted file: %w", err)
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("could not get converted file: document server returned HTTP %d", response.StatusCode)
+	}
 
 	fileData, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -290,6 +298,13 @@ func (h *ConvertHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 			statusCode = http.StatusForbidden
 		}
 		h.logErrorAndRespond(rw, err.Error(), statusCode)
+		return
+	}
+
+	// The converted file is posted back into the same channel.
+	channel, channelErr := h.api.GetChannel(file.ChannelId)
+	if channelErr != nil || !common.CanPostFileToChannel(h.api, userID, channel) {
+		h.logErrorAndRespond(rw, "user "+userID+" is not allowed to post files to channel "+file.ChannelId, http.StatusForbidden)
 		return
 	}
 

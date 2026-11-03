@@ -24,7 +24,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"strconv"
 	"sync"
 	"time"
 
@@ -48,6 +47,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/file"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/health"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/middleware"
@@ -56,6 +56,12 @@ import (
 var (
 	PluginID      = integration.Manifest.Id
 	PluginVersion = integration.Manifest.Version
+)
+
+// Minimal supported ONLYOFFICE Docs version.
+const (
+	minDocumentServerMajor = 8
+	minDocumentServerMinor = 2
 )
 
 type Plugin struct {
@@ -398,17 +404,9 @@ func (p *Plugin) sendVersionRequest(config *configuration.Configuration, token s
 }
 
 func (p *Plugin) validateServerVersion(config *configuration.Configuration, versionStr string) error {
-	if versionStr == "" || len(versionStr) == 0 {
-		p.logError(common.OnlyofficeLoggerCmdPrefix + "Received empty version from document server")
-		return p.handleConfigError(
-			config,
-			common.ErrParseDocumentServerVersion,
-			"Could not parse document server version, please check your credentials and make sure that document server version is 8.2 or higher",
-		)
-	}
-
-	version, err := strconv.ParseInt(versionStr[0:1], 10, 64)
+	version, err := tools.ParseDocumentServerVersion(versionStr)
 	if err != nil {
+		p.logError(common.OnlyofficeLoggerCmdPrefix + "Received invalid version from document server: " + err.Error())
 		return p.handleConfigError(
 			config,
 			common.ErrParseDocumentServerVersion,
@@ -416,11 +414,11 @@ func (p *Plugin) validateServerVersion(config *configuration.Configuration, vers
 		)
 	}
 
-	if version < 8 {
+	if !version.AtLeast(minDocumentServerMajor, minDocumentServerMinor) {
 		return p.handleConfigError(
 			config,
 			common.ErrDeprecatedDocumentServerVersion,
-			"Document server version is deprecated, please update your document server to version 8.2 or higher",
+			"Document server version "+versionStr+" is deprecated, please update your document server to version 8.2 or higher",
 		)
 	}
 

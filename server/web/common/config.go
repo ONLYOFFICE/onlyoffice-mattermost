@@ -89,18 +89,14 @@ func BuildEditorConfig(
 		return oomodel.Config{}, "", http.StatusBadRequest, fmt.Errorf("editor payload validation error: %w", validationErr)
 	}
 
-	fileInfo, fileInfoErr := api.GetFileInfo(payload.FileID)
-	if fileInfoErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not access file info %s: %s", payload.FileID, fileInfoErr.Message)
+	fileCtx, accessStatus, accessErr := ResolveFileForUser(api, payload.UserID, payload.FileID)
+	if accessErr != nil {
+		return oomodel.Config{}, "", accessStatus, accessErr
 	}
+	fileInfo, post := fileCtx.File, fileCtx.Post
 
 	if !configuration.IsFormatAllowedForViewing(fileInfo.Extension) {
 		return oomodel.Config{}, "", http.StatusForbidden, fmt.Errorf("format not allowed for viewing: %s", fileInfo.Extension)
-	}
-
-	post, postErr := api.GetPost(fileInfo.PostId)
-	if postErr != nil {
-		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not access post %s: %s", fileInfo.PostId, postErr.Message)
 	}
 
 	docType, typeErr := fileHelper.GetFileType(fileInfo.Extension)
