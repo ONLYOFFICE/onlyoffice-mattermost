@@ -258,3 +258,24 @@ func TestReconcileSnapshotSkipsRestoreInFlight(t *testing.T) {
 	assert.Eventually(t, func() bool { return !plugin.snapshot.restoring.Load() }, time.Second, 10*time.Millisecond)
 	api.AssertNumberOfCalls(t, "SavePluginConfig", 1)
 }
+
+func TestSnapshotIgnoresUnreadableConfig(t *testing.T) {
+	api := &plugintest.API{}
+	api.On("KVGet", configuration.SettingsSnapshotKey).Return(snapshotBytes(t, fullSettings("https://docs.example.com")), nil).Maybe()
+	api.On("GetUnsanitizedConfig").Return((*model.Config)(nil))
+
+	plugin := &Plugin{}
+	plugin.SetAPI(api)
+
+	plugin.snapshot.reconcileSnapshot()
+	api.AssertNotCalled(t, "SavePluginConfig", mock.Anything)
+	api.AssertNotCalled(t, "KVSet", mock.Anything, mock.Anything)
+
+	cfg := &configuration.Configuration{Formats: "docx"}
+	plugin.snapshot.applySnapshot(cfg)
+	assert.Equal(t, &configuration.Configuration{Formats: "docx"}, cfg)
+
+	saved, err := plugin.ConfigurationWillBeSaved(configWithPluginSettings(map[string]any{"formats": "docx"}))
+	require.NoError(t, err)
+	assert.Nil(t, saved)
+}

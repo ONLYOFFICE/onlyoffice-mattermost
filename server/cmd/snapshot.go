@@ -78,13 +78,13 @@ func mergeSettings(stored, missing map[string]any) map[string]any {
 	return merged
 }
 
-func (s *snapshot) storedSettings() map[string]any {
+func (s *snapshot) storedSettings() (map[string]any, bool) {
 	current := s.api.GetUnsanitizedConfig()
 	if current == nil {
-		return nil
+		return nil, false
 	}
 
-	return current.PluginSettings.Plugins[PluginID]
+	return current.PluginSettings.Plugins[PluginID], true
 }
 
 func (s *snapshot) loadSnapshot() map[string]any {
@@ -130,9 +130,13 @@ func (s *snapshot) storeSnapshot(settings map[string]any) {
 }
 
 func (s *snapshot) missingSettings() (map[string]any, map[string]any) {
-	stored := s.storedSettings()
-	keys := settingsKeys()
 	missing := make(map[string]any)
+	stored, ok := s.storedSettings()
+	if !ok {
+		return nil, missing
+	}
+
+	keys := settingsKeys()
 	for key, value := range s.loadSnapshot() {
 		if _, known := keys[strings.ToLower(key)]; !known {
 			continue
