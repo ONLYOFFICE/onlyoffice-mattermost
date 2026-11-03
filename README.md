@@ -140,7 +140,7 @@ All change notifications can be found within the message's discussion thread. Si
 
 ## Known issues
 
-Changes cannot be saved to storage when using S3 for storage in Mattermost **(affects Mattermost 11.7.2 only)**.
+Versions before 2.4.0 could not save changes to S3 storage configured without SSL (for example, MinIO on an internal network), and reported success to ONLYOFFICE Docs anyway. Update to 2.4.0 or later.
 
 ## ONLYOFFICE Docs editions
 

@@ -30,8 +30,8 @@ import {openConverter, openEditor, openManager, openPermissions, updateHealthSta
 import Reducer from 'redux/reducers';
 import type {ThunkDispatch} from 'redux-thunk';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {FileInfo} from '@mattermost/types/files';
+import type {GlobalState} from '@mattermost/types/store';
 
 import OnlyofficeFileConverter from 'components/converter';
 import OnlyofficeEditor from 'components/editor';

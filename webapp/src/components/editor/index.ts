@@ -25,7 +25,7 @@ import {bindActionCreators} from 'redux';
 import {closeEditor} from 'redux/actions';
 import {editorModalVisible, editorModalFileInfo, getCurrentTheme} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
 import Editor from 'components/editor/Editor';
 

@@ -62,9 +62,7 @@ export default function ConverterActions({
                 onClick={onConvert}
                 disabled={isConvertDisabled}
             >
-                {loading ?
-                    (i18n['converter.converting_button'] || 'Converting...') :
-                    (i18n['converter.convert_button'] || 'Convert')
+                {loading ? (i18n['converter.converting_button'] || 'Converting...') : (i18n['converter.convert_button'] || 'Convert')
                 }
             </button>
         </div>

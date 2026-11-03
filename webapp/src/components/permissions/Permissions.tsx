@@ -22,6 +22,7 @@
 import {ONLYOFFICE_WILDCARD_USER} from 'util/const';
 import {pipe} from 'util/func';
 import {getTranslations} from 'util/lang';
+import {getChannelByName, getTeamByName} from 'util/mattermost';
 import {FileAccess, getPermissionsTypeByPermissions} from 'util/permission';
 import {mapUsersToMattermostUsers, sortMattermostUsers} from 'util/user';
 import type {MattermostUser, OnlyofficeUser} from 'util/user';
@@ -31,9 +32,8 @@ import React, {useState, useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
 import type {Dispatch} from 'redux';
 
-import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
 
 import {PermissionsFooter} from 'components/permissions/PermissionsFooter';
 import {PermissionsHeader} from 'components/permissions/PermissionsHeader';
@@ -71,8 +71,8 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
             if (urlParts.includes('channels')) {
                 const teamName = urlParts[urlParts.length - 3];
                 const channelName = urlParts[urlParts.length - 1];
-                const team = await Client4.getTeamByName(teamName);
-                const chnl = await Client4.getChannelByName(team.id, channelName);
+                const team = await getTeamByName(teamName);
+                const chnl = await getChannelByName(team.id, channelName);
                 setChannel(chnl);
             }
             const response = (await get<OnlyofficeUser[]>(

@@ -21,9 +21,10 @@
 
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
+import {searchUsers} from 'util/mattermost';
+
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
 
 import type {MattermostUser} from './user';
 import {getUniqueMattermostUsers} from './user';
@@ -46,7 +47,7 @@ export function debounceUsersLoad(channel: Channel | undefined, fileInfo: FileIn
 
         if (channel) {
             (async () => {
-                let res = await Client4.searchUsers(input, {
+                let res = await searchUsers(input, {
                     in_channel_id: channel.id,
                     team_id: channel.team_id,
                 });

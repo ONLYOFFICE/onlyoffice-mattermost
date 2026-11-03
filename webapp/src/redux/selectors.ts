@@ -19,8 +19,9 @@
  *
  */
 
-import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
-import type {GlobalState} from 'mattermost-redux/types/store';
+import {getTheme, isDarkTheme} from 'util/mattermost';
+
+import type {GlobalState} from '@mattermost/types/store';
 
 import {id as pluginId} from '../manifest';
 
@@ -38,13 +39,10 @@ export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(s
 
 export const managerModalVisible = (state: GlobalState) => getPluginState(state).managerModal.isVisible;
 
-export const getCurrentTheme = (state: GlobalState) => {
-    const theme = getTheme(state);
-    const dark = theme.type === 'indigo' || theme.type === 'onyx';
-    return dark ? 'dark' : 'light';
-};
+export const getCurrentTheme = (state: GlobalState) => (isDarkTheme(getTheme(state)) ? 'dark' : 'light');
 
+// Mattermost stores theme types capitalized ("Onyx", "Indigo"); compare case-insensitively.
 export const getCurrentDarkTheme = (state: GlobalState) => {
     const theme = getTheme(state);
-    return theme.type === 'indigo' || theme.type === 'onyx' ? theme.type : undefined;
+    return isDarkTheme(theme) ? (theme.type as string).toLowerCase() : undefined;
 };

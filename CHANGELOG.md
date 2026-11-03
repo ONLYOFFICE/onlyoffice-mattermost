@@ -1,5 +1,26 @@
 # Change Log
 
+## 2.4.0
+### Added
+- support for ONLYOFFICE Docs 10.x (the version check read "10.x" as "1" and disabled the plugin)
+- compatibility with Mattermost 12 (React 19 web app, v12 server SDK)
+
+### Changed
+- the minimum ONLYOFFICE Docs version 8.2 is now actually enforced (8.0/8.1 used to pass)
+- web app no longer depends on the unmaintained `mattermost-redux` package
+- updated dependencies
+
+### Fixed
+- edits were silently lost when saving failed: errors are now reported to ONLYOFFICE Docs so that it retries
+- a failed download from ONLYOFFICE Docs no longer overwrites the stored file with an error page
+- saving to S3 storage without SSL (e.g. MinIO on an internal network)
+- TLS certificate verification for S3/Azure storage was always disabled
+- users who are not members of a channel could open its files, list its members and send bot notifications
+- users could create file posts in channels they cannot post to
+- converted files were posted even if downloading the result failed
+- crash on save callbacks without users
+
+
 ## 2.3.0
 ### Added
 - configuration flag to toggle health-check notifications.

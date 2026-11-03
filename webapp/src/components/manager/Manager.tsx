@@ -20,14 +20,13 @@
  */
 
 import {getTranslations} from 'util/lang';
+import {getCurrentChannelId} from 'util/mattermost';
 
 import {get, ONLYOFFICE_PLUGIN_CREATE, ONLYOFFICE_PLUGIN_GET_CODE, post} from 'api';
 import React, {useState, useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 import type {Dispatch} from 'redux';
-
-import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels';
 
 import ManagerActions from 'components/manager/ManagerActions';
 import ManagerForm from 'components/manager/ManagerForm';
