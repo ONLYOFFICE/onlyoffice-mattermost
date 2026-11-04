@@ -94,8 +94,11 @@
         };
 
         var onRequestClose = function () {
-            if (window.opener) {
+            // Opened as a separate tab/window (not inside the Mattermost modal).
+            if (window.opener || window.top === window) {
                 window.close();
+                // Browsers refuse to close tabs not opened by a script: go back to Mattermost instead.
+                setTimeout(function () { window.location.href = "/"; }, 300);
                 return;
             }
             window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
@@ -269,6 +272,9 @@
 
         var config = {{ .config }};
         config["events"] = events;
+        if (window.top === window && config.document && config.document.title) {
+            document.title = config.document.title + " - ONLYOFFICE";
+        }
 
         var connectEditor = function () {
             try {

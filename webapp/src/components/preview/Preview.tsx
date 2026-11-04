@@ -19,12 +19,15 @@
  *
  */
 
+import {openEditorInNewWindow} from 'util/editor';
 import fileHelper from 'util/file';
 import {getTranslations} from 'util/lang';
 
 import manifest from 'manifest';
 import editor from 'public/images/editor.svg';
 import editorDark from 'public/images/editor_dark.svg';
+import editorWindow from 'public/images/editor_window.svg';
+import editorWindowDark from 'public/images/editor_window_dark.svg';
 import permissions from 'public/images/permissions.svg';
 import permissionsDark from 'public/images/permissions_dark.svg';
 import React from 'react';
@@ -98,8 +101,20 @@ export default function OnlyofficeFilePreview(props: Props) {
                     }
                     {isHealthy && (
                         <img
+                            className='onlyoffice_preview__btn onlyoffice_preview__btn_window'
+                            alt={'open editor in a new window'}
+                            title={i18n['preview.open_new_window']}
+                            onClick={() => openEditorInNewWindow(props.fileInfo, props.theme)}
+                            src={props.theme === 'dark' ? editorWindowDark : editorWindow}
+                            data-theme={props.theme}
+                            data-dark-theme={props.darkTheme}
+                        />
+                    )}
+                    {isHealthy && (
+                        <img
                             className='onlyoffice_preview__btn'
                             alt={'open editor'}
+                            title={i18n['preview.open_button']}
                             onClick={() => openEditor(props.fileInfo)(dispatch)}
                             src={props.theme === 'dark' ? editorDark : editor}
                             data-theme={props.theme}

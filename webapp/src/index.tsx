@@ -19,6 +19,7 @@
  *
  */
 
+import {openEditorInNewWindow} from 'util/editor';
 import {isConvertSupported, isExtensionSupported, isFileAuthor, setPluginConfig} from 'util/file';
 import {getTranslations} from 'util/lang';
 
@@ -28,6 +29,7 @@ import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
 import {openConverter, openEditor, openManager, openPermissions, updateHealthStatus} from 'redux/actions';
 import Reducer from 'redux/reducers';
+import {getCurrentTheme} from 'redux/selectors';
 import type {ThunkDispatch} from 'redux-thunk';
 
 import type {FileInfo} from '@mattermost/types/files';
@@ -87,6 +89,16 @@ export default class Plugin {
                 },
                 () => getTranslations()['plugin.open_button'],
                 (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
+            );
+            registry.registerFileDropdownMenuAction(
+                (fileInfo: FileInfo) => {
+                    const state = store.getState() as any;
+                    const pluginState = state['plugins-' + manifest.id] || {};
+                    const health = pluginState.health || {healthy: true};
+                    return isExtensionSupported(fileInfo.extension) && health.healthy !== false;
+                },
+                () => getTranslations()['plugin.open_new_window_button'],
+                (fileInfo: FileInfo) => openEditorInNewWindow(fileInfo, getCurrentTheme(store.getState())),
             );
             registry.registerFileDropdownMenuAction(
                 (fileInfo: FileInfo) => {
