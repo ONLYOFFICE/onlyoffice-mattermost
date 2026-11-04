@@ -134,7 +134,7 @@ func TestSaveStoresDocumentAndNotifies(t *testing.T) {
 	last := GetLastEdit(e.api, fileID)
 	if assert.NotNil(t, last, "last edit is recorded") {
 		assert.Equal(t, "bob", last.UserID)
-		assert.Equal(t, int64(4242), last.At)
+		assert.InDelta(t, model.GetMillis(), last.At, 60000, "milliseconds, not seconds")
 	}
 }
 

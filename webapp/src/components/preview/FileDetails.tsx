@@ -65,11 +65,25 @@ export default function FileDetailsRows({fileId, theme}: Props) {
 
     useEffect(() => {
         let cancelled = false;
-        getFileDetails(fileId).
-            then((d) => !cancelled && setDetails(d)).
-            catch(() => !cancelled && setDetails(null));
+        const load = () => {
+            getFileDetails(fileId).
+                then((d) => !cancelled && setDetails(d)).
+                catch(() => !cancelled && setDetails(null));
+        };
+        load();
+
+        // The document is edited in another tab: refresh when the user comes back.
+        const onVisible = () => {
+            if (document.visibilityState === 'visible') {
+                load();
+            }
+        };
+        window.addEventListener('focus', load);
+        document.addEventListener('visibilitychange', onVisible);
         return () => {
             cancelled = true;
+            window.removeEventListener('focus', load);
+            document.removeEventListener('visibilitychange', onVisible);
         };
     }, [fileId]);
 

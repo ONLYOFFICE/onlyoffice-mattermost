@@ -28,6 +28,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
@@ -117,7 +118,8 @@ func _saveFile(
 	if len(callback.Users) > 0 {
 		editor = callback.Users[0]
 	}
-	recordLastEdit(api, callback.FileID, LastEdit{UserID: editor, At: post.UpdateAt})
+	// post.UpdateAt is in seconds (TimeConverter), Mattermost times are in milliseconds.
+	recordLastEdit(api, callback.FileID, LastEdit{UserID: editor, At: model.GetMillis()})
 
 	if callback.Status == 2 {
 		notifyFileUpdated(api, bot, callback, fileInfo.Name, post.Id, post.RootId, post.ChannelId)
