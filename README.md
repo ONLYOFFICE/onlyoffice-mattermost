@@ -112,7 +112,7 @@ Users can create new files directly in the chat:  click on the paperclip icon in
 
 Clicking on the file name opens a preview of the file with the Open button.
 
-When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFFICE editor opens in the same window.
+When clicking on the _Open file in ONLYOFFICE_ button, the corresponding ONLYOFFICE editor opens in a new browser tab. The tab title shows the file name; clicking the same file again switches to the already opened tab. The editor's Close button closes the tab.
 
 ![Settings](assets/screen_editor.png)
 

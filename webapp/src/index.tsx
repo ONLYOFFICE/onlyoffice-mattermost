@@ -27,7 +27,7 @@ import {getPluginConfig, getHealthStatus} from 'api';
 import manifest from 'manifest';
 import React from 'react';
 import type {Action, AnyAction, Store} from 'redux';
-import {openConverter, openEditor, openManager, openPermissions, updateHealthStatus} from 'redux/actions';
+import {openConverter, openManager, openPermissions, updateHealthStatus} from 'redux/actions';
 import Reducer from 'redux/reducers';
 import {getCurrentTheme} from 'redux/selectors';
 import type {ThunkDispatch} from 'redux-thunk';
@@ -36,7 +36,6 @@ import type {FileInfo} from '@mattermost/types/files';
 import type {GlobalState} from '@mattermost/types/store';
 
 import OnlyofficeFileConverter from 'components/converter';
-import OnlyofficeEditor from 'components/editor';
 import OnlyofficeManager from 'components/manager';
 import {ManagerIcon} from 'components/manager/Icon';
 import OnlyofficeFilePermissions from 'components/permissions';
@@ -44,7 +43,6 @@ import OnlyofficeFilePreview from 'components/preview';
 import {Formats} from 'components/settings';
 
 import 'public/scss/icons.scss';
-import 'public/scss/editor.scss';
 
 export default class Plugin {
     public async initialize(registry: any, store: Store<GlobalState, Action<Record<string, unknown>>>) {
@@ -69,7 +67,6 @@ export default class Plugin {
 
         registry.registerTranslations(getTranslations);
         registry.registerReducer(Reducer);
-        registry.registerRootComponent(OnlyofficeEditor);
         registry.registerRootComponent(OnlyofficeFilePermissions);
         registry.registerRootComponent(OnlyofficeManager);
         registry.registerRootComponent(OnlyofficeFileConverter);
@@ -88,16 +85,8 @@ export default class Plugin {
                     return isExtensionSupported(fileInfo.extension) && isHealthy;
                 },
                 () => getTranslations()['plugin.open_button'],
-                (fileInfo: FileInfo) => dispatch(openEditor(fileInfo)),
-            );
-            registry.registerFileDropdownMenuAction(
-                (fileInfo: FileInfo) => {
-                    const state = store.getState() as any;
-                    const pluginState = state['plugins-' + manifest.id] || {};
-                    const health = pluginState.health || {healthy: true};
-                    return isExtensionSupported(fileInfo.extension) && health.healthy !== false;
-                },
-                () => getTranslations()['plugin.open_new_window_button'],
+
+                // The editor always opens in a separate browser tab.
                 (fileInfo: FileInfo) => openEditorInNewWindow(fileInfo, getCurrentTheme(store.getState())),
             );
             registry.registerFileDropdownMenuAction(

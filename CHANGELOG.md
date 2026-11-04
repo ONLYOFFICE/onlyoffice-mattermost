@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.5.0
+### Changed
+- documents always open in a new browser tab instead of a modal window inside Mattermost; one tab per file (clicking the same file again focuses it), the tab title is the file name, and Close closes the tab
+
+### Fixed
+- untranslated "document server unavailable" messages in de/es/fr/it/ru
+
 ## 2.4.1
 ### Added
 - files are downloaded only from the configured ONLYOFFICE Docs address (same scheme, host and port), including redirects; this prevents server-side request forgery without blocking Document Servers on private networks

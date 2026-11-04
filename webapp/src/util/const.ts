@@ -25,6 +25,3 @@ export const ONLYOFFICE_WILDCARD_USER = '*';
 
 export const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/api`;
 
-export const ONLYOFFICE_CLOSE_EVENT = 'onlyofficecloseeditor';
-export const ONLYOFFICE_READY_EVENT = 'onlyofficeready';
-export const ONLYOFFICE_ERROR_EVENT = 'onlyofficeerror';

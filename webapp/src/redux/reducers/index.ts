@@ -22,14 +22,12 @@
 import {combineReducers} from 'redux';
 
 import {converterModal} from './converter';
-import {editorModal} from './editor';
 import healthReducer from './health';
 import {managerModal} from './manager';
 import {permissionsModal} from './permissions';
 
 export default combineReducers({
     permissionsModal,
-    editorModal,
     managerModal,
     converterModal,
     health: healthReducer,
