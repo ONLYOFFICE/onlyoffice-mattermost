@@ -63,30 +63,14 @@ export default function OnlyofficeFilePreview(props: Props) {
             data-theme={props.theme}
             data-dark-theme={props.darkTheme}
         >
-            <a
-                className='file-details__preview'
-                onClick={(e) => e.preventDefault()}
-            >
-                <a className='file-details__preview-helper'/>
+            <div className='file-details__preview onlyoffice_preview__left'>
                 <img
+                    className='onlyoffice_preview__icon'
                     alt='file preview'
                     src={icon}
                 />
-            </a>
-            <div
-                className='file-details'
-                style={{display: 'flex', flexDirection: 'column'}}
-            >
-                <div className='file-details__name'>{props.fileInfo.name}</div>
-                <div className='file-details__info'>
-                    {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}
-                </div>
-                <FileDetailsRows
-                    fileId={props.fileInfo.id}
-                    theme={props.theme}
-                />
                 <div
-                    className='file-details__onlyoffice'
+                    className='file-details__onlyoffice onlyoffice_preview__actions'
                     data-theme={props.theme}
                     data-dark-theme={props.darkTheme}
                 >
@@ -136,6 +120,19 @@ export default function OnlyofficeFilePreview(props: Props) {
                         </div>
                     )}
                 </div>
+            </div>
+            <div
+                className='file-details'
+                style={{display: 'flex', flexDirection: 'column'}}
+            >
+                <div className='file-details__name'>{props.fileInfo.name}</div>
+                <div className='file-details__info'>
+                    {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}
+                </div>
+                <FileDetailsRows
+                    fileId={props.fileInfo.id}
+                    theme={props.theme}
+                />
             </div>
         </div>
     );

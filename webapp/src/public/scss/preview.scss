@@ -21,6 +21,7 @@
 // and "Share" (secondary, owner only).
 .onlyoffice_preview__btn {
     display: inline-flex;
+    white-space: nowrap;
     align-items: center;
     gap: 8px;
     height: 40px;
@@ -31,6 +32,11 @@
     line-height: 1;
     cursor: pointer;
     transition: background-color .15s, box-shadow .15s;
+
+    span {
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
 
     img {
         width: 22px;
@@ -183,4 +189,44 @@
 
 .onlyoffice_preview__details[data-theme="dark"] {
     color: $preview_title_dark;
+}
+
+// Left column: file icon with the action buttons right under it.
+.file-details__preview.onlyoffice_preview__left {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+    cursor: default;
+}
+
+.onlyoffice_preview__icon {
+    width: 72px;
+    height: auto;
+}
+
+.file-details__onlyoffice.onlyoffice_preview__actions {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    flex-grow: 0;
+    width: 230px;
+    max-width: 100%;
+    padding-top: 0;
+
+    .onlyoffice_preview__btn {
+        justify-content: center;
+        padding: 0 16px;
+    }
+}
+
+// Mattermost styles `.file-details__preview img` (80px wide preview image);
+// keep the small button icons at their own size.
+.file-details__preview .onlyoffice_preview__btn img {
+    width: 22px !important;
+    height: 22px !important;
+    max-width: none !important;
+    margin: 0 !important;
 }
