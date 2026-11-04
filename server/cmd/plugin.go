@@ -61,6 +61,8 @@ var (
 
 type Plugin struct {
 	plugin.MattermostPlugin
+	snapshot *snapshot
+
 	app               *fx.App
 	configuration     *configuration.Configuration
 	configurationLock sync.RWMutex
@@ -182,6 +184,11 @@ func (p *Plugin) initializeContainer() *fx.App {
 	)
 }
 
+func (p *Plugin) SetAPI(api plugin.API) {
+	p.MattermostPlugin.SetAPI(api)
+	p.snapshot = newSnapshot(api)
+}
+
 func (p *Plugin) OnActivate() error {
 	if p.configuration == nil {
 		return errors.New("plugin configuration is not initialized")
@@ -240,6 +247,8 @@ func (p *Plugin) OnConfigurationChange() error {
 		previousMacrosEnabled = p.configuration.MacrosEnabled
 	}
 
+	p.snapshot.reconcileSnapshot()
+
 	configuration, err := p.prepareConfiguration()
 	if err != nil {
 		return err
@@ -270,12 +279,7 @@ func (p *Plugin) ConfigurationWillBeSaved(newConfig *model.Config) (*model.Confi
 		return nil, nil
 	}
 
-	current := p.API.GetUnsanitizedConfig()
-	if current == nil {
-		return nil, nil
-	}
-
-	currentSettings := current.PluginSettings.Plugins[PluginID]
+	currentSettings := p.snapshot.restoredSettings()
 	if len(currentSettings) == 0 {
 		return nil, nil
 	}
@@ -359,6 +363,7 @@ func (p *Plugin) prepareConfiguration() (*configuration.Configuration, error) {
 		return nil, errors.Wrap(err, "failed to load plugin configuration")
 	}
 
+	p.snapshot.applySnapshot(config)
 	if dropped := config.SanitizeConfiguration(); len(dropped) > 0 {
 		p.API.LogWarn(
 			common.OnlyofficeLoggerCmdPrefix+"Ignoring unknown formats in the configuration",
