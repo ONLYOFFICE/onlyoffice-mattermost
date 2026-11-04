@@ -17,33 +17,74 @@
  */
 @import "./colors.scss";
 
-.onlyoffice_preview__btn{
-    transition: box-shadow .3s;
-    margin-right: .5rem;
+// Large labelled action buttons in the file preview: "Open in ONLYOFFICE" (primary)
+// and "Share" (secondary, owner only).
+.onlyoffice_preview__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px 0 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
     cursor: pointer;
-}
+    transition: background-color .15s, box-shadow .15s;
 
-.onlyoffice_preview__btn:hover{
-    @include light-theme {
-        box-shadow: 0 0 11px $shadow_dark;
+    img {
+        width: 22px;
+        height: 22px;
+        border-radius: 3px;
+        flex-shrink: 0;
     }
 
-    @include dark-theme {
-        box-shadow: 0 0 11px $shadow_light;
+    &:focus-visible {
+        outline: 2px solid #4A7CE8;
+        outline-offset: 2px;
     }
 }
+
+.onlyoffice_preview__btn_open {
+    border: none;
+    color: #fff;
+
+    &[data-theme="light"] {
+        background: #1C58D9;
+        &:hover { background: #1749B8; box-shadow: 0 2px 8px rgba(28, 88, 217, .35); }
+    }
+
+    &[data-theme="dark"] {
+        background: #4A7CE8;
+        &:hover { background: #3D6CD4; box-shadow: 0 2px 8px rgba(74, 124, 232, .35); }
+    }
+}
+
+.onlyoffice_preview__btn_share {
+    background: transparent;
+
+    &[data-theme="light"] {
+        border: 1px solid #1C58D9;
+        color: #1C58D9;
+        &:hover { background: rgba(28, 88, 217, .08); }
+    }
+
+    &[data-theme="dark"] {
+        border: 1px solid #4A7CE8;
+        color: #7FA3F0;
+        &:hover { background: rgba(74, 124, 232, .12); }
+    }
+}
+
 
 .file-details__onlyoffice {
     display: flex;
-    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
     align-items: flex-end;
     flex-grow: 2;
-}
-
-@media all and (max-width: 768px) {
-    .onlyoffice_preview__btn {
-        margin-top: .5rem;
-    }
+    padding-top: 12px;
 }
 
 .file-details__container[data-theme="light"] {

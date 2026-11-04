@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.4
+### Changed
+- file preview: large labelled "Open in ONLYOFFICE" (primary) and "Share" buttons instead of small icons in the corner
+
 ## 2.4.3
 ### Added
 - file details in the preview panel: who uploaded the file and when, who saved it last in ONLYOFFICE and when, the actual file size and the current user's access (can edit / view only, owner)

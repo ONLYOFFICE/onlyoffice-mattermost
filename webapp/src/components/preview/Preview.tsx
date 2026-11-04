@@ -90,29 +90,35 @@ export default function OnlyofficeFilePreview(props: Props) {
                     data-theme={props.theme}
                     data-dark-theme={props.darkTheme}
                 >
-                    {
-                        showPermissions &&
-                            (
-                                <img
-                                    className='onlyoffice_preview__btn'
-                                    alt={'permissions button'}
-                                    onClick={() => openPermissions(props.fileInfo)(dispatch)}
-                                    src={props.theme === 'dark' ? permissionsDark : permissions}
-                                    data-theme={props.theme}
-                                    data-dark-theme={props.darkTheme}
-                                />
-                            )
-                    }
                     {isHealthy && (
-                        <img
-                            className='onlyoffice_preview__btn'
-                            alt={'open editor'}
+                        <button
+                            type='button'
+                            className='onlyoffice_preview__btn onlyoffice_preview__btn_open'
                             title={i18n['preview.open_button']}
                             onClick={() => openEditorInNewWindow(props.fileInfo, props.theme)}
-                            src={props.theme === 'dark' ? editorDark : editor}
                             data-theme={props.theme}
-                            data-dark-theme={props.darkTheme}
-                        />
+                        >
+                            <img
+                                alt=''
+                                src={props.theme === 'dark' ? editorDark : editor}
+                            />
+                            <span>{i18n['preview.open_button']}</span>
+                        </button>
+                    )}
+                    {showPermissions && (
+                        <button
+                            type='button'
+                            className='onlyoffice_preview__btn onlyoffice_preview__btn_share'
+                            title={i18n['plugin.access_button']}
+                            onClick={() => openPermissions(props.fileInfo)(dispatch)}
+                            data-theme={props.theme}
+                        >
+                            <img
+                                alt=''
+                                src={props.theme === 'dark' ? permissionsDark : permissions}
+                            />
+                            <span>{i18n['preview.share_button']}</span>
+                        </button>
                     )}
                     {!isHealthy && (
                         <div

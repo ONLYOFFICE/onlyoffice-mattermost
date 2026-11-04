@@ -5,6 +5,7 @@
   "plugin.access_button": "Change access rights",
   "plugin.convert_button": "Convert file",
   "preview.open_button": "Open in ONLYOFFICE",
+  "preview.share_button": "Share",
   "preview.file_type": "File type",
   "preview.details.uploaded": "Uploaded",
   "preview.details.edited": "Last edited",
