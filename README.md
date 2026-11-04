@@ -138,6 +138,12 @@ ONLYOFFICE bot sends notifications about changes in the document specifying the 
 
 All change notifications can be found within the message's discussion thread. Simply click the arrow on the right edge of the message to open a panel on the right, where the full history of the message's discussion is displayed.
 
+## Network requirements
+
+The plugin downloads saved documents and conversion results only from the configured **ONLYOFFICE Docs address** (same scheme, host and port, redirects included). Make sure ONLYOFFICE Docs generates file links with the same address that is configured in the plugin.
+
+Outgoing requests honour the standard `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY` environment variables of the Mattermost server.
+
 ## Known issues
 
 Versions before 2.4.0 could not save changes to S3 storage configured without SSL (for example, MinIO on an internal network), and reported success to ONLYOFFICE Docs anyway. Update to 2.4.0 or later.

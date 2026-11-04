@@ -29,7 +29,10 @@ type Callback struct {
 	Users  []string `json:"users"`
 	URL    string   `json:"url"`
 	FileID string   `json:"-" validate:"required"`
-	Token  string   `json:"token"`
+	// DocumentServer is the configured Document Server address; the file is only
+	// downloaded from this host. Not part of the callback payload.
+	DocumentServer string `json:"-"`
+	Token          string `json:"token"`
 }
 
 type CallbackResponse struct {

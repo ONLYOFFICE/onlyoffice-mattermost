@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -326,6 +327,12 @@ func (p *Plugin) prepareConfiguration() (*configuration.Configuration, error) {
 	}
 
 	config.SanitizeConfiguration()
+	if ignored := config.IgnoredFormats(); len(ignored) > 0 {
+		p.MattermostPlugin.API.LogWarn(
+			common.OnlyofficeLoggerCmdPrefix+"Ignoring unknown or unsupported formats in the plugin settings",
+			"formats", strings.Join(ignored, ","),
+		)
+	}
 	config.HandleDemoConfiguration(p.MattermostPlugin.API)
 	return config, nil
 }

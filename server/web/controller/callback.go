@@ -98,13 +98,14 @@ func (h *CallbackHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if handlerErr := h.callbackHandler.Handle(r.Context(), callback.Callback{
-		Actions: body.Actions,
-		Key:     body.Key,
-		Status:  body.Status,
-		Users:   body.Users,
-		URL:     body.URL,
-		FileID:  body.FileID,
-		Token:   body.Token,
+		Actions:        body.Actions,
+		Key:            body.Key,
+		Status:         body.Status,
+		Users:          body.Users,
+		URL:            body.URL,
+		FileID:         body.FileID,
+		DocumentServer: h.configuration.DESAddress,
+		Token:          body.Token,
 	}); handlerErr != nil {
 		h.api.LogError(handlerErr.Error())
 		common.WriteJSON(rw, callbackErr)

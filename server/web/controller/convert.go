@@ -209,8 +209,11 @@ func (h *ConvertHandler) performConversion(convertReq *client.ConvertRequest, fi
 }
 
 func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
-	client := http.Client{Timeout: convertDownloadTimeout}
-	response, err := client.Get(fileURL)
+	if err := tools.CheckDocumentServerURL(fileURL, h.configuration.DESAddress); err != nil {
+		return nil, fmt.Errorf("refusing to download converted file: %w", err)
+	}
+
+	response, err := tools.NewDocumentServerClient(h.configuration.DESAddress, convertDownloadTimeout).Get(fileURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get converted file: %w", err)
 	}

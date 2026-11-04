@@ -18,7 +18,6 @@
 package configuration
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -57,6 +56,9 @@ type Configuration struct {
 	MacrosEnabled              bool
 	HealthNotificationsEnabled bool
 	Error                      error
+
+	// formats dropped by the last SanitizeConfiguration call (unknown or not supported)
+	ignoredFormats []string
 }
 
 // Clone shallow copies the configuration. Your implementation may require a deep copy if
@@ -86,7 +88,7 @@ func (c *Configuration) SanitizeConfiguration() {
 	c.DESJwt = strings.TrimSpace(c.DESJwt)
 	c.DESJwtHeader = strings.TrimSpace(c.DESJwtHeader)
 	c.DESJwtPrefix = strings.TrimSpace(c.DESJwtPrefix)
-	c.Formats = strings.TrimSpace(c.Formats)
+	c.Formats, c.ignoredFormats = normalizeFormats(c.Formats)
 
 	c.DemoAddress = "https://onlinedocs.docs.onlyoffice.com"
 	c.DemoHeader = "AuthorizationJWT"
@@ -153,43 +155,59 @@ func (c *Configuration) HandleDemoConfiguration(api plugin.API) {
 	}
 }
 
-func (c *Configuration) validateFormats() error {
-	if c.Formats == "" {
-		return nil
-	}
+// IgnoredFormats returns the formats dropped from the "Formats" setting by the
+// last SanitizeConfiguration call.
+func (c *Configuration) IgnoredFormats() []string {
+	return c.ignoredFormats
+}
 
-	if strings.ToLower(strings.TrimSpace(c.Formats)) == EmptyFormats {
-		return nil
+// normalizeFormats keeps only known formats that can be viewed or edited.
+// Unknown names are dropped instead of failing validation: the formats list
+// comes from the document-formats submodule and formats may be removed or
+// renamed upstream, which must not disable the plugin after an update.
+// If every selected format is dropped, the result is EmptyFormats ("none")
+// rather than "" (which would mean "all formats").
+func normalizeFormats(raw string) (string, []string) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" || strings.EqualFold(raw, EmptyFormats) {
+		return raw, nil
 	}
 
 	formatManager, err := public.NewMapFormatManager()
 	if err != nil {
-		return &common.BadConfigurationError{
-			Property: "Format Configuration",
-			Reason:   "Failed to load formats: " + err.Error(),
-		}
+		return raw, nil
 	}
 
 	allFormats := formatManager.GetAllFormats()
-	for _, name := range strings.Split(c.Formats, ",") {
+	kept := make([]string, 0)
+	dropped := make([]string, 0)
+	for _, name := range strings.Split(raw, ",") {
 		formatName := strings.TrimSpace(strings.ToLower(name))
 		if formatName == "" {
 			continue
 		}
 
 		format, exists := allFormats[formatName]
-		if !exists {
-			return &common.BadConfigurationError{
-				Property: "Formats",
-				Reason:   fmt.Sprintf("Invalid format: %s", formatName),
-			}
+		if !exists || (!format.IsViewable() && !format.IsEditable() && !format.IsLossyEditable() && !format.IsAutoConvertable()) {
+			dropped = append(dropped, formatName)
+			continue
 		}
 
-		if !format.IsViewable() && !format.IsEditable() && !format.IsLossyEditable() && !format.IsAutoConvertable() {
-			return &common.BadConfigurationError{
-				Property: "Formats",
-				Reason:   fmt.Sprintf("Format does not support viewing or editing: %s", formatName),
-			}
+		kept = append(kept, formatName)
+	}
+
+	if len(kept) == 0 {
+		return EmptyFormats, dropped
+	}
+
+	return strings.Join(kept, ","), dropped
+}
+
+func (c *Configuration) validateFormats() error {
+	if _, err := public.NewMapFormatManager(); err != nil {
+		return &common.BadConfigurationError{
+			Property: "Format Configuration",
+			Reason:   "Failed to load formats: " + err.Error(),
 		}
 	}
 

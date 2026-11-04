@@ -27,6 +27,7 @@ import (
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
@@ -36,8 +37,6 @@ const (
 	downloadTimeout     = 5 * time.Minute
 	defaultMaxFileBytes = int64(100 << 20)
 )
-
-var downloadClient = &http.Client{Timeout: downloadTimeout}
 
 var _ = registryContainer.RegisterHandler(2, _saveFile)
 var _ = registryContainer.RegisterHandler(6, _saveFile)
@@ -83,7 +82,7 @@ func _saveFile(
 		}
 	}
 
-	tmp, size, err := downloadToTempFile(ctx, callback.URL, maxFileSize(api))
+	tmp, size, err := downloadToTempFile(ctx, callback.URL, callback.DocumentServer, maxFileSize(api))
 	if err != nil {
 		return &FilePersistenceError{
 			FileID: callback.FileID,
@@ -151,13 +150,17 @@ func maxFileSize(api plugin.API) int64 {
 
 // downloadToTempFile fetches url into a temporary file and returns it rewound
 // to the beginning. The caller is responsible for closing and removing it.
-func downloadToTempFile(ctx context.Context, url string, limit int64) (*os.File, int64, error) {
+func downloadToTempFile(ctx context.Context, url, documentServer string, limit int64) (*os.File, int64, error) {
+	if err := tools.CheckDocumentServerURL(url, documentServer); err != nil {
+		return nil, 0, err
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, 0, errors.Wrap(err, "failed to create download request")
 	}
 
-	resp, err := downloadClient.Do(req)
+	resp, err := tools.NewDocumentServerClient(documentServer, downloadTimeout).Do(req)
 	if err != nil {
 		return nil, 0, errors.Wrap(err, "failed to download file")
 	}

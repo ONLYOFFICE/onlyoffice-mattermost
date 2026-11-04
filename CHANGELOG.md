@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.4.1
+### Added
+- files are downloaded only from the configured ONLYOFFICE Docs address (same scheme, host and port), including redirects; this prevents server-side request forgery without blocking Document Servers on private networks
+- plugin settings are restored when a configuration save omits them
+- unit tests for saving, access checks, URL checks and configuration
+
+### Fixed
+- unknown or removed formats in the "Formats" setting are ignored and logged instead of disabling the plugin
+
 ## 2.4.0
 ### Added
 - support for ONLYOFFICE Docs 10.x (the version check read "10.x" as "1" and disabled the plugin)
