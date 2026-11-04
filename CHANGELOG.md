@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.6.0
+### Added
+- file details in the preview panel: who uploaded the file and when, who saved it last in ONLYOFFICE and when, the actual file size and the current user's access (can edit / view only, owner)
+- `GET /api/fileinfo` endpoint (channel access is required)
+
+### Fixed
+- the preview shows the real file size: Mattermost does not update the stored size after ONLYOFFICE saves a new version
+
 ## 2.5.0
 ### Changed
 - documents always open in a new browser tab instead of a modal window inside Mattermost; one tab per file (clicking the same file again focuses it), the tab title is the file name, and Close closes the tab

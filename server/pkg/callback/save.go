@@ -113,6 +113,12 @@ func _saveFile(
 		}
 	}
 
+	editor := ""
+	if len(callback.Users) > 0 {
+		editor = callback.Users[0]
+	}
+	recordLastEdit(api, callback.FileID, LastEdit{UserID: editor, At: post.UpdateAt})
+
 	if callback.Status == 2 {
 		notifyFileUpdated(api, bot, callback, fileInfo.Name, post.Id, post.RootId, post.ChannelId)
 	}

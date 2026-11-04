@@ -66,6 +66,7 @@ type env struct {
 	bot     *fakeBot
 	dir     string
 	updated bool
+	kv      map[string][]byte
 }
 
 func newEnv(t *testing.T) *env {
@@ -76,7 +77,9 @@ func newEnv(t *testing.T) *env {
 	require.NoError(t, os.MkdirAll(filepath.Join(dir, "data"), 0o755))
 	require.NoError(t, os.WriteFile(filepath.Join(dir, filePath), []byte(original), 0o600))
 
-	e := &env{api: &plugintest.API{}, store: store, bot: &fakeBot{}, dir: dir}
+	e := &env{api: &plugintest.API{}, store: store, bot: &fakeBot{}, dir: dir, kv: map[string][]byte{}}
+	e.api.On("KVSet", mock.Anything, mock.Anything).Run(func(a mock.Arguments) { e.kv[a.String(0)] = a.Get(1).([]byte) }).Return(nil).Maybe()
+	e.api.On("KVGet", mock.Anything).Return(func(k string) []byte { return e.kv[k] }, nil).Maybe()
 	cfg := &model.Config{}
 	cfg.SetDefaults()
 
@@ -127,6 +130,12 @@ func TestSaveStoresDocumentAndNotifies(t *testing.T) {
 	assert.Equal(t, "NEW-DOCUMENT", e.stored(t))
 	assert.True(t, e.updated, "document key (post.UpdateAt) is bumped after saving")
 	assert.Equal(t, []string{"File Report.docx was updated by @bob"}, e.bot.replies)
+
+	last := GetLastEdit(e.api, fileID)
+	if assert.NotNil(t, last, "last edit is recorded") {
+		assert.Equal(t, "bob", last.UserID)
+		assert.Equal(t, int64(4242), last.At)
+	}
 }
 
 func TestSaveFailureNeverCorruptsTheFile(t *testing.T) {
@@ -137,6 +146,7 @@ func TestSaveFailureNeverCorruptsTheFile(t *testing.T) {
 		assert.Equal(t, original, e.stored(t), path+": stored file must stay intact")
 		assert.False(t, e.updated, path+": document key must not change on failure")
 		assert.Empty(t, e.bot.replies, path)
+		assert.Nil(t, GetLastEdit(e.api, fileID), path+": no last edit on failure")
 	}
 }
 

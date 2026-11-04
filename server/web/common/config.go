@@ -109,24 +109,7 @@ func BuildEditorConfig(
 		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not encode document key: %w", keyErr)
 	}
 
-	permissions := oomodel.OnlyofficeDefaultPermissions
-	if fileHelper.IsExtensionEditable(fileInfo.Extension) {
-		if configuration.IsFormatAllowedForEditing(fileInfo.Extension) {
-			permissions = fileHelper.GetFilePermissionsByUserID(payload.UserID, payload.FileID, post)
-		} else {
-			api.LogDebug(LoggerPrefix + "format not allowed for editing, forcing read-only: " + fileInfo.Extension)
-		}
-	}
-
-	if configuration.OwnerProtected {
-		if payload.UserID == post.UserId {
-			permissions.Protect = true
-		} else {
-			permissions.Protect = false
-		}
-	} else {
-		permissions.Protect = true
-	}
+	permissions := EffectivePermissions(configuration, fileHelper, payload.UserID, fileInfo, post)
 
 	code := fileHelper.GenerateKey()
 	if err := api.KVSetWithExpiry(code, []byte(payload.UserID), 10); err != nil {

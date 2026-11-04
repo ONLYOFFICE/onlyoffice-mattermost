@@ -35,6 +35,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/middleware"
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost/server/public/plugin"
+	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 )
 
 func recoverRoutes(next http.Handler) http.Handler {
@@ -70,6 +71,7 @@ func NewRouter(
 	formatManager public.FormatManager,
 	commandClient client.CommandClient,
 	bot bot.Bot,
+	fileBackend filestore.FileBackend,
 ) *mux.Router {
 	router := mux.NewRouter()
 	router.Use(recoverRoutes)
@@ -96,6 +98,7 @@ func NewRouter(
 	cvh := controller.NewConvertHandler(api, configuration, formatManager, jwtManager, commandClient)
 	cdh := controller.NewCodeHandler(api, fileHelper)
 	cfh := controller.NewConfigHandler(api, configuration, formatManager)
+	fdh := controller.NewFileDetailsHandler(api, configuration, fileHelper, fileBackend)
 
 	subrouter := router.PathPrefix("/api").Subrouter()
 	subrouter.HandleFunc("/callback", ch.Handle).Methods(http.MethodPost)
@@ -124,6 +127,9 @@ func NewRouter(
 	subrouter.HandleFunc("/convert", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return cvh.Handle
 	})).Methods(http.MethodPost)
+	subrouter.HandleFunc("/fileinfo", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
+		return fdh.Handle
+	})).Methods(http.MethodGet)
 	subrouter.HandleFunc("/code", authMiddleware.Handle(func(api plugin.API) func(rw http.ResponseWriter, r *http.Request) {
 		return cdh.Handle
 	})).Methods(http.MethodGet)

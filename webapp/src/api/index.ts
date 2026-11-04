@@ -59,3 +59,27 @@ export interface HealthStatus {
 export async function getHealthStatus(): Promise<HealthStatus> {
     return get<HealthStatus>(ONLYOFFICE_PLUGIN_API + '/health');
 }
+
+export interface FileDetailsUser {
+    id: string;
+    username: string;
+    display_name: string;
+}
+
+export interface FileDetails {
+    name: string;
+    extension: string;
+    size: number;
+    uploaded_by?: FileDetailsUser;
+    uploaded_at: number;
+    edited_by?: FileDetailsUser;
+    edited_at?: number;
+    can_edit: boolean;
+    is_owner: boolean;
+}
+
+export async function getFileDetails(fileId: string): Promise<FileDetails> {
+    return get<FileDetails>(`${ONLYOFFICE_PLUGIN_API}/fileinfo?file=${encodeURIComponent(fileId)}`, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+    });
+}

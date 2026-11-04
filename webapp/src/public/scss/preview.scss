@@ -111,3 +111,35 @@
         background: $preview_background_dark !important;
     }
 }
+
+// File details (uploaded / edited / size / access) under the file type.
+.onlyoffice_preview__details {
+    margin-top: .75rem;
+    border-collapse: collapse;
+    font-size: 12px;
+    line-height: 18px;
+    width: 100%;
+
+    td {
+        padding: 2px 0;
+        vertical-align: top;
+    }
+}
+
+.onlyoffice_preview__details-label {
+    padding-right: 12px !important;
+    white-space: nowrap;
+    opacity: .64;
+}
+
+.onlyoffice_preview__details-value {
+    word-break: break-word;
+}
+
+.onlyoffice_preview__details[data-theme="light"] {
+    color: $preview_title_light;
+}
+
+.onlyoffice_preview__details[data-theme="dark"] {
+    color: $preview_title_dark;
+}

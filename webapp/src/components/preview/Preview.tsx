@@ -34,6 +34,8 @@ import {openPermissions} from 'redux/actions';
 
 import type {FileInfo} from '@mattermost/types/files';
 
+import FileDetailsRows from 'components/preview/FileDetails';
+
 import 'public/scss/preview.scss';
 
 type Props = {
@@ -79,6 +81,10 @@ export default function OnlyofficeFilePreview(props: Props) {
                 <div className='file-details__info'>
                     {`${i18n['preview.file_type']} ${props.fileInfo.extension.toUpperCase()}`}
                 </div>
+                <FileDetailsRows
+                    fileId={props.fileInfo.id}
+                    theme={props.theme}
+                />
                 <div
                     className='file-details__onlyoffice'
                     data-theme={props.theme}
