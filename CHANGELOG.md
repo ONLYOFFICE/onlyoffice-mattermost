@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.4.5
+### Added
+- ONLYOFFICE icon for the editor browser tab
+
+### Fixed
+- closing the editor browser tab right after typing could lose the last changes that were not yet sent to ONLYOFFICE Docs; the browser now asks to stay until they are sent (the editor's own Close button already warns about unsaved changes)
+
 ## 2.4.4
 ### Changed
 - file preview: large labelled "Open in ONLYOFFICE" (primary) and "Share" buttons instead of small icons in the corner

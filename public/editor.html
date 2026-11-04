@@ -26,6 +26,8 @@
     *
     -->
     <title>ONLYOFFICE</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjEwIDEwIDI4IDI4IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjIuMzc2MiAzNS43MDU4TDExLjY4MzIgMzAuNzYyNkMxMC43NzIzIDMwLjMzMSAxMC43NzIzIDI5LjY2NDEgMTEuNjgzMiAyOS4yNzE4TDE1LjQwNTkgMjcuNTQ1NkwyMi4zMzY2IDMwLjc2MjZDMjMuMjQ3NSAzMS4xOTQxIDI0LjcxMjkgMzEuMTk0MSAyNS41ODQyIDMwLjc2MjZMMzIuNTE0OSAyNy41NDU2TDM2LjIzNzYgMjkuMjcxOEMzNy4xNDg1IDI5LjcwMzMgMzcuMTQ4NSAzMC4zNzAzIDM2LjIzNzYgMzAuNzYyNkwyNS41NDQ2IDM1LjcwNThDMjQuNzEyOSAzNi4wOTgxIDIzLjI0NzUgMzYuMDk4MSAyMi4zNzYyIDM1LjcwNThaIiBmaWxsPSIjRkY2RjNEIi8+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMi4zNzYyIDI5LjYyNDlMMTEuNjgzMiAyNC42ODE3QzEwLjc3MjMgMjQuMjUwMSAxMC43NzIzIDIzLjU4MzIgMTEuNjgzMiAyMy4xOTA5TDE1LjMyNjcgMjEuNTAzOUwyMi4zNzYyIDI0Ljc2MDFDMjMuMjg3MSAyNS4xOTE3IDI0Ljc1MjUgMjUuMTkxNyAyNS42MjM4IDI0Ljc2MDFMMzIuNjczMyAyMS41MDM5TDM2LjMxNjggMjMuMTkwOUMzNy4yMjc3IDIzLjYyMjQgMzcuMjI3NyAyNC4yODk0IDM2LjMxNjggMjQuNjgxN0wyNS42MjM4IDI5LjYyNDlDMjQuNzEyOSAzMC4wNTY0IDIzLjI0NzUgMzAuMDU2NCAyMi4zNzYyIDI5LjYyNDlaIiBmaWxsPSIjOTVDMDM4Ii8+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMi4zNzYyIDIzLjcwMDlMMTEuNjgzMiAxOC43NTc3QzEwLjc3MjMgMTguMzI2MSAxMC43NzIzIDE3LjY1OTIgMTEuNjgzMiAxNy4yNjY5TDIyLjM3NjIgMTIuMzIzN0MyMy4yODcxIDExLjg5MjEgMjQuNzUyNSAxMS44OTIxIDI1LjYyMzggMTIuMzIzN0wzNi4zMTY4IDE3LjI2NjlDMzcuMjI3NyAxNy42OTg0IDM3LjIyNzcgMTguMzY1NCAzNi4zMTY4IDE4Ljc1NzdMMjUuNjIzOCAyMy43MDA5QzI0LjcxMjkgMjQuMDkzMiAyMy4yNDc1IDI0LjA5MzIgMjIuMzc2MiAyMy43MDA5WiIgZmlsbD0iIzVEQzBFOCIvPjwvc3ZnPg==" />
+    <link rel="alternate icon" type="image/png" href="data:image/png;base64,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" />
     <script>
       var isDark = {{if .dark}}true{{else}}false{{end}};
       document.addEventListener('DOMContentLoaded', function() {
@@ -93,12 +95,35 @@
             }
         };
 
+        // true while the user has changes that are not yet sent to ONLYOFFICE Docs
+        // (onDocumentStateChange). Closing the tab at that moment loses them.
+        var hasUnsentChanges = false;
+
+        var onDocumentStateChange = function (event) {
+            hasUnsentChanges = !!(event && event.data);
+        };
+
+        // Browser tab "X" / reload while changes are still being sent: ask the user to stay.
+        window.addEventListener("beforeunload", function (e) {
+            if (hasUnsentChanges) {
+                e.preventDefault();
+                e.returnValue = "";
+                return "";
+            }
+        });
+
+        var closeTab = function () {
+            window.close();
+            // Browsers refuse to close tabs not opened by a script: go back to Mattermost instead.
+            setTimeout(function () { window.location.href = "/"; }, 300);
+        };
+
         var onRequestClose = function () {
             // Opened as a separate tab/window (not inside the Mattermost modal).
+            // The editor itself warns about unsaved changes before calling onRequestClose.
             if (window.opener || window.top === window) {
-                window.close();
-                // Browsers refuse to close tabs not opened by a script: go back to Mattermost instead.
-                setTimeout(function () { window.location.href = "/"; }, 300);
+                hasUnsentChanges = false;
+                closeTab();
                 return;
             }
             window.parent.dispatchEvent(ONLYOFFICE_CLOSE_EVENT);
@@ -264,6 +289,7 @@
         var events = {
             "onAppReady": onAppReady,
             "onRequestClose": onRequestClose,
+            "onDocumentStateChange": onDocumentStateChange,
             "onError": onError,
             "onRequestRefreshFile": onRequestRefreshFile,
             "onRequestUsers": onRequestUsers,
