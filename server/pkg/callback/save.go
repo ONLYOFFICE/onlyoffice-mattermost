@@ -102,11 +102,11 @@ func _saveFile(
 	}
 
 	if callback.Status == 2 {
-		last := callback.Users[0]
-		if last == "" {
+		if len(callback.Users) == 0 || callback.Users[0] == "" {
 			return ErrInvalidUserID
 		}
 
+		last := callback.Users[0]
 		user, userErr := api.GetUser(last)
 		if userErr != nil {
 			return &FilePersistenceError{
