@@ -132,7 +132,7 @@ func (h *PermissionsHandler) SetPermissions(rw http.ResponseWriter, r *http.Requ
 		}
 	}
 
-	common.WriteJSON(rw, callbackErr)
+	common.WriteJSON(rw, callbackOK)
 }
 
 func (h *PermissionsHandler) GetPermissions(rw http.ResponseWriter, r *http.Request) {
