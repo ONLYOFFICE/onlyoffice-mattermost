@@ -18,7 +18,6 @@
 package web
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -39,39 +38,24 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/middleware"
 )
 
-func recoverRoutes(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				fmt.Printf("recovering from %v with url: %s", err, r.URL.String())
-			}
-		}()
+func recoverRoutes(api plugin.API) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if err := recover(); err != nil {
+					api.LogError(fmt.Sprintf("[ONLYOFFICE] recovering from %v with url: %s", err, r.URL.Path))
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			}()
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 func timeoutRoutes(timeout time.Duration) func(next http.HandlerFunc) http.Handler {
 	return func(next http.HandlerFunc) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx, cancel := context.WithTimeout(r.Context(), timeout)
-			defer cancel()
-
-			done := make(chan struct{})
-			go func() {
-				next(w, r.WithContext(ctx))
-				close(done)
-			}()
-
-			select {
-			case <-ctx.Done():
-				w.WriteHeader(http.StatusGatewayTimeout)
-				_, _ = w.Write([]byte("request timeout"))
-				return
-			case <-done:
-				return
-			}
-		})
+		return http.TimeoutHandler(next, timeout, "request timeout")
 	}
 }
 
@@ -90,7 +74,7 @@ func NewRouter(
 	bot bot.Bot,
 ) *mux.Router {
 	router := mux.NewRouter()
-	router.Use(recoverRoutes)
+	router.Use(recoverRoutes(api))
 	bpath, err := api.GetBundlePath()
 	var editorTemplate *template.Template
 	if err != nil {
