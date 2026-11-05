@@ -38,6 +38,7 @@ func downloadConfig() *configuration.Configuration {
 	return &configuration.Configuration{
 		DESJwt:       "download-secret",
 		DESJwtHeader: "AuthorizationJWT",
+		DESJwtPrefix: "Bearer ",
 	}
 }
 
