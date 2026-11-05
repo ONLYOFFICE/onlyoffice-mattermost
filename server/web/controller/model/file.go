@@ -22,7 +22,7 @@ import validator "github.com/go-playground/validator/v10"
 type NewFileRequest struct {
 	ChannelID string `json:"channel_id" validate:"required,min=1"`
 	FileName  string `json:"file_name" validate:"required,min=1"`
-	FileType  string `json:"file_type" validate:"required,min=1"`
+	FileType  string `json:"file_type" validate:"required,oneof=docx xlsx pptx pdf"`
 }
 
 func (n *NewFileRequest) Validate() error {
