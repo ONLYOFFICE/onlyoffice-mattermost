@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.2
+## Fixed
+- config merge in HA deployment
+
 ## 2.4.1
 ## Fixed
 - requests now get proxied via `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`

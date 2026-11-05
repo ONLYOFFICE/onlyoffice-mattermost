@@ -18,7 +18,8 @@
 package configuration
 
 var (
-	DemoKey                 = "onlyoffice_demo_start"
-	EmptyFormats            = "none"
-	_DemoPeriodMillis int64 = 7 * 24 * 60 * 60 * 1000
+	DemoKey                   = "onlyoffice_demo_start"
+	SettingsSnapshotKey       = "onlyoffice_settings_snapshot"
+	EmptyFormats              = "none"
+	_DemoPeriodMillis   int64 = 7 * 24 * 60 * 60 * 1000
 )
