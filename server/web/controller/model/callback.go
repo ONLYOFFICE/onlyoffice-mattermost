@@ -32,6 +32,22 @@ type CallbackRequest struct {
 	Token  string   `json:"token"`
 }
 
+type CallbackToken struct {
+	CallbackRequest `mapstructure:",squash"`
+	Payload         *CallbackRequest `mapstructure:"payload"`
+}
+
+func (t *CallbackToken) Signed() CallbackRequest {
+	signed := t.CallbackRequest
+	if t.Payload != nil {
+		signed = *t.Payload
+	}
+
+	signed.FileID = ""
+	signed.Token = ""
+	return signed
+}
+
 type CallbackResponse struct {
 	Error int8 `json:"error"`
 }

@@ -389,6 +389,7 @@ func TestCallbackSavePersistsFile(t *testing.T) {
 				"key":    "doc-key",
 				"status": float64(status),
 				"url":    docsServer.URL,
+				"users":  []any{"user-1"},
 			})
 
 			body, _ := json.Marshal(map[string]any{
