@@ -539,6 +539,7 @@ func TestConvertOwnerFlow(t *testing.T) {
 	siteURL := "https://mm.example.com"
 	config := &mmModel.Config{}
 	config.ServiceSettings.SiteURL = &siteURL
+	config.FileSettings.EnableFileAttachments = mmModel.NewPointer(true)
 	context.api.On("GetConfig").Return(config)
 	context.api.On("GetFileInfo", "file-doc").Return(&mmModel.FileInfo{
 		Id:        "file-doc",
@@ -589,6 +590,9 @@ func TestImageEndpoint(t *testing.T) {
 
 func TestCreateFile(t *testing.T) {
 	context := newApplicationContext(t)
+	config := &mmModel.Config{}
+	config.FileSettings.EnableFileAttachments = mmModel.NewPointer(true)
+	context.api.On("GetConfig").Return(config)
 	context.api.On("GetChannel", "channel-1").Return(&mmModel.Channel{Id: "channel-1"}, nil)
 	context.api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Locale: "en"}, nil)
 	context.api.On("CreateUploadSession", mock.AnythingOfType("*model.UploadSession")).Return(&mmModel.UploadSession{Id: "up-1"}, nil)

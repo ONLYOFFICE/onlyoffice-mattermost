@@ -30,6 +30,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
@@ -97,8 +98,8 @@ func (h *CreateHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !h.api.HasPermissionToChannel(userID, req.ChannelID, model.PermissionCreatePost) {
-		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + userID + " cannot post to channel " + req.ChannelID)
+	if !common.CanUploadToChannel(h.api, userID, req.ChannelID) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + userID + " cannot upload files to channel " + req.ChannelID)
 		rw.WriteHeader(http.StatusForbidden)
 		return
 	}

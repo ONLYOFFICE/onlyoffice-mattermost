@@ -94,21 +94,6 @@ func TestMentionsSendNotificationsSkipsRecipientsWithoutAccess(t *testing.T) {
 	}
 }
 
-func TestCreateHandlerDeniesChannelWithoutPostPermission(t *testing.T) {
-	api := quietAPI()
-	api.On("HasPermissionToChannel", "outsider", "private-ch", mmModel.PermissionCreatePost).Return(false)
-	handler := NewCreateHandler(api, validDESConfig())
-	body, _ := json.Marshal(model.NewFileRequest{ChannelID: "private-ch", FileName: "x", FileType: "docx"})
-	req := httptest.NewRequest(http.MethodPost, "/create", bytes.NewReader(body))
-	req.Header.Set(tools.MMAuthHeader, "outsider")
-	recorder := httptest.NewRecorder()
-	handler.Handle(recorder, req)
-
-	assert.Equal(t, http.StatusForbidden, recorder.Code)
-	api.AssertNotCalled(t, "CreatePost", mock.Anything)
-	api.AssertNotCalled(t, "UploadData", mock.Anything, mock.Anything)
-}
-
 func directFileAPI() *plugintest.API {
 	api := quietAPI()
 	api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{

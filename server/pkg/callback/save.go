@@ -37,7 +37,7 @@ const defaultMaxDownloadSize int64 = 100 * 1024 * 1024
 var _ = registryContainer.RegisterHandler(2, _saveFile)
 var _ = registryContainer.RegisterHandler(6, _saveFile)
 
-func maxDownloadSize(api plugin.API) int64 {
+func MaxDownloadSize(api plugin.API) int64 {
 	if config := api.GetConfig(); config != nil {
 		if size := model.SafeDereference(config.FileSettings.MaxFileSize); size > 0 {
 			return size
@@ -70,7 +70,7 @@ func replaceFile(
 		return &FileDownloadError{FileID: callback.FileID, Reason: fmt.Sprintf("unexpected response status %d", resp.StatusCode)}
 	}
 
-	limit := maxDownloadSize(api)
+	limit := MaxDownloadSize(api)
 	if resp.ContentLength > limit {
 		return &FileDownloadError{FileID: callback.FileID, Reason: fmt.Sprintf("file size %d exceeds the limit of %d bytes", resp.ContentLength, limit)}
 	}

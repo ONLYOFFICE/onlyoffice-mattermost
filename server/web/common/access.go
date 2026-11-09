@@ -60,6 +60,20 @@ func CanReadChannel(api plugin.API, userID, channelID string) bool {
 	return api.HasPermissionToTeam(userID, channel.TeamId, model.PermissionReadPublicChannel)
 }
 
+func CanUploadToChannel(api plugin.API, userID, channelID string) bool {
+	if userID == "" || channelID == "" {
+		return false
+	}
+
+	config := api.GetConfig()
+	if config == nil || !model.SafeDereference(config.FileSettings.EnableFileAttachments) {
+		return false
+	}
+
+	return api.HasPermissionToChannel(userID, channelID, model.PermissionCreatePost) &&
+		api.HasPermissionToChannel(userID, channelID, model.PermissionUploadFile)
+}
+
 func PostLink(api plugin.API, channel *model.Channel, postID string) string {
 	siteURL := ""
 	if config := api.GetConfig(); config != nil {

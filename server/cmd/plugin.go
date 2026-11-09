@@ -116,20 +116,31 @@ func (p *Plugin) provideFormatManager() public.FormatManager {
 }
 
 func (p *Plugin) provideFileBackend() filestore.FileBackend {
-	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
-	serverConfig.FileSettings.SetDefaults(true)
+	if serverConfig == nil {
+		p.logError(common.OnlyofficeLoggerCmdPrefix + "Failed to initialize file backend: could not get server configuration")
+		return nil
+	}
+
+	fileSettings := &serverConfig.FileSettings
+	fileSettings.AmazonS3SSL = model.NewPointer(model.SafeDereference(fileSettings.AmazonS3SSL))
+	fileSettings.AzureSSL = model.NewPointer(model.SafeDereference(fileSettings.AzureSSL))
+	fileSettings.SetDefaults(true)
+
+	license := p.API.GetLicense()
+	compliance := license != nil && license.Features != nil && model.SafeDereference(license.Features.Compliance)
+
 	fs, err := filestore.NewFileBackend(
 		filestore.NewFileBackendSettingsFromConfig(
 			&serverConfig.FileSettings,
-			license != nil && license.Features.Compliance != nil && *license.Features.Compliance,
-			true,
+			compliance,
+			model.SafeDereference(serverConfig.ServiceSettings.EnableInsecureOutgoingConnections),
 			model.SafeDereference(serverConfig.ServiceSettings.AllowedUntrustedInternalConnections),
 		),
 	)
 
 	if err != nil {
-		p.logError(common.OnlyofficeLoggerCmdPrefix + "Failed to parse editor template: " + err.Error())
+		p.logError(common.OnlyofficeLoggerCmdPrefix + "Failed to initialize file backend: " + err.Error())
 		return nil
 	}
 
