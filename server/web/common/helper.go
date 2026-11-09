@@ -25,12 +25,12 @@ import (
 )
 
 func WriteJSON(w http.ResponseWriter, v interface{}, code ...int) {
+	w.Header().Set("Content-Type", "application/json")
 	if len(code) == 1 {
 		w.WriteHeader(code[0])
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
-	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(v)
 }
 

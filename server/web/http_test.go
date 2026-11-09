@@ -138,6 +138,10 @@ func (s *integrationStore) CopyFile(oldPath, newPath string) error {
 }
 
 func (s *integrationStore) MoveFile(oldPath, newPath string) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.written[newPath] = s.written[oldPath]
+	delete(s.written, oldPath)
 	return nil
 }
 
@@ -146,6 +150,9 @@ func (s *integrationStore) AppendFile(fr io.Reader, path string) (int64, error) 
 }
 
 func (s *integrationStore) RemoveFile(path string) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	delete(s.written, path)
 	return nil
 }
 
@@ -210,6 +217,7 @@ func newApplicationContext(t *testing.T) *applicationContext {
 	api.On("LogWarn", mock.Anything).Return().Maybe()
 	api.On("LogInfo", mock.Anything).Return().Maybe()
 	api.On("PublishWebSocketEvent", mock.Anything, mock.Anything, mock.Anything).Return().Maybe()
+	api.On("HasPermissionToChannel", mock.Anything, mock.Anything, mock.Anything).Return(true).Maybe()
 
 	formatManager, err := public.NewMapFormatManager()
 
@@ -375,6 +383,7 @@ func TestCallbackSavePersistsFile(t *testing.T) {
 	}, nil)
 	context.api.On("UpdatePost", mock.AnythingOfType("*model.Post")).Return(&mmModel.Post{Id: "post-1"}, nil)
 	context.api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Username: "alice"}, nil)
+	context.api.On("GetConfig").Return(&mmModel.Config{}).Maybe()
 
 	for _, status := range []int{2, 6} {
 		t.Run("status_"+strconv.Itoa(status), func(t *testing.T) {
@@ -389,6 +398,7 @@ func TestCallbackSavePersistsFile(t *testing.T) {
 				"key":    "doc-key",
 				"status": float64(status),
 				"url":    docsServer.URL,
+				"users":  []any{"user-1"},
 			})
 
 			body, _ := json.Marshal(map[string]any{
@@ -413,6 +423,10 @@ func TestCallbackSavePersistsFile(t *testing.T) {
 			context.store.mutex.Unlock()
 
 			assert.Equal(t, []byte("saved-from-docs"), result)
+			context.store.mutex.Lock()
+			stored := len(context.store.written)
+			context.store.mutex.Unlock()
+			assert.Equal(t, 1, stored, "no temporary file is left behind")
 		})
 	}
 }

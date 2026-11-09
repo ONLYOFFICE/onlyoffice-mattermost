@@ -22,17 +22,19 @@
 import type {AnyAction} from 'redux';
 import {OPEN_EDITOR_MODAL, CLOSE_EDITOR_MODAL} from 'redux/actions/types';
 
-export const editorModal = (state = {isVisible: false, fileInfo: null}, action: AnyAction) => {
+export const editorModal = (state = {isVisible: false, fileInfo: null, actionLink: null as string | null}, action: AnyAction) => {
     switch (action.type) {
     case OPEN_EDITOR_MODAL:
         return {
             isVisible: true,
             fileInfo: action.payload,
+            actionLink: action.actionLink || null,
         };
     case CLOSE_EDITOR_MODAL:
         return {
             isVisible: false,
             fileInfo: null,
+            actionLink: null,
         };
     default:
         return state;

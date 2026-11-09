@@ -97,6 +97,12 @@ func (h *CreateHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !h.api.HasPermissionToChannel(userID, req.ChannelID, model.PermissionCreatePost) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + userID + " cannot post to channel " + req.ChannelID)
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	channel, user, err := h.fetchData(req.ChannelID, userID)
 	if err != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel or user: " + err.Error())

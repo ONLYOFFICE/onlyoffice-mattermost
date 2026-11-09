@@ -19,32 +19,36 @@
  *
  */
 
+import type {GlobalState} from '@mattermost/types/store';
+
 import {getTheme} from 'mattermost-redux/selectors/entities/preferences';
-import type {GlobalState} from 'mattermost-redux/types/store';
 
 import {id as pluginId} from '../manifest';
 
-//@ts-expect-error: Suppressing error because state['plugins-' + pluginId] might be undefined
-const getPluginState = (state: GlobalState) => state['plugins-' + pluginId] || {};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getPluginState = (state: GlobalState) => (state as any)['plugins-' + pluginId] || {};
 
 export const converterModalVisible = (state: GlobalState) => getPluginState(state).converterModal.isVisible;
 export const converterModalFileInfo = (state: GlobalState) => getPluginState(state).converterModal.fileInfo;
 
 export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
 export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModal.fileInfo;
+export const editorModalActionLink = (state: GlobalState) => getPluginState(state).editorModal.actionLink;
 
 export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
 export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;
 
 export const managerModalVisible = (state: GlobalState) => getPluginState(state).managerModal.isVisible;
 
+const getThemeType = (state: GlobalState) => getTheme(state).type?.toLowerCase();
+
 export const getCurrentTheme = (state: GlobalState) => {
-    const theme = getTheme(state);
-    const dark = theme.type === 'indigo' || theme.type === 'onyx';
+    const type = getThemeType(state);
+    const dark = type === 'indigo' || type === 'onyx';
     return dark ? 'dark' : 'light';
 };
 
 export const getCurrentDarkTheme = (state: GlobalState) => {
-    const theme = getTheme(state);
-    return theme.type === 'indigo' || theme.type === 'onyx' ? theme.type : undefined;
+    const type = getThemeType(state);
+    return type === 'indigo' || type === 'onyx' ? type : undefined;
 };

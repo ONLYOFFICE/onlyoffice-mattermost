@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/mattermost/mattermost/server/public/plugin/plugintest"
@@ -203,4 +204,132 @@ func TestCallbackHandlerInvalidJWT(t *testing.T) {
 	handler.Handle(recorder, req)
 
 	assert.Equal(t, http.StatusForbidden, recorder.Code)
+}
+
+func newCallbackTestHandler(t *testing.T) (CallbackHandler, *stubCallbackHandler, *configuration.Configuration) {
+	t.Helper()
+	api := &plugintest.API{}
+	api.On("LogDebug", mock.Anything).Return().Maybe()
+	api.On("LogError", mock.Anything).Return().Maybe()
+
+	config := callbackConfig()
+	stub := &stubCallbackHandler{}
+	return NewCallbackHandler(api, config, crypto.NewJwtManager(), stub), stub, config
+}
+
+func postCallback(t *testing.T, handler CallbackHandler, file string, body map[string]any, header string) (int, model.CallbackResponse) {
+	t.Helper()
+	raw, err := json.Marshal(body)
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodPost, "/callback?file="+file, bytes.NewReader(raw))
+	if header != "" {
+		req.Header.Set(callbackConfig().DESJwtHeader, callbackConfig().DESJwtPrefix+header)
+	}
+
+	recorder := httptest.NewRecorder()
+	handler.Handle(recorder, req)
+
+	var response model.CallbackResponse
+	require.NoError(t, json.NewDecoder(recorder.Body).Decode(&response))
+	return recorder.Code, response
+}
+
+func TestCallbackHandlerRejectsEditorConfigToken(t *testing.T) {
+	handler, stub, config := newCallbackTestHandler(t)
+
+	editorConfig := model.Config{
+		Document: model.Document{
+			FileType: "docx",
+			Key:      "own-key",
+			Title:    "own.docx",
+			URL:      "https://mm.example.com/plugins/com.onlyoffice.mattermost/api/download?id=own-file",
+		},
+		DocumentType: "word",
+		EditorConfig: model.EditorConfig{
+			CallbackURL: "https://mm.example.com/plugins/com.onlyoffice.mattermost/api/callback?file=own-file",
+			Mode:        "view",
+		},
+		Type: "desktop",
+	}
+	editorConfig.IssuedAt = jwt.NewNumericDate(time.Now())
+	editorConfig.ExpiresAt = jwt.NewNumericDate(time.Now().Add(3 * time.Minute))
+	token, err := crypto.NewJwtManager().Sign([]byte(config.DESJwt), editorConfig)
+	require.NoError(t, err)
+
+	forged := map[string]any{
+		"key":    "anything",
+		"status": 6,
+		"users":  []string{"attacker"},
+		"url":    "http://10.0.0.5/secret",
+	}
+
+	withBodyToken := map[string]any{"token": token}
+	for k, v := range forged {
+		withBodyToken[k] = v
+	}
+
+	code, response := postCallback(t, handler, "victim-file", withBodyToken, "")
+	assert.Equal(t, http.StatusForbidden, code)
+	assert.Equal(t, int8(1), response.Error)
+
+	code, response = postCallback(t, handler, "victim-file", forged, token)
+	assert.Equal(t, http.StatusForbidden, code)
+	assert.Equal(t, int8(1), response.Error)
+
+	assert.Empty(t, stub.last.FileID, "a forged callback must never reach the save handler")
+}
+
+func TestCallbackHandlerUsesSignedFieldsOnly(t *testing.T) {
+	handler, stub, config := newCallbackTestHandler(t)
+	token := signCallbackClaims(t, config.DESJwt, jwt.MapClaims{
+		"key":    "doc-key",
+		"status": float64(2),
+		"users":  []any{"user-1"},
+		"url":    "https://docs.example.com/cache/output.docx",
+		"fileid": "other-file",
+	})
+
+	code, response := postCallback(t, handler, "file-1", map[string]any{
+		"key":    "forged-key",
+		"status": 6,
+		"users":  []string{"attacker"},
+		"url":    "http://10.0.0.5/secret",
+		"token":  token,
+	}, "")
+
+	assert.Equal(t, http.StatusOK, code)
+	assert.Equal(t, int8(0), response.Error)
+	assert.Equal(t, "file-1", stub.last.FileID, "file comes from the callback URL, not from claims")
+	assert.Equal(t, "doc-key", stub.last.Key)
+	assert.Equal(t, 2, stub.last.Status)
+	assert.Equal(t, []string{"user-1"}, stub.last.Users)
+	assert.Equal(t, "https://docs.example.com/cache/output.docx", stub.last.URL)
+}
+
+func TestCallbackHandlerRejectsTokenWithoutCallbackFields(t *testing.T) {
+	cases := map[string]jwt.MapClaims{
+		"no status (convert request shape)": {"key": "doc-key", "url": "https://docs.example.com/file", "filetype": "odt"},
+		"no key":                            {"status": float64(2), "url": "https://docs.example.com/file"},
+		"empty payload":                     {"payload": map[string]any{}},
+		"version command":                   {"c": "version"},
+	}
+
+	for name, claims := range cases {
+		t.Run(name, func(t *testing.T) {
+			handler, stub, config := newCallbackTestHandler(t)
+			token := signCallbackClaims(t, config.DESJwt, claims)
+
+			code, response := postCallback(t, handler, "file-1", map[string]any{
+				"key":    "doc-key",
+				"status": 2,
+				"url":    "http://10.0.0.5/secret",
+				"token":  token,
+			}, "")
+
+			assert.Equal(t, http.StatusForbidden, code)
+			assert.Equal(t, int8(1), response.Error)
+			assert.Empty(t, stub.last.FileID)
+		})
+	}
 }

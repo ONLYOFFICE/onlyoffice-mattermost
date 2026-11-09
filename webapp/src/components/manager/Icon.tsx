@@ -25,10 +25,10 @@ import React from 'react';
 import type {Action, Store} from 'redux';
 import {getCurrentTheme} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
 type Props = {
-    store: Store<GlobalState, Action<Record<string, unknown>>>;
+    store: Store<GlobalState, Action>;
 };
 
 export function ManagerIcon({store}: Props) {

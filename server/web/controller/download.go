@@ -50,7 +50,7 @@ func NewDownloadHandler(
 func (h *DownloadHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	var jwt model.DownloadTokenRequest
 
-	token := strings.ReplaceAll(r.Header.Get(h.configuration.DESJwtHeader), "Bearer ", "")
+	token := strings.TrimSpace(strings.ReplaceAll(r.Header.Get(h.configuration.DESJwtHeader), h.configuration.DESJwtPrefix, ""))
 	if token == "" {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not extract jwt with the header specified. Please validate your JWT Header settings")
 		rw.WriteHeader(http.StatusForbidden)

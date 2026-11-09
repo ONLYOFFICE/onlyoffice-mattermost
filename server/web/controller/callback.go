@@ -63,15 +63,6 @@ func (h *CallbackHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	body.FileID = r.URL.Query().Get("file")
-	validationErr := body.Validate()
-	if validationErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "callback body validation error: " + validationErr.Error())
-		common.WriteJSON(rw, callbackErr)
-		return
-	}
-
-	h.api.LogDebug(onlyofficeLoggerPrefix + "valid callback payload")
-
 	headerToken := strings.TrimSpace(strings.ReplaceAll(r.Header.Get(h.configuration.DESJwtHeader), h.configuration.DESJwtPrefix, ""))
 	if body.Token == "" && headerToken == "" {
 		h.api.LogError(onlyofficeLoggerPrefix + "expected to get a callback jwt. Got null")
@@ -79,8 +70,9 @@ func (h *CallbackHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var claims model.CallbackToken
 	if body.Token != "" {
-		err := h.jwtManager.Verify([]byte(h.configuration.DESJwt), body.Token, &body)
+		err := h.jwtManager.Verify([]byte(h.configuration.DESJwt), body.Token, &claims)
 		if err != nil {
 			h.api.LogError(err.Error())
 			common.WriteJSON(rw, callbackErr, http.StatusForbidden)
@@ -89,13 +81,26 @@ func (h *CallbackHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if body.Token == "" && headerToken != "" {
-		err := h.jwtManager.Verify([]byte(h.configuration.DESJwt), headerToken, &body)
+		err := h.jwtManager.Verify([]byte(h.configuration.DESJwt), headerToken, &claims)
 		if err != nil {
 			h.api.LogError(err.Error())
 			common.WriteJSON(rw, callbackErr, http.StatusForbidden)
 			return
 		}
 	}
+
+	signed := claims.Signed()
+	signed.FileID, signed.Token = body.FileID, body.Token
+	body = signed
+
+	validationErr := body.Validate()
+	if validationErr != nil {
+		h.api.LogError(onlyofficeLoggerPrefix + "callback body validation error: " + validationErr.Error())
+		common.WriteJSON(rw, callbackErr, http.StatusForbidden)
+		return
+	}
+
+	h.api.LogDebug(onlyofficeLoggerPrefix + "valid callback payload")
 
 	if handlerErr := h.callbackHandler.Handle(r.Context(), callback.Callback{
 		Actions: body.Actions,
