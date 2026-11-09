@@ -24,14 +24,21 @@ describe('redux reducers', () => {
     const fileInfo = {id: 'file-1', name: 'doc.docx'};
 
     it('toggles editor modal', () => {
-        expect(editorModal(undefined, {type: 'unknown'})).toEqual({isVisible: false, fileInfo: null});
+        expect(editorModal(undefined, {type: 'unknown'})).toEqual({isVisible: false, fileInfo: null, actionLink: null});
         expect(editorModal(undefined, {type: OPEN_EDITOR_MODAL, payload: fileInfo})).toEqual({
             isVisible: true,
             fileInfo,
+            actionLink: null,
         });
-        expect(editorModal({isVisible: true, fileInfo: fileInfo as any}, {type: CLOSE_EDITOR_MODAL})).toEqual({
+        expect(editorModal(undefined, {type: OPEN_EDITOR_MODAL, payload: fileInfo, actionLink: '{"action":{}}'})).toEqual({
+            isVisible: true,
+            fileInfo,
+            actionLink: '{"action":{}}',
+        });
+        expect(editorModal({isVisible: true, fileInfo: fileInfo as any, actionLink: '{}'}, {type: CLOSE_EDITOR_MODAL})).toEqual({
             isVisible: false,
             fileInfo: null,
+            actionLink: null,
         });
     });
 

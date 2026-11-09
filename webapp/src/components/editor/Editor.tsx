@@ -32,11 +32,12 @@ import EditorLoader from 'components/editor/EditorLoader';
 type Props = {
     visible: boolean;
     fileInfo?: FileInfo;
+    actionLink?: string | null;
     theme: string;
     close: () => (dispatch: Dispatch) => void;
 };
 
-export default function Editor({visible, close, fileInfo, theme}: Props) {
+export default function Editor({visible, close, fileInfo, actionLink, theme}: Props) {
     const lang = localStorage.getItem('onlyoffice_locale') || 'en';
 
     const handleClose = useCallback(() => {
@@ -89,7 +90,7 @@ export default function Editor({visible, close, fileInfo, theme}: Props) {
         >
             <EditorLoader theme={theme}/>
             <iframe
-                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}`}
+                src={`${ONLYOFFICE_PLUGIN_API}/editor?file=${fileInfo?.id}&lang=${lang}&dark=${theme === 'dark'}${actionLink ? `&action=${encodeURIComponent(actionLink)}` : ''}`}
                 className='onlyoffice-modal__frame'
                 name='iframeEditor'
                 data-theme={theme}

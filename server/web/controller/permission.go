@@ -103,13 +103,6 @@ func (h *PermissionsHandler) SetPermissions(rw http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	team, teamErr := h.api.GetTeam(channel.TeamId)
-	if teamErr != nil && len(postPermissions) > 1 && postPermissions[0].UserID != h.fileHelper.GetWildcardUser() {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not get team with id " + channel.TeamId + " Reason: " + teamErr.Message)
-		common.WriteJSON(rw, callbackErr, http.StatusBadRequest)
-		return
-	}
-
 	newPermissions := h.fileHelper.SetPostFilePermissions(post, postPermissions)
 	_, err := h.api.UpdatePost(post)
 
@@ -124,11 +117,12 @@ func (h *PermissionsHandler) SetPermissions(rw http.ResponseWriter, r *http.Requ
 		postID = post.RootId
 	}
 
+	link := common.PostLink(h.api, channel, postID)
 	for _, permission := range newPermissions {
 		if permission.UserID == h.fileHelper.GetWildcardUser() {
 			h.bot.BotCreateReply(fileInfo.Name+" permissions have been changed to "+common.GetPermissionsName(permission.Permissions), post.ChannelId, postID)
-		} else if team != nil {
-			h.bot.BotCreateDM("Your "+fileInfo.Name+" file permissions have been changed to "+common.GetPermissionsName(permission.Permissions)+": "+*h.api.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+"/pl/"+postID, permission.UserID)
+		} else {
+			h.bot.BotCreateDM("Your "+fileInfo.Name+" file permissions have been changed to "+common.GetPermissionsName(permission.Permissions)+": "+link, permission.UserID)
 		}
 	}
 

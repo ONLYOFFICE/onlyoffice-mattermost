@@ -31,9 +31,10 @@ export const closeEditor = () => (dispatch: Dispatch) => {
     });
 };
 
-export const openEditor = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
+export const openEditor = (fileInfo: FileInfo, actionLink?: string) => (dispatch: Dispatch) => {
     dispatch({
         type: OPEN_EDITOR_MODAL,
         payload: fileInfo,
+        ...(actionLink ? {actionLink} : {}),
     });
 };

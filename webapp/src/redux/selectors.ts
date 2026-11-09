@@ -32,6 +32,7 @@ export const converterModalFileInfo = (state: GlobalState) => getPluginState(sta
 
 export const editorModalVisible = (state: GlobalState) => getPluginState(state).editorModal.isVisible;
 export const editorModalFileInfo = (state: GlobalState) => getPluginState(state).editorModal.fileInfo;
+export const editorModalActionLink = (state: GlobalState) => getPluginState(state).editorModal.actionLink;
 
 export const permissionsModalVisible = (state: GlobalState) => getPluginState(state).permissionsModal.isVisible;
 export const permissionsModalFileInfo = (state: GlobalState) => getPluginState(state).permissionsModal.fileInfo;

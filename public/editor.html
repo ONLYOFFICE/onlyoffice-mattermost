@@ -118,6 +118,27 @@
             return link;
         }
 
+        var buildActionLink = function (action) {
+            var fileId = new URLSearchParams(window.location.search).get('file');
+            try {
+                var base = window.location.pathname.split('/plugins/')[0];
+                var team = window.parent !== window ? window.parent.location.pathname.slice(base.length).split('/')[1] : '';
+                if (fileId && team && team.charAt(0) !== '_') {
+                    return window.location.origin + base + '/' + team + '/com.onlyoffice.mattermost/comment?file=' +
+                        encodeURIComponent(fileId) + '&action=' + encodeURIComponent(action);
+                }
+            } catch (e) {
+            }
+
+            return replaceActionLink(window.location.href, action);
+        };
+
+        var onMakeActionLink = function (event) {
+            if (event && event.data) {
+                docEditor.setActionLink(buildActionLink(JSON.stringify(event.data)));
+            }
+        };
+
         var onError = function (event) {
             if (event) innerAlert(event.data);
         };
@@ -265,6 +286,7 @@
             "onRequestRefreshFile": onRequestRefreshFile,
             "onRequestUsers": onRequestUsers,
             "onRequestSendNotify": onRequestSendNotify,
+            "onMakeActionLink": onMakeActionLink,
         };
 
         var config = {{ .config }};
