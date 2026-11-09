@@ -19,7 +19,7 @@
  *
  */
 
-import type {UserProfile} from 'mattermost-redux/types/users';
+import type {UserProfile} from '@mattermost/types/users';
 
 import {ONLYOFFICE_WILDCARD_USER} from './const';
 import type {FilePermissions} from './permission';

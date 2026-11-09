@@ -21,7 +21,7 @@
 
 import type {Dispatch} from 'redux';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import {CLOSE_CONVERTER_MODAL, OPEN_CONVERTER_MODAL} from './types';
 

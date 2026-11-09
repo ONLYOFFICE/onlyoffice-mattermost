@@ -20,7 +20,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {openEditor} from 'redux/actions';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 type WebappHistory = {replace: (path: string) => void};
 
