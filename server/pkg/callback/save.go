@@ -20,8 +20,10 @@ package callback
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 
+	"github.com/mattermost/mattermost/server/public/model"
 	"github.com/mattermost/mattermost/server/public/plugin"
 	"github.com/mattermost/mattermost/server/v8/platform/shared/filestore"
 	"github.com/pkg/errors"
@@ -30,8 +32,84 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/converter"
 )
 
+const defaultMaxDownloadSize int64 = 100 * 1024 * 1024
+
 var _ = registryContainer.RegisterHandler(2, _saveFile)
 var _ = registryContainer.RegisterHandler(6, _saveFile)
+
+func maxDownloadSize(api plugin.API) int64 {
+	if config := api.GetConfig(); config != nil {
+		if size := model.SafeDereference(config.FileSettings.MaxFileSize); size > 0 {
+			return size
+		}
+	}
+
+	return defaultMaxDownloadSize
+}
+
+func replaceFile(
+	ctx context.Context,
+	api plugin.API,
+	httpClient *http.Client,
+	store filestore.FileBackend,
+	callback Callback,
+	fileInfo *model.FileInfo,
+) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, callback.URL, nil)
+	if err != nil {
+		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix+"failed to create request")
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return &FileDownloadError{FileID: callback.FileID, Reason: fmt.Sprintf("unexpected response status %d", resp.StatusCode)}
+	}
+
+	limit := maxDownloadSize(api)
+	if resp.ContentLength > limit {
+		return &FileDownloadError{FileID: callback.FileID, Reason: fmt.Sprintf("file size %d exceeds the limit of %d bytes", resp.ContentLength, limit)}
+	}
+
+	tmpPath := fileInfo.Path + ".onlyoffice-" + model.NewId() + ".tmp"
+	cleanup := func() {
+		if rmErr := store.RemoveFile(tmpPath); rmErr != nil {
+			api.LogWarn(onlyofficeLoggerCallbackPrefix + "could not remove temporary file " + tmpPath + ": " + rmErr.Error())
+		}
+	}
+
+	written, err := filestore.TryWriteFileContext(ctx, store, io.LimitReader(resp.Body, limit+1), tmpPath)
+	if err != nil {
+		cleanup()
+		return &FilePersistenceError{FileID: callback.FileID, Reason: err.Error()}
+	}
+
+	var reason string
+	switch {
+	case written > limit:
+		reason = fmt.Sprintf("file exceeds the limit of %d bytes", limit)
+	case resp.ContentLength >= 0 && written != resp.ContentLength:
+		reason = fmt.Sprintf("incomplete download: got %d of %d bytes", written, resp.ContentLength)
+	case written == 0:
+		reason = "empty download"
+	}
+
+	if reason != "" {
+		cleanup()
+		return &FileDownloadError{FileID: callback.FileID, Reason: reason}
+	}
+
+	if err := store.MoveFile(tmpPath, fileInfo.Path); err != nil {
+		cleanup()
+		return &FilePersistenceError{FileID: callback.FileID, Reason: err.Error()}
+	}
+
+	return nil
+}
 
 func _saveFile(
 	ctx context.Context,
@@ -50,30 +128,16 @@ func _saveFile(
 		}
 	}
 
+	if httpClient == nil {
+		return ErrHTTPClientRequired
+	}
+
 	fileInfo, fileErr := api.GetFileInfo(callback.FileID)
 	if fileErr != nil {
 		return &FileNotFoundError{
 			FileID: callback.FileID,
 			Reason: fileErr.Error(),
 		}
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "GET", callback.URL, nil)
-	if err != nil {
-		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix+"failed to create request")
-	}
-
-	if httpClient == nil {
-		return ErrHTTPClientRequired
-	}
-
-	resp, err := httpClient.Do(req)
-	if resp != nil {
-		defer resp.Body.Close()
-	}
-
-	if err != nil {
-		return errors.Wrap(err, onlyofficeLoggerCallbackPrefix)
 	}
 
 	post, postErr := api.GetPost(fileInfo.PostId)
@@ -84,30 +148,13 @@ func _saveFile(
 		}
 	}
 
-	post.UpdateAt = converter.GetTimestamp()
-	_, uErr := api.UpdatePost(post)
-	if uErr != nil {
-		return &FilePersistenceError{
-			FileID: callback.FileID,
-			Reason: uErr.Error(),
-		}
-	}
-
-	_, storeErr := filestore.WriteFile(resp.Body, fileInfo.Path)
-	if storeErr != nil {
-		return &FilePersistenceError{
-			FileID: callback.FileID,
-			Reason: storeErr.Error(),
-		}
-	}
-
+	var editor *model.User
 	if callback.Status == 2 {
 		if len(callback.Users) == 0 || callback.Users[0] == "" {
 			return ErrInvalidUserID
 		}
 
-		last := callback.Users[0]
-		user, userErr := api.GetUser(last)
+		user, userErr := api.GetUser(callback.Users[0])
 		if userErr != nil {
 			return &FilePersistenceError{
 				FileID: callback.FileID,
@@ -115,7 +162,23 @@ func _saveFile(
 			}
 		}
 
-		replyMsg := fmt.Sprintf("File %s was updated by @%s", fileInfo.Name, user.Username)
+		editor = user
+	}
+
+	if err := replaceFile(ctx, api, httpClient, filestore, callback, fileInfo); err != nil {
+		return err
+	}
+
+	post.UpdateAt = converter.GetTimestamp()
+	if _, uErr := api.UpdatePost(post); uErr != nil {
+		return &FilePersistenceError{
+			FileID: callback.FileID,
+			Reason: uErr.Error(),
+		}
+	}
+
+	if editor != nil {
+		replyMsg := fmt.Sprintf("File %s was updated by @%s", fileInfo.Name, editor.Username)
 		postID := post.Id
 		if post.RootId != "" {
 			postID = post.RootId

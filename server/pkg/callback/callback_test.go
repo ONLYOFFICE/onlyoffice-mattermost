@@ -53,6 +53,15 @@ type stubFileBackend struct {
 	written []byte
 	path    string
 	err     error
+	moveErr error
+	files   map[string][]byte
+	ops     *[]string
+}
+
+func (s *stubFileBackend) record(op string) {
+	if s.ops != nil {
+		*s.ops = append(*s.ops, op)
+	}
 }
 
 func (s *stubFileBackend) DriverName() string { return "local" }
@@ -75,13 +84,28 @@ func (s *stubFileBackend) FileModTime(path string) (time.Time, error) {
 
 func (s *stubFileBackend) CopyFile(oldPath, newPath string) error { return nil }
 
-func (s *stubFileBackend) MoveFile(oldPath, newPath string) error { return nil }
+func (s *stubFileBackend) MoveFile(oldPath, newPath string) error {
+	s.record("move " + oldPath + " -> " + newPath)
+	if s.moveErr != nil {
+		return s.moveErr
+	}
+
+	s.written = s.files[oldPath]
+	s.path = newPath
+	s.files[newPath] = s.files[oldPath]
+	delete(s.files, oldPath)
+	return nil
+}
 
 func (s *stubFileBackend) AppendFile(fr io.Reader, path string) (int64, error) {
 	return 0, nil
 }
 
-func (s *stubFileBackend) RemoveFile(path string) error { return nil }
+func (s *stubFileBackend) RemoveFile(path string) error {
+	s.record("remove " + path)
+	delete(s.files, path)
+	return nil
+}
 
 func (s *stubFileBackend) ListDirectory(path string) ([]string, error) {
 	return nil, nil
@@ -103,12 +127,15 @@ func (s *stubFileBackend) WriteFile(fr io.Reader, path string) (int64, error) {
 	}
 
 	data, err := io.ReadAll(fr)
+	s.record("write " + path)
+	if s.files == nil {
+		s.files = map[string][]byte{}
+	}
+	s.files[path] = data
 	if err != nil {
-		return 0, err
+		return int64(len(data)), err
 	}
 
-	s.written = data
-	s.path = path
 	return int64(len(data)), nil
 }
 
@@ -178,6 +205,7 @@ func TestSaveHandlerStatus2(t *testing.T) {
 	}, nil)
 	api.On("UpdatePost", mock.AnythingOfType("*model.Post")).Return(&mmModel.Post{Id: "post-1"}, nil)
 	api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Username: "alice"}, nil)
+	api.On("GetConfig").Return(&mmModel.Config{})
 
 	bot := &stubBot{}
 	store := &stubFileBackend{}
