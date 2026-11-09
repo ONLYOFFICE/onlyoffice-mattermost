@@ -33,6 +33,7 @@ import type {ThunkDispatch} from 'redux-thunk';
 import type {FileInfo} from 'mattermost-redux/types/files';
 import type {GlobalState} from 'mattermost-redux/types/store';
 
+import OnlyofficeCommentRedirect from 'components/comment';
 import OnlyofficeFileConverter from 'components/converter';
 import OnlyofficeEditor from 'components/editor';
 import OnlyofficeManager from 'components/manager';
@@ -71,6 +72,9 @@ export default class Plugin {
         registry.registerRootComponent(OnlyofficeFilePermissions);
         registry.registerRootComponent(OnlyofficeManager);
         registry.registerRootComponent(OnlyofficeFileConverter);
+        if (registry.registerNeedsTeamRoute) {
+            registry.registerNeedsTeamRoute('/comment', OnlyofficeCommentRedirect);
+        }
 
         if (registry.registerAdminConsoleCustomSetting) {
             registry.registerAdminConsoleCustomSetting('Formats', Formats);
