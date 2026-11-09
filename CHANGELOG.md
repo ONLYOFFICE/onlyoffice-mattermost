@@ -11,6 +11,7 @@
 
 ### Fixed
 - security fixes
+- saving to S3-compatible storage without SSL
 
 ## 2.4.2
 ## Fixed
