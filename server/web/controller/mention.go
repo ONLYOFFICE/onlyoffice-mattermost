@@ -20,6 +20,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -28,8 +29,11 @@ import (
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/bot"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
+
+const maxQuotedCommentLength = 500
 
 type MentionsHandler struct {
 	api plugin.API
@@ -44,6 +48,65 @@ func NewMentionsHandler(
 		api: api,
 		bot: bot,
 	}
+}
+
+func commentLink(api plugin.API, channel *mmModel.Channel, recipientID, fileID string, actionLink json.RawMessage) string {
+	action := common.ParseActionLink(actionLink)
+	if action == nil {
+		return ""
+	}
+
+	siteURL := ""
+	if config := api.GetConfig(); config != nil {
+		siteURL = mmModel.SafeDereference(config.ServiceSettings.SiteURL)
+	}
+
+	query := "?file=" + url.QueryEscape(fileID) + "&action=" + url.QueryEscape(string(action))
+	if team := linkTeam(api, channel, recipientID); team != "" {
+		return siteURL + "/" + team + "/" + onlyofficePluginID + "/comment" + query
+	}
+
+	return siteURL + "/" + onlyofficeAPIRootSuffix + "/editor" + query
+}
+
+func linkTeam(api plugin.API, channel *mmModel.Channel, userID string) string {
+	if channel != nil && channel.TeamId != "" {
+		if team, appErr := api.GetTeam(channel.TeamId); appErr == nil && team != nil {
+			return team.Name
+		}
+	}
+
+	teams, appErr := api.GetTeamsForUser(userID)
+	if appErr != nil || len(teams) == 0 || teams[0] == nil {
+		return ""
+	}
+
+	return teams[0].Name
+}
+
+func mentionMessage(mentionedBy, fileName, comment, postLink, commentLink string) string {
+	var message strings.Builder
+	message.WriteString(mentionedBy + " mentioned you in the document **" + fileName + "**")
+
+	if comment = strings.TrimSpace(comment); comment != "" {
+		if runes := []rune(comment); len(runes) > maxQuotedCommentLength {
+			comment = string(runes[:maxQuotedCommentLength]) + "…"
+		}
+
+		message.WriteString(":\n")
+		for _, line := range strings.Split(comment, "\n") {
+			message.WriteString("> " + line + "\n")
+		}
+	} else {
+		message.WriteString("\n")
+	}
+
+	if commentLink != "" {
+		message.WriteString("[Open the comment](" + commentLink + ") · ")
+	}
+
+	message.WriteString("[Go to the post](" + postLink + ")")
+	return message.String()
 }
 
 func (h *MentionsHandler) writeErrorResponse(rw http.ResponseWriter, errorMsg string, statusCode int) {
@@ -114,6 +177,13 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	currentUserID := r.Header.Get(tools.MMAuthHeader)
+	if !common.CanReadFile(h.api, currentUserID, fileInfo, post) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + currentUserID + " has no access to file " + fileID)
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	channel, channelErr := h.api.GetChannel(post.ChannelId)
 	if channelErr != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel with id " + post.ChannelId + " Reason: " + channelErr.Message)
@@ -137,7 +207,6 @@ func (h *MentionsHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 		channelMembers = []*mmModel.User{}
 	}
 
-	currentUserID := r.Header.Get(tools.MMAuthHeader)
 	filteredUsers := make([]model.MentionUser, 0, len(channelMembers))
 	for _, user := range channelMembers {
 		if user == nil {
@@ -232,17 +301,17 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	currentUserID := r.Header.Get(tools.MMAuthHeader)
+	if !common.CanReadFile(h.api, currentUserID, fileInfo, post) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + currentUserID + " has no access to file " + payload.FileID)
+		h.writeErrorResponse(rw, "forbidden", http.StatusForbidden)
+		return
+	}
+
 	channel, channelErr := h.api.GetChannel(post.ChannelId)
 	if channelErr != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "could not get channel with id " + post.ChannelId + " Reason: " + channelErr.Message)
 		h.writeErrorResponse(rw, "channel not found", http.StatusBadRequest)
-		return
-	}
-
-	team, teamErr := h.api.GetTeam(channel.TeamId)
-	if teamErr != nil {
-		h.api.LogError(onlyofficeLoggerPrefix + "could not get team with id " + channel.TeamId + " Reason: " + teamErr.Message)
-		h.writeErrorResponse(rw, "team not found", http.StatusBadRequest)
 		return
 	}
 
@@ -251,8 +320,8 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 		postID = post.RootId
 	}
 
-	documentLink := *h.api.GetConfig().ServiceSettings.SiteURL + "/" + team.Name + "/pl/" + postID
-	currentUser, _ := h.api.GetUser(r.Header.Get(tools.MMAuthHeader))
+	documentLink := common.PostLink(h.api, channel, postID)
+	currentUser, _ := h.api.GetUser(currentUserID)
 	mentionedByMention := "@Someone"
 	if currentUser != nil {
 		mentionedByMention = "@" + currentUser.Username
@@ -266,7 +335,12 @@ func (h *MentionsHandler) SendNotifications(rw http.ResponseWriter, r *http.Requ
 			continue
 		}
 
-		message := mentionedByMention + " mentioned you in the document **" + fileInfo.Name + "**: " + documentLink
+		if !common.CanReadFile(h.api, user.Id, fileInfo, post) {
+			h.api.LogDebug(onlyofficeLoggerPrefix + "skipping mention of user " + user.Id + " without access to file " + payload.FileID)
+			continue
+		}
+
+		message := mentionMessage(mentionedByMention, fileInfo.Name, payload.Message, documentLink, commentLink(h.api, channel, user.Id, fileInfo.Id, payload.ActionLink))
 		h.bot.BotCreateDM(message, user.Id)
 		notificationsSent++
 	}
