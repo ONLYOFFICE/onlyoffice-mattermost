@@ -1,5 +1,17 @@
 # Change Log
 
+## 3.0.0
+### Added
+- mention notifications quote the comment and include an `Open the comment` link that opens the editor at that comment inside Mattermost
+
+### Changed
+- migrated the webapp to React 19 (`react-redux` 9, `redux` 5, `mattermost-redux` 11); dropped enzyme in favor of Testing Library
+- document saves are written to a temporary file first and replace the attachment only after a complete download; failed, truncated, empty or oversized (above `MaxFileSize`) downloads leave the original file untouched
+- panics in HTTP handlers are logged through the plugin logger and return `500`; request timeouts use `http.TimeoutHandler`
+
+### Fixed
+- security fixes
+
 ## 2.4.2
 ## Fixed
 - config merge in HA deployment
