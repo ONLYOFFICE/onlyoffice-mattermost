@@ -342,9 +342,8 @@ export const PermissionsHeader: React.FC<Props> = ({
     const [accessHeader, setAccessHeader] = useState<string>(i18n['permissions.loading']);
 
     useEffect(() => {
-        const isChannel = window.location.href.split('/').includes('channels');
         if (!loading) {
-            const headerText = isChannel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'];
+            const headerText = channel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'];
             setTimeout(() => {
                 setAccessHeader(headerText);
             }, 0);

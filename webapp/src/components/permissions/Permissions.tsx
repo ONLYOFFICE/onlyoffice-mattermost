@@ -71,14 +71,12 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
         }
 
         setChannel(null);
-        const urlParts = window.location.href.split('/');
         try {
-            if (urlParts.includes('channels')) {
-                const teamName = urlParts[urlParts.length - 3];
-                const channelName = urlParts[urlParts.length - 1];
-                const team = await Client4.getTeamByName(teamName);
-                const chnl = await Client4.getChannelByName(team.id, channelName);
-                setChannel(chnl);
+            if (fileInfo.channel_id) {
+                const chnl = await Client4.getChannel(fileInfo.channel_id);
+                if (chnl.type === 'O' || chnl.type === 'P') {
+                    setChannel(chnl);
+                }
             }
             const response = (await get<OnlyofficeUser[]>(
                 `${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`,
