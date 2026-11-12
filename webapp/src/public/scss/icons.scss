@@ -27,73 +27,73 @@
   background-image: url("../images/xlsx_icon.svg") !important;
 }
 
-$word-exts: doc, docm, docx, dot, dotm, dotx, epub, fb2, fodt, htm, html, hwp, hwpx, md, mht, mhtml, odt, ott, pages, rtf, stw, sxw, txt, wps, wpt, xml;
+$word-exts: doc, docm, docx, dot, dotm, dotx, epub, fb2, fodt, gdoc, hml, htm, html, hwp, hwpx, md, mht, mhtml, odt, ott, pages, rtf, stw, sxw, txt, wps, wpt, xml;
 @each $ext in $word-exts {
-  a[aria-label$='.#{$ext}'] .file-icon.word, a[aria-label$='.#{$ext}'] .file-icon.generic {
+  a[aria-label$='.#{$ext}' i] .file-icon.word, a[aria-label$='.#{$ext}' i] .file-icon.generic {
     background-image: url("../images/docx_icon.svg") !important;
   }
 
   @if $ext == xml {
-    a[aria-label$='.xml'] .file-icon.code {
+    a[aria-label$='.xml' i] .file-icon.code {
       background-image: url("../images/docx_icon.svg") !important;
     }
   }
 
   @if $ext == md {
-    a[aria-label$='.md'] .file-icon.code {
+    a[aria-label$='.md' i] .file-icon.code {
       background-image: url("../images/docx_icon.svg") !important;
     }
   }
 
   @if $ext == html {
-    a[aria-label$='.html'] .file-icon.code {
+    a[aria-label$='.html' i] .file-icon.code {
       background-image: url("../images/docx_icon.svg") !important;
     }
   }
 
   @if $ext == txt {
-    a[aria-label$='.txt'] .file-icon.text {
+    a[aria-label$='.txt' i] .file-icon.text {
       background-image: url("../images/docx_icon.svg") !important;
     }
   }
 
   @if $ext == rtf {
-    a[aria-label$='.rtf'] .file-icon.text {
+    a[aria-label$='.rtf' i] .file-icon.text {
       background-image: url("../images/docx_icon.svg") !important;
     }
   }
 }
 
-$cell-exts: csv, et, ett, fods, numbers, ods, ots, sxc, tsv, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx;
+$cell-exts: csv, et, ett, fods, gsheet, numbers, ods, ots, sxc, tsv, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx;
 @each $ext in $cell-exts {
-  a[aria-label$='.#{$ext}'] .file-icon.excel, a[aria-label$='.#{$ext}'] .file-icon.generic {
+  a[aria-label$='.#{$ext}' i] .file-icon.excel, a[aria-label$='.#{$ext}' i] .file-icon.generic {
     background-image: url("../images/xlsx_icon.svg") !important;
   }
 
   @if $ext == tsv {
-    a[aria-label$='.tsv'] .file-icon.text, a[aria-label$='.tsv'] .file-icon.code {
+    a[aria-label$='.tsv' i] .file-icon.text, a[aria-label$='.tsv' i] .file-icon.code {
       background-image: url("../images/xlsx_icon.svg") !important;
     }
   }
 }
 
-$slide-exts: dps, dpt, fodp, key, odg, odp, otp, pot, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, sxi;
+$slide-exts: dps, dpt, fodp, gslides, key, odg, odp, otp, pot, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, sxi;
 @each $ext in $slide-exts {
-  a[aria-label$='.#{$ext}'] .file-icon.ppt, a[aria-label$='.#{$ext}'] .file-icon.generic {
+  a[aria-label$='.#{$ext}' i] .file-icon.ppt, a[aria-label$='.#{$ext}' i] .file-icon.generic {
     background-image: url("../images/pptx_icon.svg") !important;
   }
 }
 
-$pdf-exts: djvu, docxf, oform, oxps, pdf, xps;
+$pdf-exts: djvu, docxf, ofd, oform, oxps, pdf, xps;
 @each $ext in $pdf-exts {
-  a[aria-label$='.#{$ext}'] .file-icon.pdf, a[aria-label$='.#{$ext}'] .file-icon.generic {
+  a[aria-label$='.#{$ext}' i] .file-icon.pdf, a[aria-label$='.#{$ext}' i] .file-icon.generic {
     background-image: url("../images/pdf_icon.svg") !important;
   }
 }
 
 $diagram-exts: vsdx, vsdm, vssm, vssx, vstm, vstx;
 @each $ext in $diagram-exts {
-  a[aria-label$='.#{$ext}'] .file-icon.diagram, a[aria-label$='.#{$ext}'] .file-icon.generic {
+  a[aria-label$='.#{$ext}' i] .file-icon.diagram, a[aria-label$='.#{$ext}' i] .file-icon.generic {
     background-image: url("../images/diagram_icon.svg") !important;
   }
 }
