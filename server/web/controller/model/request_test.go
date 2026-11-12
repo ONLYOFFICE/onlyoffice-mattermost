@@ -42,3 +42,14 @@ func TestNewFileRequestValidate(t *testing.T) {
 	}).Validate())
 	assert.Error(t, (&NewFileRequest{ChannelID: "ch-1"}).Validate())
 }
+
+func TestNewFileRequestValidateFileName(t *testing.T) {
+	for _, name := range []string{"отчёт июнь", "report (v2).final", "a'b&c#d"} {
+		require.NoError(t, (&NewFileRequest{ChannelID: "ch-1", FileName: name, FileType: "docx"}).Validate(), name)
+	}
+
+	for _, name := range []string{"отчёт/июнь", `отчёт\июнь`, "../../etc/passwd", "<b>bold</b>",
+		"a:b", "a*b", "a?b", `a"b`, "a|b", "a\x00b", "a\nb", "   "} {
+		assert.ErrorIs(t, (&NewFileRequest{ChannelID: "ch-1", FileName: name, FileType: "docx"}).Validate(), ErrInvalidFileName, name)
+	}
+}

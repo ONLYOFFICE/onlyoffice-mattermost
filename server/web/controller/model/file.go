@@ -17,7 +17,17 @@
  */
 package model
 
-import validator "github.com/go-playground/validator/v10"
+import (
+	"errors"
+	"strings"
+	"unicode"
+
+	validator "github.com/go-playground/validator/v10"
+)
+
+const invalidFileNameChars = `\/:*?"<>|`
+
+var ErrInvalidFileName = errors.New("file name contains invalid characters")
 
 type NewFileRequest struct {
 	ChannelID string `json:"channel_id" validate:"required,min=1"`
@@ -26,5 +36,14 @@ type NewFileRequest struct {
 }
 
 func (n *NewFileRequest) Validate() error {
-	return validator.New().Struct(n)
+	if err := validator.New().Struct(n); err != nil {
+		return err
+	}
+
+	if strings.TrimSpace(n.FileName) == "" || strings.ContainsAny(n.FileName, invalidFileNameChars) ||
+		strings.ContainsFunc(n.FileName, unicode.IsControl) {
+		return ErrInvalidFileName
+	}
+
+	return nil
 }

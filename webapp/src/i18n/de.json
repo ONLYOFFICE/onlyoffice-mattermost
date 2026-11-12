@@ -29,7 +29,7 @@
     "manager.create_button": "Erstellen",
     "manager.cancel_button": "Stornieren",
     "manager.error_empty_name": "Der Dateiname darf nicht leer sein.",
-    "manager.error_invalid_name": "Ungültiger Dateiname.",
+    "manager.error_invalid_name": "Ungültiger Dateiname. Er darf folgende Zeichen nicht enthalten: \\ / : * ? \" < > |",
     "manager.error_create_failed": "Datei konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "manager.error_name_too_long": "Der Dateiname darf nicht länger als 250 Zeichen sein.",
     "manager.default_name.document": "Neues Dokument",

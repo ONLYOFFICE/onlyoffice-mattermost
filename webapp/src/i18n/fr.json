@@ -32,7 +32,7 @@
     "manager.default_name.spreadsheet": "Nouvelle feuille de calcul",
     "manager.default_name.presentation": "Nouvelle présentation",
     "manager.error_empty_name": "Le nom du fichier ne peut pas être vide.",
-    "manager.error_invalid_name": "Nom de fichier incorrect.",
+    "manager.error_invalid_name": "Nom de fichier incorrect. Il ne peut pas contenir \\ / : * ? \" < > |",
     "manager.error_create_failed": "Échec de la création du fichier. Veuillez réessayer.",
     "manager.error_name_too_long": "Le nom du fichier ne doit pas dépasser 250 caractères.",
     "converter.modal_header": "Conversion de fichiers",
