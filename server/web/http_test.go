@@ -381,6 +381,7 @@ func TestCallbackSavePersistsFile(t *testing.T) {
 		Id:        "post-1",
 		ChannelId: "channel-1",
 	}, nil)
+	context.api.On("GetChannel", "channel-1").Return(&mmModel.Channel{Id: "channel-1"}, nil)
 	context.api.On("UpdatePost", mock.AnythingOfType("*model.Post")).Return(&mmModel.Post{Id: "post-1"}, nil)
 	context.api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Username: "alice"}, nil)
 	context.api.On("GetConfig").Return(&mmModel.Config{}).Maybe()

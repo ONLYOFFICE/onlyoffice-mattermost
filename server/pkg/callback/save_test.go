@@ -23,6 +23,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -55,6 +56,7 @@ func newSaveFixture(t *testing.T, maxFileSize int64) saveFixture {
 	api.On("LogWarn", mock.Anything).Return().Maybe()
 	api.On("GetFileInfo", "file-1").Return(&mmModel.FileInfo{Id: "file-1", PostId: "post-1", Path: "files/file-1.docx", Name: "file-1.docx"}, nil)
 	api.On("GetPost", "post-1").Return(&mmModel.Post{Id: "post-1", ChannelId: "channel-1"}, nil)
+	api.On("GetChannel", "channel-1").Return(&mmModel.Channel{Id: "channel-1"}, nil).Maybe()
 	api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Username: "alice"}, nil).Maybe()
 	api.On("UpdatePost", mock.AnythingOfType("*model.Post")).
 		Run(func(mock.Arguments) { *ops = append(*ops, "update post") }).
@@ -228,4 +230,22 @@ func TestForceSaveDoesNotNeedUsers(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "forced", string(f.store.files["files/file-1.docx"]))
 	assert.Empty(t, f.bot.replies)
+}
+
+func TestSaveRefusesArchivedChannel(t *testing.T) {
+	f := newSaveFixture(t, 0)
+	f.api.ExpectedCalls = slices.DeleteFunc(f.api.ExpectedCalls, func(c *mock.Call) bool { return c.Method == "GetChannel" })
+	f.api.On("GetChannel", "channel-1").Return(&mmModel.Channel{Id: "channel-1", DeleteAt: 1700000000000}, nil)
+	downloaded := false
+	url := serve(t, func(w http.ResponseWriter, r *http.Request) {
+		downloaded = true
+		_, _ = w.Write([]byte("new-content"))
+	})
+
+	var persistErr *FilePersistenceError
+	require.ErrorAs(t, f.save(url, "user-1"), &persistErr)
+	assert.Contains(t, persistErr.Reason, "archived")
+	assert.False(t, downloaded, "nothing is downloaded for an archived channel")
+	f.assertUntouched(t)
+	assert.Empty(t, *f.ops)
 }

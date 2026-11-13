@@ -203,6 +203,7 @@ func TestSaveHandlerStatus2(t *testing.T) {
 		Id:        "post-1",
 		ChannelId: "channel-1",
 	}, nil)
+	api.On("GetChannel", "channel-1").Return(&mmModel.Channel{Id: "channel-1"}, nil)
 	api.On("UpdatePost", mock.AnythingOfType("*model.Post")).Return(&mmModel.Post{Id: "post-1"}, nil)
 	api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetConfig").Return(&mmModel.Config{})

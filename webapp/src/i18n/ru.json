@@ -32,7 +32,7 @@
     "manager.default_name.spreadsheet": "Новая электронная таблица",
     "manager.default_name.presentation": "Новая презентация",
     "manager.error_empty_name": "Имя файла не может быть пустым.",
-    "manager.error_invalid_name": "Неверное имя файла.",
+    "manager.error_invalid_name": "Неверное имя файла. Оно не может содержать \\ / : * ? \" < > |",
     "manager.error_create_failed": "Не удалось создать файл. Попробуйте ещё раз.",
     "manager.error_name_too_long": "Длина имени файла не может превышать 250 символов.",
     "converter.modal_header": "Конвертация файла",

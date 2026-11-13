@@ -88,3 +88,16 @@ func PostLink(api plugin.API, channel *model.Channel, postID string) string {
 
 	return siteURL + "/_redirect/pl/" + postID
 }
+
+func IsChannelArchived(api plugin.API, channelID string) (bool, error) {
+	if channelID == "" {
+		return false, nil
+	}
+
+	channel, appErr := api.GetChannel(channelID)
+	if appErr != nil {
+		return false, appErr
+	}
+
+	return channel != nil && channel.DeleteAt != 0, nil
+}
