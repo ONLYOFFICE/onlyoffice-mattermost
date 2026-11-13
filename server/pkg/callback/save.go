@@ -148,6 +148,21 @@ func _saveFile(
 		}
 	}
 
+	channel, channelErr := api.GetChannel(post.ChannelId)
+	if channelErr != nil {
+		return &FilePersistenceError{
+			FileID: callback.FileID,
+			Reason: channelErr.Error(),
+		}
+	}
+
+	if channel.DeleteAt != 0 {
+		return &FilePersistenceError{
+			FileID: callback.FileID,
+			Reason: "channel " + channel.Id + " is archived",
+		}
+	}
+
 	var editor *model.User
 	if callback.Status == 2 {
 		if len(callback.Users) == 0 || callback.Users[0] == "" {

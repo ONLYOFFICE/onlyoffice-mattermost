@@ -143,6 +143,18 @@ func BuildEditorConfig(
 		}
 	}
 
+	channelID := fileInfo.ChannelId
+	if channelID == "" {
+		channelID = post.ChannelId
+	}
+
+	if archived, archivedErr := IsChannelArchived(api, channelID); archivedErr != nil || archived {
+		if archivedErr != nil {
+			api.LogError(LoggerPrefix + "could not check channel " + channelID + ", forcing read-only: " + archivedErr.Error())
+		}
+		permissions = permissions.ReadOnly()
+	}
+
 	if configuration.OwnerProtected {
 		if payload.UserID == post.UserId {
 			permissions.Protect = true
