@@ -1,115 +1,75 @@
-# ONLYOFFICE Mattermost Integration
+# ONLYOFFICE Mattermost plugin
 
-## Project Architecture
-A Mattermost plugin integrating ONLYOFFICE Docs. Files live in Mattermost's file store (`filestore.FileBackend`), not a local folder. Saves overwrite attachments in place and bump the post's `UpdateAt` timestamp, which rotates the document's unique tracking `key`.
+A Mattermost plugin (Go server + React webapp) that opens chat attachments in ONLYOFFICE Docs. Plugin ID
+`com.onlyoffice.mattermost`. Supports Mattermost >= 9.11 and Docs >= 8.2.
 
-- **Go Server (`server/`)**: HTTP API at `/plugins/com.onlyoffice.mattermost/api/*`, callback handling, JWT management, file I/O, bot alerts, and background health crons.
-- **TypeScript Webapp (`webapp/`)**: Mattermost UI (previews, editor launcher, permissions dialog). Built with Webpack and registered via `window.registerPlugin`.
+For background (features, decisions, branches, release flow), read `HANDOVER.md`.
 
-### Environment Specs
-- **Mattermost Server**: >= 9.11.0 (`plugin.json`)
-- **ONLYOFFICE Document Server**: >= 8.2 (Validated via Command Service `version` call)
-- **Deep Reference Docs**: Core specifications reside in `.claude/skills/**` and `.claude/skills/SKILL.md`.
+## Commands
 
----
+```sh
+git submodule update --init --recursive  # required before any Go build (go:embed of formats/templates)
+make                 # check-style + test + dist
+make test            # go test -race ./server/... and jest
+make check-style     # eslint + tsc + golangci-lint v2
+make dist            # bundle: dist/com.onlyoffice.mattermost-<version>.tar.gz
+make deploy          # dist + upload (MM_SERVICESETTINGS_SITEURL, MM_ADMIN_TOKEN)
+cd webapp && npm run lint && npm run check-types && npx jest <path>
+go test ./server/web/ -run TestCallback   # single Go test
+```
 
-## Development Commands
+Toolchain: Go 1.26.7, Node 22, golangci-lint v2.13.2.
 
-### Compilation & Quality Control
-- **Full Release**: `make` (Runs check-style, test, and dist steps)
-- **Bundle Production**: `make dist` (Builds submodules, server, webapp, and output zip)
-- **Go Binary**: `make server` (Cross-compiles binaries into `server/dist/`)
-- **Webapp Compilation**: `make webapp` (Webpack production build to `webapp/dist/main.js`)
-- **Linter Checks**: `make check-style` (Runs eslint/tsc on webapp, golangci-lint on server)
-- **Test Suites**: `make test` (Runs `go test ./server/...` and Jest tests)
-- **Clean Artifacts**: `make clean` (Removes dist folders and node_modules)
+The webapp cannot run standalone. Check UI changes by deploying into Mattermost.
 
-### Active Iteration & Live Debugging
-- **Hot-Watch**: `MM_DEBUG=1 make watch` (Webpack watch + Go debug flags `-gcflags "all=-N -l"`)
-- **Deploy Artifacts**: `make deploy` or `make deploy-from-watch` (Pushes bundle to local server via `pluginctl`)
-- **Instance Cycle**: `make reset` (Disables and re-enables the plugin on Mattermost)
-- **Attach Debugger**: `make attach` (Attaches `dlv` to the running plugin process on port 2346)
-- **Update Formats**: `make submodules` (Pulls default templates and definitions from `ONLYOFFICE/document-formats`)
+## Layout
 
-*Note: Webapp cannot run standalone. For frontend iteration, use `cd webapp && npm run lint` / `npm run check-types`.*
+- `server/cmd/plugin.go`: plugin lifecycle (`OnConfigurationChange` rebuilds the fx container, validates
+  Docs, disables the plugin on bad config). `snapshot.go`: HA settings restore.
+- `server/web/router.go`: all routes under `/api`. `controller/`: handlers. `common/config.go`: the editor
+  config builder. `middleware/auth.go`: `Mattermost-User-Id` header or a KV `?code=`.
+- `server/pkg/`:
+  - `callback/`: save callbacks, with safe save in `save.go`
+  - `client/`: Docs command and convert client, plus the SSRF-safe HTTP client
+  - `configuration/`: settings, sanitizing, demo mode, format allowlist
+  - `crypto/`: JWT and document key
+  - `file/`: post-prop permissions
+  - `bot/`: the `onlyoffice` bot
+  - `health/`: the 30 min cron
+- `webapp/src/`: `index.tsx` registers everything; `components/` holds editor, permissions, manager
+  (create), converter, preview, settings and comment.
+- `public/`: `editor.html` template; `formats` and `template` are submodules embedded into Go.
+- `build/`: from the Mattermost starter template; do not edit.
 
----
+## Conventions
 
-## Configuration Layout (`plugin.json`)
-Settings deserialize into `server/pkg/configuration.Configuration` during `OnConfigurationChange`. Configuration failures disable the plugin automatically via `API.DisablePlugin`.
+- Commits: `type(scope): lowercase summary`, for example `fix(server): ...`, `feat(webapp): ...`.
+- Branch from `develop`; `main` is release only.
+- Every source file starts with the Ascensio System SIA Apache-2.0 header. Copy it from a neighbouring
+  file.
+- Go imports: stdlib, third party, then `github.com/ONLYOFFICE/onlyoffice-mattermost` (goimports
+  local-prefixes).
+- Tests sit next to the code. Server tests use `plugintest.API` mocks; `server/web/http_test.go` is the
+  route-level smoke suite. Add a test with every fix.
+- User-visible webapp strings go through i18n (`webapp/src/i18n`).
+- A release bumps `plugin.json` `version` and adds a top `## x.y.z` section to `CHANGELOG.md`. Both must
+  match.
 
-| Key | Purpose |
-| :--- | :--- |
-| `DESAddress` | Document Server base URL (No trailing slash; sanitized on load) |
-| `DESJwt` | Shared JWT secret key used for signing payloads and headers |
-| `DESJwtHeader` | Custom header name (**Must not** be `Authorization`; blocked by Mattermost) |
-| `DESJwtPrefix` | Authorization header prefix string (Defaults to `Bearer `) |
-| `DESAllowPrivate` | When true, allows loopback/private Docs URLs via safeurl allowlist; default rejects them including redirect hops |
-| `DemoEnabled` | Forces 7-day cloud trial override tracked via KV store key `onlyoffice_demo_start` |
-| `Formats` | Comma-separated extension allowlist; empty = all; `none` = block all |
-| `OwnerProtected` | Restricts editor document protection features exclusively to the post author |
+## Do not
 
----
-
-## Codebase Routing & Package Map
-
-### HTTP Router (`server/web/router.go` & `controller/`)
-Endpoints use the sub-route prefix `/plugins/com.onlyoffice.mattermost/api/*`.
-
-| Handler | Route | Auth Context | Function |
-| :--- | :--- | :--- | :--- |
-| `CallbackHandler` | `POST /callback` | JWT (Header/Body) | Handles saving states (`1` editing, `2`/`6` save, `4` closed) |
-| `DownloadHandler` | `GET /download` | JWT Header | Streams workspace binary files directly to ONLYOFFICE |
-| `EditorHandler` | `GET /editor` | Session / Code | Parses `public/editor.html` with signed template configuration |
-| `RefreshHandler` | `GET /editor/config` | Session / Code | Recovers and regenerates configurations for expired document keys |
-| `PermissionsHandler`| `GET/POST /permissions` | Mattermost User | Evaluates per-user permissions stored in post metadata |
-| `CreateHandler` | `POST /create` | Mattermost User | Spawns a new file using templates located in `public/template` |
-| `ConvertHandler` | `POST /convert` | Mattermost User | Handles format transformations via Document Server APIs |
-| `CodeHandler` | `GET /code` | Mattermost User | Emits short-lived fallback authentication tokens for isolated windows |
-
-*Authentication Context is resolved via `middleware/auth.go`, validating the `Mattermost-User-Id` header or falling back to custom short-lived KV codes.*
-
-### Package Registry (`server/pkg/`)
-- `configuration/`: Sanitizes settings and implements format allowlist filters.
-- `callback/`: Downloads binary assets from callback URLs and commits saves to `filestore.FileBackend`.
-- `crypto/`: Manages JWT claims signing and document token keys via `JwtManager` and `Encoder`.
-- `client/`: Interfaces with Document Server Command Services (`/command`) and Conversion APIs (`/converter`).
-- `file/`: Performs permission mappings (`ONLYOFFICE_PERMISSIONS_<fileId>_<userId>`) using post props.
-- `bot/`: Controls the `onlyoffice` bot account to stream channel notification logs.
-- `health/`: Runs background loops (`*/30 * * * *`) tracking core Document Server states.
-
----
-
-## Model Operational Directives
-* **Reference Requirements**: Always parse `.claude/SKILL.md` and context parameters inside nested skills before updating callback handling or editor configuration signing algorithms.
-* **Storage Constraint**: Never generate localized disk storage steps. Pass all active payloads directly to Mattermost storage abstraction boundaries via `filestore.FileBackend`.
-* **Security Context**: Ensure token authorization utilizes unique client parameters. Never allow the use of standard HTTP `Authorization` headers to prevent data blockage within Mattermost proxies.
-
----
-
-## Dependency Management & Safe Upgrades
-
-To ensure the stability of the ONLYOFFICE Mattermost integration, updates to dependencies across both the Go server and TypeScript webapp must be handled carefully. Unpinned upgrades can break file I/O pipelines or violate proxy contracts.
-
-### Core Upgrade Principles
-* **Align Mattermost Server Libraries**: Server dependencies (especially `://github.com`) must strictly target the minimum supported platform version declared in `plugin.json`.
-* **Preserve Webpack Sandbox Context**: The webapp operates inside a tightly sandboxed environment injected through `window.registerPlugin`. Major upgrades to build utilities (Webpack, Babel) can silently break asset registration.
-* **Maintain JWT Signature Parity**: Cryptographic libraries used for payload encoding must not modify signing behavior, payload structure, or validation logic. The ONLYOFFICE Document Server requires absolute compliance with configuration specifications.
-
-### Safe Upgrade Workflows
-
-#### 1. Go Server Dependencies (`server/`)
-* **Identify Vulnerabilities**: Audit requirements using tools like `govulncheck` or analyze unpinned modules with `go list -m -u all`.
-* **Pin Specific Releases**: Target precise tags during updates via `go get -u ://github.com` rather than broad blanket upgrades.
-* **Clean Code Maps**: Purge stale markers and recalculate module hash integrity maps using `go mod tidy`.
-* **Enforce Integrity Checks**: Run `make check-style` and `make test` locally to verify build stability before committing package mutations.
-
-#### 2. TypeScript Webapp Dependencies (`webapp/`)
-* **Audit Security Contexts**: Review vulnerable package footprints regularly using `npm audit`.
-* **Isolate Dependency Shifts**: Rely on `npm update` for non-breaking patch adjustments. Apply major updates manually using explicit version declarations (`npm install package-name@latest`).
-* **Preserve Dependency Lockfiles**: Do not delete `package-lock.json` globally. Allow the npm package manager to resolve tree-shaking rules and sub-dependency configurations naturally.
-* **Verify Typings**: Run type checking and static analysis routines (`cd webapp && npm run check-types && npm run lint`) to catch breakages introduced by upgraded type definitions.
-
-### Critical Pitfalls to Avoid
-* **Breaking Webpack Bundling Rules**: Altering `webpack` versions or updating `mattermost-webapp` definition bundles can change how layout elements map inside the Mattermost channel view. Always validate interface mutations under active watch compilation rules (`make watch`).
-* **Header Stripping via Secondary Libraries**: Upgrading mid-tier proxy, router, or client packages can cause unexpected sanitation or removal of custom headers. If `DESJwtHeader` is stripped or renamed, backend authentication loops with the document server will instantly fail.
+- Do not use the `Authorization` header for Docs JWT; Mattermost strips it. Use the configured
+  `DESJwtHeader`.
+- Do not read callback fields from the unsigned body. Use only verified JWT claims (`claims.Signed()`).
+- Do not write directly over an attachment. Save via a temp file plus `MoveFile` (`callback/save.go`), and
+  bump `post.UpdateAt` after a save.
+- Do not use `http.DefaultClient` or a new client for outgoing requests. Use the injected safe client
+  (`pkg/client`).
+- Do not trust server config bools or pointers from the plugin API:
+  - A false `*bool` arrives as nil, so read it with `model.SafeDereference` (nil means false).
+  - `GetUnsanitizedConfig()` and `license.Features` can be nil.
+- Do not write files to local disk. Use the Mattermost `filestore.FileBackend`.
+- Do not commit accidental submodule bumps. `make dist` pulls submodules from remote; reset them with
+  `git submodule update --init --recursive`.
+- Do not change the plugin ID, KV key names, or the post-prop permission key format; existing installs
+  depend on them.
+- Never write secrets (JWT secrets, tokens, passwords) into files or commits.
