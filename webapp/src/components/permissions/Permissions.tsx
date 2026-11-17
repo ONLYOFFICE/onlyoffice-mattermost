@@ -31,9 +31,10 @@ import React, {useState, useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
 import type {Dispatch} from 'redux';
 
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
+
 import {Client4} from 'mattermost-redux/client';
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
 
 import {PermissionsFooter} from 'components/permissions/PermissionsFooter';
 import {PermissionsHeader} from 'components/permissions/PermissionsHeader';
@@ -70,14 +71,12 @@ export default function OnlyofficeFilePermissions({visible, close, fileInfo, the
         }
 
         setChannel(null);
-        const urlParts = window.location.href.split('/');
         try {
-            if (urlParts.includes('channels')) {
-                const teamName = urlParts[urlParts.length - 3];
-                const channelName = urlParts[urlParts.length - 1];
-                const team = await Client4.getTeamByName(teamName);
-                const chnl = await Client4.getChannelByName(team.id, channelName);
-                setChannel(chnl);
+            if (fileInfo.channel_id) {
+                const chnl = await Client4.getChannel(fileInfo.channel_id);
+                if (chnl.type === 'O' || chnl.type === 'P') {
+                    setChannel(chnl);
+                }
             }
             const response = (await get<OnlyofficeUser[]>(
                 `${ONLYOFFICE_PLUGIN_PERMISSIONS}?file=${fileInfo.id}`,

@@ -34,10 +34,12 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/callback"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/client"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/crypto"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
@@ -222,9 +224,27 @@ func (h *ConvertHandler) downloadConvertedFile(fileURL string) ([]byte, error) {
 
 	defer response.Body.Close()
 
-	fileData, err := io.ReadAll(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("could not get converted file: unexpected response status %d", response.StatusCode)
+	}
+
+	limit := callback.MaxDownloadSize(h.api)
+	if response.ContentLength > limit {
+		return nil, fmt.Errorf("converted file size %d exceeds the limit of %d bytes", response.ContentLength, limit)
+	}
+
+	fileData, err := io.ReadAll(io.LimitReader(response.Body, limit+1))
 	if err != nil {
 		return nil, fmt.Errorf("could not read converted file: %w", err)
+	}
+
+	switch {
+	case int64(len(fileData)) > limit:
+		return nil, fmt.Errorf("converted file exceeds the limit of %d bytes", limit)
+	case response.ContentLength >= 0 && int64(len(fileData)) != response.ContentLength:
+		return nil, fmt.Errorf("incomplete converted file: got %d of %d bytes", len(fileData), response.ContentLength)
+	case len(fileData) == 0:
+		return nil, errors.New("converted file is empty")
 	}
 
 	return fileData, nil
@@ -300,6 +320,13 @@ func (h *ConvertHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 			statusCode = http.StatusForbidden
 		}
 		h.logErrorAndRespond(rw, ownerErr.Error(), statusCode)
+		return
+	}
+
+	// The result is posted to the file's channel: the owner may have left it or lost the right
+	// to upload there since the original upload.
+	if !common.CanUploadToChannel(h.api, userID, file.ChannelId) {
+		h.logErrorAndRespond(rw, "user "+userID+" cannot upload files to channel "+file.ChannelId, http.StatusForbidden)
 		return
 	}
 

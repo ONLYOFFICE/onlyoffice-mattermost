@@ -55,6 +55,10 @@ func (viewOnlyHelper) GetFileType(fileExt string) (string, error) {
 
 func (viewOnlyHelper) GenerateKey() string { return "fixed-code" }
 
+func allowAccess(api *plugintest.API) {
+	api.On("HasPermissionToChannel", mock.Anything, mock.Anything, mock.Anything).Return(true).Maybe()
+}
+
 func validEditorConfiguration() *configuration.Configuration {
 	return &configuration.Configuration{
 		DESAddress:     "https://docs.example.com",
@@ -89,6 +93,7 @@ func editorRequest(userID, fileID string) *http.Request {
 
 func TestBuildEditorConfigHappyPath(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -140,6 +145,7 @@ func TestBuildEditorConfigHappyPath(t *testing.T) {
 
 func TestBuildEditorConfigDarkThemeAndViewMode(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-2").Return(&model.User{Id: "user-2", Username: "bob"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -193,6 +199,7 @@ func TestBuildEditorConfigNoCredentials(t *testing.T) {
 
 func TestBuildEditorConfigDemoActive(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -227,6 +234,7 @@ func TestBuildEditorConfigDemoActive(t *testing.T) {
 
 func TestBuildEditorConfigUserError(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return((*model.User)(nil), model.NewAppError("GetUser", "fail", nil, "missing", http.StatusNotFound))
 
@@ -246,6 +254,7 @@ func TestBuildEditorConfigUserError(t *testing.T) {
 
 func TestBuildEditorConfigMissingFileQuery(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 
@@ -268,6 +277,7 @@ func TestBuildEditorConfigMissingFileQuery(t *testing.T) {
 
 func TestBuildEditorConfigFileInfoError(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return((*model.FileInfo)(nil), model.NewAppError("GetFileInfo", "fail", nil, "missing", http.StatusNotFound))
@@ -288,6 +298,7 @@ func TestBuildEditorConfigFileInfoError(t *testing.T) {
 
 func TestBuildEditorConfigFormatNotAllowed(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -313,6 +324,7 @@ func TestBuildEditorConfigFormatNotAllowed(t *testing.T) {
 
 func TestBuildEditorConfigPostError(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -336,6 +348,7 @@ func TestBuildEditorConfigPostError(t *testing.T) {
 
 func TestBuildEditorConfigUnsupportedExtension(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -360,6 +373,7 @@ func TestBuildEditorConfigUnsupportedExtension(t *testing.T) {
 
 func TestBuildEditorConfigOwnerProtectedNonOwner(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-2").Return(&model.User{Id: "user-2", Username: "bob"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -388,6 +402,7 @@ func TestBuildEditorConfigOwnerProtectedNonOwner(t *testing.T) {
 
 func TestBuildEditorConfigOwnerProtectedAuthor(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "author").Return(&model.User{Id: "author", Username: "owner"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -416,6 +431,7 @@ func TestBuildEditorConfigOwnerProtectedAuthor(t *testing.T) {
 
 func TestBuildEditorConfigKVSetErrorIsLogged(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -443,6 +459,7 @@ func TestBuildEditorConfigKVSetErrorIsLogged(t *testing.T) {
 }
 func TestBuildEditorConfigEncodeError(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -467,6 +484,7 @@ func TestBuildEditorConfigEncodeError(t *testing.T) {
 
 func TestBuildEditorConfigNonEditableExtension(t *testing.T) {
 	api := &plugintest.API{}
+	allowAccess(api)
 	api.On("GetConfig").Return(siteURLConfig())
 	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
 	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
@@ -490,4 +508,78 @@ func TestBuildEditorConfigNonEditableExtension(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 	assert.Equal(t, "view", config.EditorConfig.Mode)
 	assert.False(t, config.Document.Permissions.Edit)
+}
+
+func TestBuildEditorConfigArchivedChannelIsReadOnly(t *testing.T) {
+	cases := map[string]func(api *plugintest.API){
+		"archived": func(api *plugintest.API) {
+			api.On("GetChannel", "channel-1").Return(&model.Channel{Id: "channel-1", DeleteAt: 1700000000000}, nil)
+		},
+		"channel lookup fails": func(api *plugintest.API) {
+			api.On("GetChannel", "channel-1").Return((*model.Channel)(nil), model.NewAppError("GetChannel", "fail", nil, "", http.StatusInternalServerError))
+			api.On("LogError", mock.Anything).Return()
+		},
+	}
+
+	for name, setup := range cases {
+		t.Run(name, func(t *testing.T) {
+			api := &plugintest.API{}
+			allowAccess(api)
+			api.On("GetConfig").Return(siteURLConfig())
+			api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
+			api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
+				Id: "file-1", Name: "notes.docx", Extension: "docx", PostId: "post-1", ChannelId: "channel-1",
+			}, nil)
+			api.On("GetPost", "post-1").Return(&model.Post{Id: "post-1", UserId: "user-1", ChannelId: "channel-1", UpdateAt: 1}, nil)
+			api.On("KVSetWithExpiry", mock.AnythingOfType("string"), []byte("user-1"), int64(10)).Return(nil)
+			setup(api)
+
+			config, _, status, err := BuildEditorConfig(
+				editorRequest("user-1", "file-1"),
+				validEditorConfiguration(),
+				api,
+				crypto.NewMD5Encoder(),
+				crypto.NewJwtManager(),
+				newFileHelper(t),
+			)
+
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, status)
+			assert.Equal(t, "view", config.EditorConfig.Mode, "even the author only views a file in an archived channel")
+			assert.False(t, config.Document.Permissions.Edit)
+			assert.False(t, config.Document.Permissions.Comment)
+			assert.False(t, config.Document.Permissions.Review)
+			assert.False(t, config.EditorConfig.CoEditing.Change)
+			assert.True(t, config.Document.Permissions.Download, "viewing rights are kept")
+			assert.True(t, config.Document.Permissions.Print)
+			api.AssertExpectations(t)
+		})
+	}
+}
+
+func TestBuildEditorConfigActiveChannelKeepsEditing(t *testing.T) {
+	api := &plugintest.API{}
+	allowAccess(api)
+	api.On("GetConfig").Return(siteURLConfig())
+	api.On("GetUser", "user-1").Return(&model.User{Id: "user-1", Username: "alice"}, nil)
+	api.On("GetFileInfo", "file-1").Return(&model.FileInfo{
+		Id: "file-1", Name: "notes.docx", Extension: "docx", PostId: "post-1", ChannelId: "channel-1",
+	}, nil)
+	api.On("GetPost", "post-1").Return(&model.Post{Id: "post-1", UserId: "user-1", ChannelId: "channel-1", UpdateAt: 1}, nil)
+	api.On("GetChannel", "channel-1").Return(&model.Channel{Id: "channel-1"}, nil)
+	api.On("KVSetWithExpiry", mock.AnythingOfType("string"), []byte("user-1"), int64(10)).Return(nil)
+
+	config, _, _, err := BuildEditorConfig(
+		editorRequest("user-1", "file-1"),
+		validEditorConfiguration(),
+		api,
+		crypto.NewMD5Encoder(),
+		crypto.NewJwtManager(),
+		newFileHelper(t),
+	)
+
+	require.NoError(t, err)
+	assert.Empty(t, config.EditorConfig.Mode)
+	assert.True(t, config.Document.Permissions.Edit)
+	api.AssertExpectations(t)
 }

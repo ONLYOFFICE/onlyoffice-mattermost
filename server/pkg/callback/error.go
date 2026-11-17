@@ -35,6 +35,15 @@ func (e *FilePersistenceError) Error() string {
 	return fmt.Sprintf(onlyofficeFilePersistenceErrorPrefix+"file %s could not be saved: %s", e.FileID, e.Reason)
 }
 
+type FileDownloadError struct {
+	FileID string
+	Reason string
+}
+
+func (e *FileDownloadError) Error() string {
+	return fmt.Sprintf(onlyofficeLoggerCallbackPrefix+"file %s could not be downloaded: %s", e.FileID, e.Reason)
+}
+
 type FileNotFoundError struct {
 	FileID string
 	Reason string

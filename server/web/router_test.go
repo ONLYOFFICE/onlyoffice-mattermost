@@ -83,7 +83,10 @@ func newTestRouter(t *testing.T, api *plugintest.API) http.Handler {
 }
 
 func TestRecoverRoutesCatchesPanic(t *testing.T) {
-	handler := recoverRoutes(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	api := &plugintest.API{}
+	api.On("LogError", mock.Anything).Return()
+
+	handler := recoverRoutes(api)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic("panic")
 	}))
 
@@ -92,6 +95,8 @@ func TestRecoverRoutesCatchesPanic(t *testing.T) {
 	assert.NotPanics(t, func() {
 		handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/api/panic", nil))
 	})
+	assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	api.AssertCalled(t, "LogError", mock.Anything)
 }
 
 func TestTimeoutRoutesCompletesBeforeDeadline(t *testing.T) {
@@ -105,7 +110,7 @@ func TestTimeoutRoutesCompletesBeforeDeadline(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, recorder.Code)
 }
 
-func TestTimeoutRoutesReturnsGatewayTimeout(t *testing.T) {
+func TestTimeoutRoutesReturnsServiceUnavailable(t *testing.T) {
 	handler := timeoutRoutes(20 * time.Millisecond)(func(w http.ResponseWriter, r *http.Request) {
 		select {
 		case <-r.Context().Done():
@@ -118,7 +123,7 @@ func TestTimeoutRoutesReturnsGatewayTimeout(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/slow", nil))
 
-	assert.Equal(t, http.StatusGatewayTimeout, recorder.Code)
+	assert.Equal(t, http.StatusServiceUnavailable, recorder.Code)
 	assert.Contains(t, recorder.Body.String(), "request timeout")
 }
 

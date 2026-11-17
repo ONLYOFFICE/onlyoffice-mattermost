@@ -22,7 +22,7 @@
 import {connect} from 'react-redux';
 import {getCurrentDarkTheme, getCurrentTheme} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
 import OnlyofficeFilePreview from 'components/preview/Preview';
 

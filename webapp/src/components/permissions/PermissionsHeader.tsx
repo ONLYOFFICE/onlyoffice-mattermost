@@ -30,8 +30,8 @@ import {Button} from 'react-bootstrap';
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 
-import type {Channel} from 'mattermost-redux/types/channels';
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {Channel} from '@mattermost/types/channels';
+import type {FileInfo} from '@mattermost/types/files';
 
 type Props = {
     loading: boolean;
@@ -342,9 +342,8 @@ export const PermissionsHeader: React.FC<Props> = ({
     const [accessHeader, setAccessHeader] = useState<string>(i18n['permissions.loading']);
 
     useEffect(() => {
-        const isChannel = window.location.href.split('/').includes('channels');
         if (!loading) {
-            const headerText = isChannel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'];
+            const headerText = channel ? i18n['permissions.access_header_default'] : i18n['permissions.access_header'];
             setTimeout(() => {
                 setAccessHeader(headerText);
             }, 0);

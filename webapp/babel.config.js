@@ -41,10 +41,6 @@ const config = {
             allExtensions: true,
             isTSX: true,
         }],
-        ['@emotion/babel-preset-css-prop'],
-    ],
-    plugins: [
-        'babel-plugin-typescript-to-proptypes',
     ],
 };
 
@@ -52,7 +48,6 @@ const config = {
 config.env = {
     test: {
         presets: config.presets,
-        plugins: config.plugins,
     },
 };
 config.env.test.presets[0][1].modules = 'auto';

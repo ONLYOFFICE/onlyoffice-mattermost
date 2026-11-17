@@ -54,6 +54,29 @@ describe('Manager', () => {
         expect(await screen.findByText(/cannot be empty/i)).toBeInTheDocument();
     });
 
+    it.each(['report/june', 'report\\june', '../../etc/passwd', '<b>bold</b>', 'a:b', 'a|b'])('rejects invalid file name %s', async (name) => {
+        renderManager();
+
+        const input = screen.getByPlaceholderText(/file name/i);
+        await userEvent.clear(input);
+        await userEvent.type(input, name);
+
+        expect(await screen.findByText(/invalid file name/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', {name: /create/i})).toBeDisabled();
+        expect(api.post).not.toHaveBeenCalled();
+    });
+
+    it('accepts a valid file name', async () => {
+        renderManager();
+
+        const input = screen.getByPlaceholderText(/file name/i);
+        await userEvent.clear(input);
+        await userEvent.type(input, 'report june (v2)');
+
+        expect(screen.queryByText(/invalid file name/i)).not.toBeInTheDocument();
+        expect(screen.getByRole('button', {name: /create/i})).toBeEnabled();
+    });
+
     it('creates a file and closes', async () => {
         jest.useFakeTimers();
         const user = userEvent.setup({advanceTimers: jest.advanceTimersByTime});

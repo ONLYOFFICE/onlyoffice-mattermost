@@ -39,7 +39,7 @@ func TestWriteJSONDefaultStatus(t *testing.T) {
 	WriteJSON(rr, map[string]int{"error": 0})
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.Equal(t, "application/json", rr.Result().Header.Get("Content-Type"))
 
 	var body map[string]int
 

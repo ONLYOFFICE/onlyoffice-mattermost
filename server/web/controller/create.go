@@ -30,6 +30,7 @@ import (
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/public"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/pkg/configuration"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/tools"
+	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/common"
 	oomodel "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 )
 
@@ -94,6 +95,12 @@ func (h *CreateHandler) Handle(rw http.ResponseWriter, r *http.Request) {
 	if err := req.Validate(); err != nil {
 		h.api.LogError(onlyofficeLoggerPrefix + "invalid request: " + err.Error())
 		rw.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !common.CanUploadToChannel(h.api, userID, req.ChannelID) {
+		h.api.LogWarn(onlyofficeLoggerPrefix + "user " + userID + " cannot upload files to channel " + req.ChannelID)
+		rw.WriteHeader(http.StatusForbidden)
 		return
 	}
 

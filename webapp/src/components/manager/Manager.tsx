@@ -42,11 +42,29 @@ type Props = {
     close: () => (dispatch: Dispatch) => void;
 };
 
+const INVALID_FILE_NAME = /[\\/:*?"<>|\p{Cc}]/u;
+
 const removeInAnimation = (): void => {
     const modal = document.getElementById('onlyoffice-manager-modal');
     const backdrop = modal?.previousElementSibling;
     modal?.classList.remove('in');
     backdrop?.classList.remove('in');
+};
+
+const validateFileName = (name: string, i18n: Record<string, string>): string => {
+    if (!name.trim()) {
+        return i18n['manager.error_empty_name'];
+    }
+
+    if (INVALID_FILE_NAME.test(name)) {
+        return i18n['manager.error_invalid_name'];
+    }
+
+    if (name.length > 250) {
+        return i18n['manager.error_name_too_long'];
+    }
+
+    return '';
 };
 
 const getDefaultFileName = (type: string, i18n: Record<string, string>): string => {
@@ -95,13 +113,9 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
     };
 
     const handleCreate = async (): Promise<void> => {
-        if (!fileName.trim()) {
-            setError(i18n['manager.error_empty_name']);
-            return;
-        }
-
-        if (fileName.length > 250) {
-            setError(i18n['manager.error_name_too_long']);
+        const validationError = validateFileName(fileName, i18n);
+        if (validationError) {
+            setError(validationError);
             return;
         }
 
@@ -130,13 +144,7 @@ export default function Manager({visible, theme, darkTheme, close}: Props) {
 
     const handleFileNameChange = (value: string): void => {
         setFileName(value);
-        if (!value.trim()) {
-            setError(i18n['manager.error_empty_name']);
-        } else if (value.length > 250) {
-            setError(i18n['manager.error_name_too_long']);
-        } else {
-            setError('');
-        }
+        setError(validateFileName(value, i18n));
     };
 
     return (

@@ -54,3 +54,11 @@ type PostPermission struct {
 	Username    string      `json:"username"`
 	Permissions Permissions `json:"permissions"`
 }
+
+func (p Permissions) ReadOnly() Permissions {
+	return Permissions{
+		Copy:     p.Copy,
+		Download: p.Download,
+		Print:    p.Print,
+	}
+}

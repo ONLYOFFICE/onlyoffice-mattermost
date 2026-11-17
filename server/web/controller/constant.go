@@ -22,7 +22,8 @@ import "github.com/ONLYOFFICE/onlyoffice-mattermost/server/web/controller/model"
 const (
 	onlyofficeRedirectULR   = "https://onlyoffice.com"
 	onlyofficeLoggerPrefix  = "[ONLYOFFICE Handler]: "
-	onlyofficeAPIRootSuffix = "plugins/com.onlyoffice.mattermost/api"
+	onlyofficePluginID      = "com.onlyoffice.mattermost"
+	onlyofficeAPIRootSuffix = "plugins/" + onlyofficePluginID + "/api"
 )
 
 var (

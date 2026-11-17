@@ -52,6 +52,8 @@ type stubCommandClient struct {
 	convertErr  error
 	versionResp client.VersionResponse
 	versionErr  error
+
+	convertCalls int
 }
 
 func (c *stubCommandClient) SendVersion(commandURL string, request client.VersionRequest, timeout time.Duration) (client.VersionResponse, error) {
@@ -59,6 +61,7 @@ func (c *stubCommandClient) SendVersion(commandURL string, request client.Versio
 }
 
 func (c *stubCommandClient) SendConvert(commandURL string, request client.ConvertRequest, timeout time.Duration) (client.ConvertResponse, error) {
+	c.convertCalls++
 	return c.convertResp, c.convertErr
 }
 
@@ -78,6 +81,7 @@ func siteURLConfig() *model.Config {
 	config := &model.Config{}
 	siteURL := "https://mm.example.com"
 	config.ServiceSettings.SiteURL = &siteURL
+	config.FileSettings.EnableFileAttachments = model.NewPointer(true)
 	return config
 }
 
@@ -100,6 +104,12 @@ func newFormatManager(t *testing.T) public.FormatManager {
 }
 
 func loggingAPI() *plugintest.API {
+	api := quietAPI()
+	api.On("HasPermissionToChannel", mock.Anything, mock.Anything, mock.Anything).Return(true).Maybe()
+	return api
+}
+
+func quietAPI() *plugintest.API {
 	api := &plugintest.API{}
 	api.On("LogError", mock.Anything).Return().Maybe()
 	api.On("LogDebug", mock.Anything).Return().Maybe()

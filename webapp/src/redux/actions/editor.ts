@@ -21,7 +21,7 @@
 
 import type {Dispatch} from 'redux';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import {CLOSE_EDITOR_MODAL, OPEN_EDITOR_MODAL} from './types';
 
@@ -31,9 +31,10 @@ export const closeEditor = () => (dispatch: Dispatch) => {
     });
 };
 
-export const openEditor = (fileInfo: FileInfo) => (dispatch: Dispatch) => {
+export const openEditor = (fileInfo: FileInfo, actionLink?: string) => (dispatch: Dispatch) => {
     dispatch({
         type: OPEN_EDITOR_MODAL,
         payload: fileInfo,
+        ...(actionLink ? {actionLink} : {}),
     });
 };

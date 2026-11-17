@@ -175,6 +175,7 @@ func TestCreateHandler(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		api := loggingAPI()
+		api.On("GetConfig").Return(siteURLConfig())
 		api.On("GetChannel", "ch-1").Return(&mmModel.Channel{Id: "ch-1"}, nil)
 		api.On("GetUser", "user-1").Return(&mmModel.User{Id: "user-1", Locale: "en"}, nil)
 		api.On("CreateUploadSession", mock.AnythingOfType("*model.UploadSession")).Return(&mmModel.UploadSession{Id: "up-1"}, nil)

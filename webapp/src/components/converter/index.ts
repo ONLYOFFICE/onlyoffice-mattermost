@@ -25,7 +25,7 @@ import {bindActionCreators} from 'redux';
 import {closeConverter} from 'redux/actions';
 import {getCurrentTheme, converterModalVisible, converterModalFileInfo, getCurrentDarkTheme} from 'redux/selectors';
 
-import type {GlobalState} from 'mattermost-redux/types/store';
+import type {GlobalState} from '@mattermost/types/store';
 
 import OnlyofficeFileConverter from 'components/converter/Converter';
 

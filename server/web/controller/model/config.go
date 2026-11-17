@@ -18,6 +18,8 @@
 package model
 
 import (
+	"encoding/json"
+
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
@@ -44,12 +46,13 @@ type CoEditing struct {
 }
 
 type EditorConfig struct {
-	User          User          `json:"user"`
-	CallbackURL   string        `json:"callbackUrl"`
-	Mode          string        `json:"mode,omitempty"`
-	CoEditing     CoEditing     `json:"coEditing"`
-	Customization Customization `json:"customization,omitempty"`
-	Lang          string        `json:"lang,omitempty"`
+	User          User            `json:"user"`
+	CallbackURL   string          `json:"callbackUrl"`
+	Mode          string          `json:"mode,omitempty"`
+	CoEditing     CoEditing       `json:"coEditing"`
+	Customization Customization   `json:"customization,omitempty"`
+	Lang          string          `json:"lang,omitempty"`
+	ActionLink    json.RawMessage `json:"actionLink,omitempty"`
 }
 
 type User struct {

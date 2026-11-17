@@ -18,6 +18,8 @@
 package common
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -36,8 +38,9 @@ import (
 )
 
 const (
-	LoggerPrefix  = "[ONLYOFFICE Handler]: "
-	apiRootSuffix = "plugins/com.onlyoffice.mattermost/api"
+	LoggerPrefix      = "[ONLYOFFICE Handler]: "
+	apiRootSuffix     = "plugins/com.onlyoffice.mattermost/api"
+	maxActionLinkSize = 2048
 )
 
 type editorParameters struct {
@@ -49,6 +52,20 @@ type editorParameters struct {
 
 func (c *editorParameters) validate() error {
 	return validator.New().Struct(c)
+}
+
+func ParseActionLink(raw []byte) json.RawMessage {
+	raw = bytes.TrimSpace(raw)
+	if len(raw) == 0 || len(raw) > maxActionLinkSize || raw[0] != '{' || !json.Valid(raw) {
+		return nil
+	}
+
+	var compact bytes.Buffer
+	if err := json.Compact(&compact, raw); err != nil {
+		return nil
+	}
+
+	return compact.Bytes()
 }
 
 func BuildEditorConfig(
@@ -103,6 +120,10 @@ func BuildEditorConfig(
 		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not access post %s: %s", fileInfo.PostId, postErr.Message)
 	}
 
+	if !CanReadFile(api, user.Id, fileInfo, post) {
+		return oomodel.Config{}, "", http.StatusForbidden, fmt.Errorf("user %s has no access to file %s", user.Id, fileInfo.Id)
+	}
+
 	docType, typeErr := fileHelper.GetFileType(fileInfo.Extension)
 	if typeErr != nil {
 		return oomodel.Config{}, "", http.StatusInternalServerError, fmt.Errorf("could not get file type: %w", typeErr)
@@ -120,6 +141,18 @@ func BuildEditorConfig(
 		} else {
 			api.LogDebug(LoggerPrefix + "format not allowed for editing, forcing read-only: " + fileInfo.Extension)
 		}
+	}
+
+	channelID := fileInfo.ChannelId
+	if channelID == "" {
+		channelID = post.ChannelId
+	}
+
+	if archived, archivedErr := IsChannelArchived(api, channelID); archivedErr != nil || archived {
+		if archivedErr != nil {
+			api.LogError(LoggerPrefix + "could not check channel " + channelID + ", forcing read-only: " + archivedErr.Error())
+		}
+		permissions = permissions.ReadOnly()
 	}
 
 	if configuration.OwnerProtected {
@@ -157,7 +190,8 @@ func BuildEditorConfig(
 			Plugins: configuration.PluginsEnabled,
 			Macros:  configuration.MacrosEnabled,
 		},
-		Lang: payload.Lang,
+		Lang:       payload.Lang,
+		ActionLink: ParseActionLink([]byte(query.Get("action"))),
 	}
 
 	editorConfig.CoEditing = oomodel.CoEditing{

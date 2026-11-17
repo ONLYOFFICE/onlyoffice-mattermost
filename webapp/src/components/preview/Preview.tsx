@@ -31,7 +31,7 @@ import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {openEditor, openPermissions} from 'redux/actions';
 
-import type {FileInfo} from 'mattermost-redux/types/files';
+import type {FileInfo} from '@mattermost/types/files';
 
 import 'public/scss/preview.scss';
 
